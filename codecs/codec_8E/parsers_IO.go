@@ -31,25 +31,25 @@ func parseTotalNumberOfIO(startIndex int, body []byte) (uint16, int) {
 // N1
 // number of properties, which length is 1 byte.
 func parseOneByteIO(startIndex int, body []byte) (uint16, map[uint16]uint8, int) {
-	oneByteIO := map[uint16]uint8{}
-
+	IOelements := map[uint16]uint8{}
+	splitByte := 3
 	// One Byte IO Number
-	noOfByteIOStartIndex := startIndex
-	noOfByteIOEndIndex := noOfByteIOStartIndex + 2
-	noOfOneByteIO := binary.BigEndian.Uint16(body[noOfByteIOStartIndex:noOfByteIOEndIndex])
+	nOfIOstartIndex := startIndex
+	nOfIOendIndex := nOfIOstartIndex + 2
+	nOfIOelements := binary.BigEndian.Uint16(body[nOfIOstartIndex:nOfIOendIndex])
 	// One Byte IO Data
-	IOstartIndex := noOfByteIOEndIndex
-	IOendIndex := IOstartIndex + int(noOfOneByteIO)*3
-	data := body[IOstartIndex:IOendIndex]
+	IOelementsStartIndex := nOfIOendIndex
+	IOelementsEndIndex := IOelementsStartIndex + int(nOfIOelements)*splitByte
+	data := body[IOelementsStartIndex:IOelementsEndIndex]
 
-	for i := 0; i < len(data); i += 3 {
+	for i := 0; i < len(data); i += splitByte {
 		id := binary.BigEndian.Uint16(data[i : i+2])
 		value := data[i+2]
 
-		oneByteIO[id] = value
+		IOelements[id] = value
 	}
 
-	return noOfOneByteIO, oneByteIO, IOendIndex
+	return nOfIOelements, IOelements, IOelementsEndIndex
 }
 
 // This function parse two byte IO.
@@ -57,25 +57,25 @@ func parseOneByteIO(startIndex int, body []byte) (uint16, map[uint16]uint8, int)
 // N2
 // number of properties, which length is 2 byte.
 func parseTwoByteIO(startIndex int, body []byte) (uint16, map[uint16]uint16, int) {
-	twoByteIO := map[uint16]uint16{}
-
+	IOelements := map[uint16]uint16{}
+	splitByte := 4
 	// Two Byte IO Number
-	noOfTwoByteIOIndexStart := startIndex
-	noOfTwoByteIOIndexEnd := noOfTwoByteIOIndexStart + 2
-	noOfTwoByteIO := binary.BigEndian.Uint16(body[noOfTwoByteIOIndexStart:noOfTwoByteIOIndexEnd])
+	nOfIOstartIndex := startIndex
+	nOfIOendIndex := nOfIOstartIndex + 2
+	nOfIOelements := binary.BigEndian.Uint16(body[nOfIOstartIndex:nOfIOendIndex])
 	// Two Byte IO Data
-	twoByteIOStartIndex := noOfTwoByteIOIndexEnd
-	twoByteIOEndIndex := twoByteIOStartIndex + int(noOfTwoByteIO)*4
-	data := body[twoByteIOStartIndex:twoByteIOEndIndex]
+	IOelementsStartIndex := nOfIOendIndex
+	IOelementsEndIndex := IOelementsStartIndex + int(nOfIOelements)*splitByte
+	data := body[IOelementsStartIndex:IOelementsEndIndex]
 
-	for i := 0; i < len(data); i += 4 {
+	for i := 0; i < len(data); i += splitByte {
 		id := binary.BigEndian.Uint16(data[i : i+2])
-		value := binary.BigEndian.Uint16(data[i+2 : i+4])
+		value := binary.BigEndian.Uint16(data[i+2 : i+splitByte])
 
-		twoByteIO[id] = value
+		IOelements[id] = value
 	}
 
-	return noOfTwoByteIO, twoByteIO, twoByteIOEndIndex
+	return nOfIOelements, IOelements, IOelementsEndIndex
 }
 
 // This function parse four byte IO.
@@ -83,25 +83,25 @@ func parseTwoByteIO(startIndex int, body []byte) (uint16, map[uint16]uint16, int
 // N4
 // number of properties, which length is 4 byte.
 func parseFourByteIO(startIndex int, body []byte) (uint16, map[uint16]uint32, int) {
-	fourByteIO := map[uint16]uint32{}
-
+	IOelements := map[uint16]uint32{}
+	splitByte := 6
 	// Four Byte IO Number
-	noOfFourByteIOIndexStart := startIndex
-	noOfFourByteIOIndexEnd := noOfFourByteIOIndexStart + 2
-	noOfFourByteIO := binary.BigEndian.Uint16(body[noOfFourByteIOIndexStart:noOfFourByteIOIndexEnd])
+	nOfIOstartIndex := startIndex
+	nOfIOendIndex := nOfIOstartIndex + 2
+	nOfIOelements := binary.BigEndian.Uint16(body[nOfIOstartIndex:nOfIOendIndex])
 	// Four Byte IO Number
-	fourByteIOStartIndex := noOfFourByteIOIndexEnd
-	fourByteIOEndIndex := fourByteIOStartIndex + int(noOfFourByteIO)*6
-	data := body[fourByteIOStartIndex:fourByteIOEndIndex]
+	IOelementsStartIndex := nOfIOendIndex
+	IOelementsEndIndex := IOelementsStartIndex + int(nOfIOelements)*splitByte
+	data := body[IOelementsStartIndex:IOelementsEndIndex]
 
-	for i := 0; i < len(data); i += 6 {
+	for i := 0; i < len(data); i += splitByte {
 		id := binary.BigEndian.Uint16(data[i : i+2])
-		value := binary.BigEndian.Uint32(data[i+2 : i+6])
+		value := binary.BigEndian.Uint32(data[i+2 : i+splitByte])
 
-		fourByteIO[id] = value
+		IOelements[id] = value
 	}
 
-	return noOfFourByteIO, fourByteIO, fourByteIOEndIndex
+	return nOfIOelements, IOelements, IOelementsEndIndex
 }
 
 // This function parse eight byte IO.
@@ -110,26 +110,25 @@ func parseFourByteIO(startIndex int, body []byte) (uint16, map[uint16]uint32, in
 // number of properties, which length is 8 byte.
 // Eight Byte IO Number
 func parseEightByteIO(startIndex int, body []byte) (uint16, map[uint16]uint64, int) {
-	eightByteIO := map[uint16]uint64{}
-
+	IOelements := map[uint16]uint64{}
+	splitByte := 10
 	// Eight Byte IO Number
-	noOfEightByteIOIndexStart := startIndex
-	noOfEightByteIOIndexEnd := noOfEightByteIOIndexStart + 2
-	noOfEightByteIO := binary.BigEndian.Uint16(body[noOfEightByteIOIndexStart:noOfEightByteIOIndexEnd])
+	nOfIOstartIndex := startIndex
+	nOfIOendIndex := nOfIOstartIndex + 2
+	nOfIOelements := binary.BigEndian.Uint16(body[nOfIOstartIndex:nOfIOendIndex])
 	// Eight Byte IO Data
-	eightByteIOStartIndex := noOfEightByteIOIndexEnd
-	eightByteIOEndIndex := eightByteIOStartIndex + int(noOfEightByteIO)*10
-	data := body[eightByteIOStartIndex:eightByteIOEndIndex]
+	IOelementsStartIndex := nOfIOendIndex
+	IOelementsEndIndex := IOelementsStartIndex + int(nOfIOelements)*splitByte
+	data := body[IOelementsStartIndex:IOelementsEndIndex]
 
-	for i := 0; i < len(data); i += 10 {
+	for i := 0; i < len(data); i += splitByte {
 		id := binary.BigEndian.Uint16(data[i : i+2])
-		value := binary.BigEndian.Uint64(data[i+2 : i+10])
+		value := binary.BigEndian.Uint64(data[i+2 : i+splitByte])
 
-		eightByteIO[id] = value
-
+		IOelements[id] = value
 	}
 
-	return noOfEightByteIO, eightByteIO, eightByteIOEndIndex
+	return nOfIOelements, IOelements, IOelementsEndIndex
 }
 
 // This function parse X byte IO.
@@ -138,48 +137,48 @@ func parseEightByteIO(startIndex int, body []byte) (uint16, map[uint16]uint64, i
 // a number of properties, which length is defined by length element.
 // X Byte IO Number
 func parseXByteIO(startIndex int, body []byte) (uint16, map[uint16]uint, int) {
-	xByteIO := map[uint16]uint{}
+	IOelements := map[uint16]uint{}
 
 	// Eight Byte IO Number
-	noOfXByteIOIndexStart := startIndex
-	noOfXByteIOIndexEnd := noOfXByteIOIndexStart + 2
-	noOfXByteIO := binary.BigEndian.Uint16(body[noOfXByteIOIndexStart:noOfXByteIOIndexEnd])
+	nOfIOstartIndex := startIndex
+	nOfIOendIndex := nOfIOstartIndex + 2
+	nOfIOelements := binary.BigEndian.Uint16(body[nOfIOstartIndex:nOfIOendIndex])
 	// Eight Byte IO Data
-	if noOfXByteIO != 0 {
-		xByteIOStartIndex := noOfXByteIOIndexEnd
+	if nOfIOelements != 0 {
+		IOelementsStartIndex := nOfIOendIndex
 
 		var i uint16 = 0
 		j := 0
 
-		for i < noOfXByteIO {
-			xIOIDStartIndex := j + xByteIOStartIndex
-			xIOIDEndIndex := xIOIDStartIndex + 2
+		for i < nOfIOelements {
+			IOelementsIDstartIndex := j + IOelementsStartIndex
+			IOelementsIDendIndex := IOelementsIDstartIndex + 2
 
-			id := binary.BigEndian.Uint16(body[xIOIDStartIndex:xIOIDEndIndex])
+			id := binary.BigEndian.Uint16(body[IOelementsIDstartIndex:IOelementsIDendIndex])
 
-			xValueLengthStartIndex := xIOIDEndIndex
-			xValueLengthEndIndex := xValueLengthStartIndex + 2
+			valueLengthStartIndex := IOelementsIDendIndex
+			valueLengthEndIndex := valueLengthStartIndex + 2
 
-			valueLength := binary.BigEndian.Uint16(body[xValueLengthStartIndex:xValueLengthEndIndex])
+			valueLength := binary.BigEndian.Uint16(body[valueLengthStartIndex:valueLengthEndIndex])
 
 			if valueLength == 0 {
-				return noOfXByteIO, xByteIO, xValueLengthEndIndex
+				return nOfIOelements, IOelements, valueLengthEndIndex
 			}
 
-			xValueStartIndex := xValueLengthEndIndex
-			xValueEndIndex := xValueStartIndex + int(valueLength)
+			valueStartIndex := valueLengthEndIndex
+			valueEndIndex := valueStartIndex + int(valueLength)
 
-			value := binary.BigEndian.Uint64(body[xValueStartIndex:xValueEndIndex])
+			value := binary.BigEndian.Uint64(body[valueStartIndex:valueEndIndex])
 
-			xByteIO[id] = uint(value)
+			IOelements[id] = uint(value)
 
 			i = i + 1
-			j = j + xValueEndIndex
+			j = j + valueEndIndex
 		}
 
-		xByteIOEndIndex := j
-		return noOfXByteIO, xByteIO, xByteIOEndIndex
+		IOelementsEndIndex := j
+		return nOfIOelements, IOelements, IOelementsEndIndex
 	}
 
-	return noOfXByteIO, xByteIO, startIndex + 2
+	return nOfIOelements, IOelements, startIndex + 2
 }
