@@ -1,15 +1,9 @@
 package codec8e
 
 import (
-	// golang import
-
-	// project import
-	parser "sipli/device/teltonika/tcp_server/codecs"
 	conf "sipli/device/teltonika/tcp_server/configuration"
-	models "sipli/device/teltonika/tcp_server/models"
 	"strings"
 
-	// external import
 	"go.uber.org/zap"
 )
 

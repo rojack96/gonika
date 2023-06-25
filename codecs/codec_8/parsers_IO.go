@@ -1,12 +1,7 @@
-package common
+package codec8
 
 import (
-	// golang import
 	"encoding/binary"
-	"encoding/hex"
-	"fmt"
-	// project import
-	// external import
 )
 
 // This function parse the Event IO data from AVL data.
@@ -33,7 +28,7 @@ func parseTotalNumberOfIO(startIndex int, body []byte) (uint8, int) {
 //
 // N1
 // number of properties, which length is 1 byte.
-func parseOneByteIO(startIndex int, body []byte, IORawData []string) (uint8, map[uint8]uint8, []string, int) {
+func parseOneByteIO(startIndex int, body []byte) (uint8, map[uint8]uint8, int) {
 	oneByteIO := map[uint8]uint8{}
 	splitByte := 2 // ID 1 byte + VALUE 1 byte
 	if startIndex < len(body) {
@@ -49,20 +44,18 @@ func parseOneByteIO(startIndex int, body []byte, IORawData []string) (uint8, map
 			value := data[i+1]
 
 			oneByteIO[id] = value
-
-			IORawData = append(IORawData, fmt.Sprintf("%s=%s", hex.EncodeToString([]byte{id}), hex.EncodeToString([]byte{value})))
 		}
 
-		return noOfOneByteIO, oneByteIO, IORawData, oneByteIOEndIndex
+		return noOfOneByteIO, oneByteIO, oneByteIOEndIndex
 	}
-	return 0, oneByteIO, []string{}, len(body)
+	return 0, oneByteIO, len(body)
 }
 
 // This function parse two byte IO.
 //
 // N2
 // number of properties, which length is 2 byte.
-func parseTwoByteIO(startIndex int, body []byte, IORawData []string) (uint8, map[uint8]uint16, []string, int) {
+func parseTwoByteIO(startIndex int, body []byte) (uint8, map[uint8]uint16, int) {
 	twoByteIO := map[uint8]uint16{}
 	splitByte := 3 // ID 1 byte + VALUE 2 bytes
 	if startIndex < len(body) {
@@ -78,20 +71,18 @@ func parseTwoByteIO(startIndex int, body []byte, IORawData []string) (uint8, map
 			value := binary.BigEndian.Uint16(data[i+1 : i+splitByte])
 
 			twoByteIO[id] = value
-
-			IORawData = append(IORawData, fmt.Sprintf("%s=%s", hex.EncodeToString([]byte{id}), hex.EncodeToString(data[i+1:i+splitByte])))
 		}
 
-		return noOfTwoByteIO, twoByteIO, IORawData, twoByteIOEndIndex
+		return noOfTwoByteIO, twoByteIO, twoByteIOEndIndex
 	}
-	return 0, twoByteIO, []string{}, len(body)
+	return 0, twoByteIO, len(body)
 }
 
 // This function parse four byte IO.
 //
 // N4
 // number of properties, which length is 4 byte.
-func parseFourByteIO(startIndex int, body []byte, IORawData []string) (uint8, map[uint8]uint32, []string, int) {
+func parseFourByteIO(startIndex int, body []byte) (uint8, map[uint8]uint32, int) {
 	fourByteIO := map[uint8]uint32{}
 	splitByte := 5 // ID 1 byte + VALUE 4 bytes
 
@@ -108,13 +99,11 @@ func parseFourByteIO(startIndex int, body []byte, IORawData []string) (uint8, ma
 			value := binary.BigEndian.Uint32(data[i+1 : i+splitByte])
 
 			fourByteIO[id] = value
-
-			IORawData = append(IORawData, fmt.Sprintf("%s=%s", hex.EncodeToString([]byte{id}), hex.EncodeToString(data[i+1:i+splitByte])))
 		}
 
-		return noOfFourByteIO, fourByteIO, IORawData, fourByteIOEndIndex
+		return noOfFourByteIO, fourByteIO, fourByteIOEndIndex
 	}
-	return 0, fourByteIO, []string{}, len(body)
+	return 0, fourByteIO, len(body)
 }
 
 // This function parse eight byte IO.
@@ -122,7 +111,7 @@ func parseFourByteIO(startIndex int, body []byte, IORawData []string) (uint8, ma
 // N8
 // number of properties, which length is 8 byte.
 // Eight Byte IO Number
-func parseEightByteIO(startIndex int, body []byte, IORawData []string) (uint8, map[uint8]uint64, []string, int) {
+func parseEightByteIO(startIndex int, body []byte) (uint8, map[uint8]uint64, int) {
 	eightByteIO := map[uint8]uint64{}
 	splitByte := 9 // ID 1 byte + VALUE 8 bytes
 
@@ -139,12 +128,10 @@ func parseEightByteIO(startIndex int, body []byte, IORawData []string) (uint8, m
 			value := binary.BigEndian.Uint64(data[i+1 : i+splitByte])
 
 			eightByteIO[id] = value
-
-			IORawData = append(IORawData, fmt.Sprintf("%s=%s", hex.EncodeToString([]byte{id}), hex.EncodeToString(data[i+1:i+splitByte])))
 		}
 
-		return noOfEightByteIO, eightByteIO, IORawData, eightByteIOEndIndex
+		return noOfEightByteIO, eightByteIO, eightByteIOEndIndex
 	}
 
-	return 0, eightByteIO, []string{}, len(body)
+	return 0, eightByteIO, len(body)
 }

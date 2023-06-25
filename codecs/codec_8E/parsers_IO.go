@@ -1,21 +1,8 @@
 package codec8e
 
 import (
-	// golang import
 	"encoding/binary"
-	"encoding/hex"
-	"fmt"
-
-	// project import
-	conf "sipli/device/teltonika/tcp_server/configuration"
-
-	"go.uber.org/zap"
-	// external import
 )
-
-func logger(sh *conf.ServiceHub) *zap.Logger {
-	return sh.Log
-}
 
 // This function parse the Event IO data from AVL data.
 //
@@ -23,29 +10,27 @@ func logger(sh *conf.ServiceHub) *zap.Logger {
 // if data is acquired on event
 // this field defines which IO property has changed and generated an event.
 func parseEventIO(startIndex int, body []byte) (uint16, int) {
-	eventIOIDIndexStart := startIndex
-	eventIOIDIndexEnd := eventIOIDIndexStart + 2
-	eventIOID := binary.BigEndian.Uint16(body[eventIOIDIndexStart:eventIOIDIndexEnd])
+	endIndex := startIndex + 2
+	eventIOID := binary.BigEndian.Uint16(body[startIndex:endIndex])
 
-	return eventIOID, eventIOIDIndexEnd
+	return eventIOID, endIndex
 }
 
 // Total Number of IO.
 //
 // A total number of properties coming with record (N = N1 + N2 + N4 + N8).
 func parseTotalNumberOfIO(startIndex int, body []byte) (uint16, int) {
-	noOfTotalIOIndexStart := startIndex
-	noOfTotalIOIndexEnd := noOfTotalIOIndexStart + 2
-	noOfTotalIO := binary.BigEndian.Uint16(body[noOfTotalIOIndexStart:noOfTotalIOIndexEnd])
+	endIndex := startIndex + 2
+	noOfTotalIO := binary.BigEndian.Uint16(body[startIndex:endIndex])
 
-	return noOfTotalIO, noOfTotalIOIndexEnd
+	return noOfTotalIO, endIndex
 }
 
 // This function parse one byte IO.
 //
 // N1
 // number of properties, which length is 1 byte.
-func parseOneByteIO(startIndex int, body []byte, IORawData []string) (uint16, map[uint16]uint8, []string, int) {
+func parseOneByteIO(startIndex int, body []byte) (uint16, map[uint16]uint8, int) {
 	oneByteIO := map[uint16]uint8{}
 
 	// One Byte IO Number
@@ -62,18 +47,16 @@ func parseOneByteIO(startIndex int, body []byte, IORawData []string) (uint16, ma
 		value := data[i+2]
 
 		oneByteIO[id] = value
-
-		IORawData = append(IORawData, fmt.Sprintf("%s=%s", hex.EncodeToString(data[i:i+2]), hex.EncodeToString([]byte{value})))
 	}
 
-	return noOfOneByteIO, oneByteIO, IORawData, oneByteIOEndIndex
+	return noOfOneByteIO, oneByteIO, oneByteIOEndIndex
 }
 
 // This function parse two byte IO.
 //
 // N2
 // number of properties, which length is 2 byte.
-func parseTwoByteIO(startIndex int, body []byte, IORawData []string) (uint16, map[uint16]uint16, []string, int) {
+func parseTwoByteIO(startIndex int, body []byte) (uint16, map[uint16]uint16, int) {
 	twoByteIO := map[uint16]uint16{}
 
 	// Two Byte IO Number
@@ -90,18 +73,16 @@ func parseTwoByteIO(startIndex int, body []byte, IORawData []string) (uint16, ma
 		value := binary.BigEndian.Uint16(data[i+2 : i+4])
 
 		twoByteIO[id] = value
-
-		IORawData = append(IORawData, fmt.Sprintf("%s=%s", hex.EncodeToString(data[i:i+2]), hex.EncodeToString(data[i+2:i+4])))
 	}
 
-	return noOfTwoByteIO, twoByteIO, IORawData, twoByteIOEndIndex
+	return noOfTwoByteIO, twoByteIO, twoByteIOEndIndex
 }
 
 // This function parse four byte IO.
 //
 // N4
 // number of properties, which length is 4 byte.
-func parseFourByteIO(startIndex int, body []byte, IORawData []string) (uint16, map[uint16]uint32, []string, int) {
+func parseFourByteIO(startIndex int, body []byte) (uint16, map[uint16]uint32, int) {
 	fourByteIO := map[uint16]uint32{}
 
 	// Four Byte IO Number
@@ -118,11 +99,9 @@ func parseFourByteIO(startIndex int, body []byte, IORawData []string) (uint16, m
 		value := binary.BigEndian.Uint32(data[i+2 : i+6])
 
 		fourByteIO[id] = value
-
-		IORawData = append(IORawData, fmt.Sprintf("%s=%s", hex.EncodeToString(data[i:i+2]), hex.EncodeToString(data[i+2:i+6])))
 	}
 
-	return noOfFourByteIO, fourByteIO, IORawData, fourByteIOEndIndex
+	return noOfFourByteIO, fourByteIO, fourByteIOEndIndex
 }
 
 // This function parse eight byte IO.
@@ -130,7 +109,7 @@ func parseFourByteIO(startIndex int, body []byte, IORawData []string) (uint16, m
 // N8
 // number of properties, which length is 8 byte.
 // Eight Byte IO Number
-func parseEightByteIO(startIndex int, body []byte, IORawData []string) (uint16, map[uint16]uint64, []string, int) {
+func parseEightByteIO(startIndex int, body []byte) (uint16, map[uint16]uint64, int) {
 	eightByteIO := map[uint16]uint64{}
 
 	// Eight Byte IO Number
@@ -148,10 +127,9 @@ func parseEightByteIO(startIndex int, body []byte, IORawData []string) (uint16, 
 
 		eightByteIO[id] = value
 
-		IORawData = append(IORawData, fmt.Sprintf("%s=%s", hex.EncodeToString(data[i:i+2]), hex.EncodeToString(data[i+2:i+10])))
 	}
 
-	return noOfEightByteIO, eightByteIO, IORawData, eightByteIOEndIndex
+	return noOfEightByteIO, eightByteIO, eightByteIOEndIndex
 }
 
 // This function parse X byte IO.
@@ -159,16 +137,13 @@ func parseEightByteIO(startIndex int, body []byte, IORawData []string) (uint16, 
 // NX
 // a number of properties, which length is defined by length element.
 // X Byte IO Number
-func parseXByteIO(startIndex int, body []byte, IORawData []string, sh *conf.ServiceHub) (uint16, map[uint16]uint, []string, int) {
+func parseXByteIO(startIndex int, body []byte) (uint16, map[uint16]uint, int) {
 	xByteIO := map[uint16]uint{}
 
 	// Eight Byte IO Number
 	noOfXByteIOIndexStart := startIndex
-	sh.Log.Debug("noOfXByteIOIndexStart", zap.Any("x", noOfXByteIOIndexStart))
 	noOfXByteIOIndexEnd := noOfXByteIOIndexStart + 2
-	sh.Log.Debug("noOfXByteIOIndexEnd", zap.Any("x", noOfXByteIOIndexEnd))
 	noOfXByteIO := binary.BigEndian.Uint16(body[noOfXByteIOIndexStart:noOfXByteIOIndexEnd])
-	sh.Log.Debug("noOfXByteIO", zap.Any("x", noOfXByteIO))
 	// Eight Byte IO Data
 	if noOfXByteIO != 0 {
 		xByteIOStartIndex := noOfXByteIOIndexEnd
@@ -178,43 +153,33 @@ func parseXByteIO(startIndex int, body []byte, IORawData []string, sh *conf.Serv
 
 		for i < noOfXByteIO {
 			xIOIDStartIndex := j + xByteIOStartIndex
-			sh.Log.Debug("xIOIDStartIndex", zap.Any("x", xIOIDStartIndex))
 			xIOIDEndIndex := xIOIDStartIndex + 2
-			sh.Log.Debug("xIOIDEndIndex", zap.Any("x", xIOIDEndIndex))
 
 			id := binary.BigEndian.Uint16(body[xIOIDStartIndex:xIOIDEndIndex])
-			sh.Log.Debug("id", zap.Any("x", id))
 
 			xValueLengthStartIndex := xIOIDEndIndex
-			sh.Log.Debug("xValueLengthStartIndex", zap.Any("x", xValueLengthStartIndex))
 			xValueLengthEndIndex := xValueLengthStartIndex + 2
-			sh.Log.Debug("xValueLengthEndIndex", zap.Any("x", xValueLengthEndIndex))
 
 			valueLength := binary.BigEndian.Uint16(body[xValueLengthStartIndex:xValueLengthEndIndex])
-			sh.Log.Debug("valueLength", zap.Any("v", valueLength))
 
 			if valueLength == 0 {
-				return noOfXByteIO, xByteIO, IORawData, xValueLengthEndIndex
+				return noOfXByteIO, xByteIO, xValueLengthEndIndex
 			}
 
 			xValueStartIndex := xValueLengthEndIndex
-			sh.Log.Debug("xValueStartIndex", zap.Any("x", xValueStartIndex))
 			xValueEndIndex := xValueStartIndex + int(valueLength)
-			sh.Log.Debug("xValueEndIndex", zap.Any("x", xValueEndIndex))
 
 			value := binary.BigEndian.Uint64(body[xValueStartIndex:xValueEndIndex])
 
 			xByteIO[id] = uint(value)
 
-			IORawData = append(IORawData, fmt.Sprintf("%s=%s", hex.EncodeToString(body[xIOIDStartIndex:xIOIDEndIndex]), hex.EncodeToString(body[xValueStartIndex:xValueEndIndex])))
-			sh.Log.Debug("xByteIO", zap.Any("x", xByteIO))
 			i = i + 1
 			j = j + xValueEndIndex
 		}
 
 		xByteIOEndIndex := j
-		return noOfXByteIO, xByteIO, IORawData, xByteIOEndIndex
+		return noOfXByteIO, xByteIO, xByteIOEndIndex
 	}
 
-	return noOfXByteIO, xByteIO, IORawData, startIndex + 2
+	return noOfXByteIO, xByteIO, startIndex + 2
 }
