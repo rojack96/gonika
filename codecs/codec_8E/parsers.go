@@ -10,13 +10,11 @@ import (
 
 // This function parse the timestamp from AVL data.
 func parseTimestamp(startIndex int, body []byte) (time.Time, int) {
-
-	tsStartIndex := startIndex
-	tsEndIndex := startIndex + 8
-	ts := body[tsStartIndex:tsEndIndex]
+	endIndex := startIndex + 8
+	ts := body[startIndex:endIndex]
 
 	unixTs := binary.BigEndian.Uint64(ts)
-	return time.UnixMilli(int64(unixTs)), tsEndIndex
+	return time.UnixMilli(int64(unixTs)), endIndex
 }
 
 // This function parse the priority from AVL data.
@@ -29,9 +27,8 @@ func parsePriority(index int, body []byte) (byte, int) {
 // This function parse the GPS data from AVL data.
 func parseGPSElement(startIndex int, body []byte) (models.GPSElement, int) {
 
-	gpsStartIndex := startIndex
-	gpsEndIndex := gpsStartIndex + 15
-	data := body[gpsStartIndex:gpsEndIndex]
+	endIndex := startIndex + 15
+	data := body[startIndex:endIndex]
 	var gps models.GPSElement
 
 	gps.Longitude = positionAnalyzer(data[0:4])
@@ -41,7 +38,7 @@ func parseGPSElement(startIndex int, body []byte) (models.GPSElement, int) {
 	gps.Satellites = data[12]
 	gps.Speed = binary.BigEndian.Uint16(data[13:15])
 
-	return gps, gpsEndIndex
+	return gps, endIndex
 }
 
 // This function return a position negative.
@@ -49,7 +46,6 @@ func parseGPSElement(startIndex int, body []byte) (models.GPSElement, int) {
 // To determine if the coordinate is negative, convert it to binary format and check the very first bit.
 // If it is 0, coordinate is positive, if it is 1, coordinate is negative.
 func positionAnalyzer(position []byte) int32 {
-
 	var bits string
 	firstByte := position[0]
 	bits = fmt.Sprintf("%08b", byte(firstByte))

@@ -34,13 +34,13 @@ func parseOneByteIO(startIndex int, body []byte) (uint16, map[uint16]uint8, int)
 	oneByteIO := map[uint16]uint8{}
 
 	// One Byte IO Number
-	noOfOneByteIOIndexStart := startIndex
-	noOfOneByteIOIndexEnd := noOfOneByteIOIndexStart + 2
-	noOfOneByteIO := binary.BigEndian.Uint16(body[noOfOneByteIOIndexStart:noOfOneByteIOIndexEnd])
+	noOfByteIOStartIndex := startIndex
+	noOfByteIOEndIndex := noOfByteIOStartIndex + 2
+	noOfOneByteIO := binary.BigEndian.Uint16(body[noOfByteIOStartIndex:noOfByteIOEndIndex])
 	// One Byte IO Data
-	oneByteIOStartIndex := noOfOneByteIOIndexEnd
-	oneByteIOEndIndex := oneByteIOStartIndex + int(noOfOneByteIO)*3
-	data := body[oneByteIOStartIndex:oneByteIOEndIndex]
+	IOstartIndex := noOfByteIOEndIndex
+	IOendIndex := IOstartIndex + int(noOfOneByteIO)*3
+	data := body[IOstartIndex:IOendIndex]
 
 	for i := 0; i < len(data); i += 3 {
 		id := binary.BigEndian.Uint16(data[i : i+2])
@@ -49,7 +49,7 @@ func parseOneByteIO(startIndex int, body []byte) (uint16, map[uint16]uint8, int)
 		oneByteIO[id] = value
 	}
 
-	return noOfOneByteIO, oneByteIO, oneByteIOEndIndex
+	return noOfOneByteIO, oneByteIO, IOendIndex
 }
 
 // This function parse two byte IO.

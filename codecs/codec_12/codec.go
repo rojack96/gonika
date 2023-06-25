@@ -2,22 +2,21 @@ package codec12
 
 import (
 	"encoding/hex"
-	conf "sipli/device/teltonika/tcp_server/configuration"
-	"sipli/device/teltonika/tcp_server/models"
+	"fmt"
 
-	"go.uber.org/zap"
+	"github.com/rojack96/teltonika-parser/models"
 )
 
-func codec12(responseMessage *models.ResponseMessage, sh *conf.ServiceHub) {
+func Codec12(responseMessage *models.ResponseMessage) {
 
-	sh.Log.Info("encode", zap.String("Preamble", hex.EncodeToString(responseMessage.Preamble)))
-	sh.Log.Info("encode", zap.String("DataSize", hex.EncodeToString(responseMessage.DataSize)))
-	sh.Log.Info("encode", zap.Any("CodecID", responseMessage.CodecID))
-	sh.Log.Info("encode", zap.Any("ResponseQuantity1", responseMessage.ResponseQuantity1))
-	sh.Log.Info("encode", zap.Any("Type", responseMessage.Type))
-	sh.Log.Info("encode", zap.Any("ResponseSize", hex.EncodeToString(responseMessage.ResponseSize)))
-	sh.Log.Info("encode", zap.Any("Response", string(responseMessage.Response)))
-	sh.Log.Info("encode", zap.Any("ResponseQuantity2", responseMessage.ResponseQuantity2))
-	sh.Log.Info("encode", zap.Any("CRC16", hex.EncodeToString(responseMessage.CRC16)))
+	fmt.Println("Preamble", hex.EncodeToString(responseMessage.Preamble))
+	fmt.Println("DataSize", hex.EncodeToString(responseMessage.DataSize))
+	fmt.Println("CodecID", responseMessage.CodecID)
+	fmt.Println("ResponseQuantity1", responseMessage.ResponseQuantity1)
+	fmt.Println("Type", responseMessage.Type)
+	fmt.Println("ResponseSize", hex.EncodeToString(responseMessage.ResponseSize))
+	fmt.Println("Response", string(responseMessage.Response))
+	fmt.Println("ResponseQuantity2", responseMessage.ResponseQuantity2)
+	fmt.Println("CRC16", hex.EncodeToString(responseMessage.CRC16))
 
 }
