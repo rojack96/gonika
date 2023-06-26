@@ -6,13 +6,6 @@ import (
 	models "github.com/rojack96/teltonika-parser/models/codec_12"
 )
 
-const (
-	PREAMBLE     = "00000000"
-	CODEC_ID_12  = "0C"
-	TYPE_COMMAND = "05"
-	COMMAND_QUANTITY
-)
-
 func ResponseParser(responseMessage []byte) string {
 
 	var response models.ResponseMessage
