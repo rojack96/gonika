@@ -1,1 +1,5 @@
-package main
+package teltonikaparser
+
+func main() {
+
+}

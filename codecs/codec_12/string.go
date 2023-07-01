@@ -28,7 +28,7 @@ func CreateCommand(command string) string {
 	var commandMessage models.CommandMessage
 
 	commandMessage.Preamble = constant.PREAMBLE
-	commandMessage.CodecID = constant.CODEC_12
+	commandMessage.CodecID = hex.EncodeToString([]byte{constant.CODEC_12})
 	commandMessage.Type = constant.TYPE_COMMAND
 	commandMessage.CommandQuantity1 = constant.COMMAND_QUANTITY
 	commandMessage.CommandQuantity2 = commandMessage.CommandQuantity1
