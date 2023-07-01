@@ -1,10 +1,10 @@
-package codec12
+package codec14
 
 import (
 	"encoding/hex"
 
 	"github.com/rojack96/teltonika-parser/constant"
-	models "github.com/rojack96/teltonika-parser/models/codec_12"
+	models "github.com/rojack96/teltonika-parser/models/codec_14"
 )
 
 func ResponseParserBytes(responseMessage []byte) []byte {
@@ -16,8 +16,9 @@ func ResponseParserBytes(responseMessage []byte) []byte {
 	response.CodecID = responseMessage[8]
 	response.ResponseQuantity1 = responseMessage[9]
 	response.Type = responseMessage[10]
-	response.ResponseSize = responseMessage[11:15]
-	response.Response = responseMessage[15 : len(responseMessage)-5]
+	response.ResponseAndImeiSize = responseMessage[11:15]
+	response.IMEI = responseMessage[15:23]
+	response.Response = responseMessage[23 : len(responseMessage)-5]
 	response.ResponseQuantity2 = responseMessage[len(responseMessage)-5]
 	response.CRC16 = responseMessage[len(responseMessage)-4:]
 
@@ -28,13 +29,13 @@ func CreateCommandBytes(command string) []byte {
 	var commandMessage models.CommandMessage
 
 	commandMessage.Preamble = constant.PREAMBLE
-	commandMessage.CodecID = constant.CODEC_12
+	commandMessage.CodecID = constant.CODEC_14
 	commandMessage.Type = constant.TYPE_COMMAND
 	commandMessage.CommandQuantity1 = constant.COMMAND_QUANTITY
 	commandMessage.CommandQuantity2 = commandMessage.CommandQuantity1
 
 	commandMessage.Command = commandBuilder(command)
-	commandMessage.CommandSize = commandSize(commandMessage.Command)
+	commandMessage.CommandAndImeiSize = commandSize(commandMessage.Command)
 	commandMessage.DataSize = dataSize(&commandMessage)
 
 	commandMessage.CRC16 = crc16builder(&commandMessage)
@@ -44,7 +45,8 @@ func CreateCommandBytes(command string) []byte {
 		commandMessage.CodecID +
 		commandMessage.CommandQuantity1 +
 		commandMessage.Type +
-		commandMessage.CommandSize +
+		commandMessage.CommandAndImeiSize +
+		commandMessage.IMEI +
 		commandMessage.Command +
 		commandMessage.CommandQuantity2 +
 		commandMessage.CRC16

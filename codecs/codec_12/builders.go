@@ -1,34 +1,12 @@
-package codec13
+package codec12
 
 import (
 	"encoding/hex"
 	"strconv"
-	"time"
 
-	"github.com/howeyc/crc16"
-	models "github.com/rojack96/teltonika-parser/models/codec_13"
+	"github.com/getrak/crc16"
+	models "github.com/rojack96/teltonika-parser/models/codec_12"
 )
-
-const (
-	PREAMBLE         = "00000000"
-	CODEC_ID_13      = "0D"
-	TYPE_COMMAND     = "05"
-	COMMAND_QUANTITY = "01"
-)
-
-func timestampBuilder() string {
-	now := time.Now().String()
-
-	nowBytes, e := hex.DecodeString(now)
-
-	if e != nil {
-		return ""
-	}
-
-	nowByteString := hex.EncodeToString(nowBytes)
-
-	return nowByteString
-}
 
 func dataSize(command *models.CommandMessage) string {
 	c := *command
@@ -37,7 +15,6 @@ func dataSize(command *models.CommandMessage) string {
 		(len(c.CommandQuantity1) / 2) +
 		(len(c.Type) / 2) +
 		(len(c.CommandSize) / 2) +
-		(len(c.Timestamp) / 2) +
 		(len(c.Command) / 2) +
 		(len(c.CommandQuantity2) / 2)
 
@@ -62,7 +39,14 @@ func crc16builder(command *models.CommandMessage) string {
 	c := *command
 
 	crc := c.CodecID + c.CommandQuantity1 + c.Type + c.CommandSize + c.Command + c.CommandQuantity2
-	checksum := crc16.ChecksumIBM([]byte(crc))
+
+	resCRC, e := hex.DecodeString(crc)
+	if e != nil {
+		return "00000000"
+	}
+	checksum := crc16.Checksum(resCRC, crc16.MakeTable(
+		crc16.CRC16_ARC,
+	))
 
 	crcResult := padLeft(strconv.FormatInt(int64(checksum), 16), 8)
 	return crcResult

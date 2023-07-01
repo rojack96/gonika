@@ -3,6 +3,7 @@ package codec12
 import (
 	"encoding/hex"
 
+	"github.com/rojack96/teltonika-parser/constant"
 	models "github.com/rojack96/teltonika-parser/models/codec_12"
 )
 
@@ -26,10 +27,10 @@ func ResponseParser(responseMessage []byte) string {
 func CreateCommand(command string) string {
 	var commandMessage models.CommandMessage
 
-	commandMessage.Preamble = PREAMBLE
-	commandMessage.CodecID = CODEC_ID_12
-	commandMessage.Type = TYPE_COMMAND
-	commandMessage.CommandQuantity1 = COMMAND_QUANTITY
+	commandMessage.Preamble = constant.PREAMBLE
+	commandMessage.CodecID = constant.CODEC_12
+	commandMessage.Type = constant.TYPE_COMMAND
+	commandMessage.CommandQuantity1 = constant.COMMAND_QUANTITY
 	commandMessage.CommandQuantity2 = commandMessage.CommandQuantity1
 
 	commandMessage.Command = commandBuilder(command)
