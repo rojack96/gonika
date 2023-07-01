@@ -1,13 +1,13 @@
-package codec16
+package codecs
 
 import (
 	"encoding/binary"
 
 	"github.com/rojack96/teltonika-parser/helpers"
-	models "github.com/rojack96/teltonika-parser/models/codec_16"
+	models "github.com/rojack96/teltonika-parser/models/codec_8"
 )
 
-func Codec16Bytes(dataPacket []byte) models.AVLDataArray {
+func Codec8(dataPacket []byte) models.AVLDataArray {
 	var avlDataArray models.AVLDataArray
 
 	avlDataPacket := helpers.DataBytesParser(&dataPacket)
@@ -36,25 +36,22 @@ func Codec16Bytes(dataPacket []byte) models.AVLDataArray {
 			avlData.GPSElement, gpsEndIndex = parseGPSElement(priorityIndex, body)
 
 			var eventIOIDIndexEnd int
-			avlData.EventIOID, eventIOIDIndexEnd = parseEventIO(gpsEndIndex, body)
-
-			var generationTypeIndexEnd int
-			avlData.GenerationType, generationTypeIndexEnd = parseGenerationType(eventIOIDIndexEnd, body)
+			avlData.EventIOID, eventIOIDIndexEnd = codec8ParseEventIO(gpsEndIndex, body)
 
 			var noOfTotalIOIndexEnd int
-			avlData.NoOfTotalIO, noOfTotalIOIndexEnd = parseTotalNumberOfIO(generationTypeIndexEnd, body)
+			avlData.NoOfTotalIO, noOfTotalIOIndexEnd = codec8ParseTotalNumberOfIO(eventIOIDIndexEnd, body)
 
 			var oneByteIOEndIndex int
-			avlData.NoOfOneByte, avlData.OneByteIO, oneByteIOEndIndex = parseOneByteIO(noOfTotalIOIndexEnd, body)
+			avlData.NoOfOneByte, avlData.OneByteIO, oneByteIOEndIndex = codec8ParseOneByteIO(noOfTotalIOIndexEnd, body)
 
 			var twoByteIOEndIndex int
-			avlData.NoOfTwoByte, avlData.TwoByteIO, twoByteIOEndIndex = parseTwoByteIO(oneByteIOEndIndex, body)
+			avlData.NoOfTwoByte, avlData.TwoByteIO, twoByteIOEndIndex = codec8ParseTwoByteIO(oneByteIOEndIndex, body)
 
 			var fourByteIOEndIndex int
-			avlData.NoOfFourByte, avlData.FourByteIO, fourByteIOEndIndex = parseFourByteIO(twoByteIOEndIndex, body)
+			avlData.NoOfFourByte, avlData.FourByteIO, fourByteIOEndIndex = codec8ParseFourByteIO(twoByteIOEndIndex, body)
 
 			var eightByteIOEndIndex int
-			avlData.NoOfEightByte, avlData.EightByteIO, eightByteIOEndIndex = parseEightByteIO(fourByteIOEndIndex, body)
+			avlData.NoOfEightByte, avlData.EightByteIO, eightByteIOEndIndex = codec8ParseEightByteIO(fourByteIOEndIndex, body)
 
 			startIndex = eightByteIOEndIndex
 

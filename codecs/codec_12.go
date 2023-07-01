@@ -1,15 +1,16 @@
-package codec12
+package codecs
 
 import (
 	"encoding/hex"
 
 	"github.com/rojack96/teltonika-parser/constant"
-	models "github.com/rojack96/teltonika-parser/models/codec_12"
+	modelsCodec12 "github.com/rojack96/teltonika-parser/models/codec_12"
 )
 
-func ResponseParserBytes(responseMessage []byte) []byte {
+// Return a response from device
+func C12ResponseParser(responseMessage []byte) []byte {
 
-	var response models.ResponseMessage
+	var response modelsCodec12.ResponseMessage
 
 	response.Preamble = responseMessage[0:4]
 	response.DataSize = responseMessage[4:8]
@@ -24,8 +25,8 @@ func ResponseParserBytes(responseMessage []byte) []byte {
 	return response.Response
 }
 
-func CreateCommandBytes(command string) []byte {
-	var commandMessage models.CommandMessage
+func C12CreateCommandBytes(command string) []byte {
+	var commandMessage modelsCodec12.CommandMessage
 
 	commandMessage.Preamble = constant.PREAMBLE
 	commandMessage.CodecID = hex.EncodeToString([]byte{constant.CODEC_12})

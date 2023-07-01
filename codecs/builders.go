@@ -1,4 +1,4 @@
-package codec12
+package codecs
 
 import (
 	"encoding/hex"
