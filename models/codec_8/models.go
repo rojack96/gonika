@@ -1,6 +1,6 @@
 package codec8
 
-import "github.com/rojack96/teltonika-parser/models"
+import models "github.com/rojack96/teltonika-parser/models"
 
 type AVLDataArray struct {
 	models.AVLDataArray

@@ -1,4 +1,4 @@
-package codec8e
+package codecs
 
 import (
 	"encoding/binary"

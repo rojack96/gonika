@@ -1,12 +1,13 @@
-package codec12
+package codecs
 
 import (
 	"encoding/hex"
 
-	models "github.com/rojack96/teltonika-parser/models/codec_12"
+	"github.com/rojack96/teltonika-parser/constant"
+	models "github.com/rojack96/teltonika-parser/models/codec_14"
 )
 
-func ResponseParserBytes(responseMessage []byte) []byte {
+func c14ResponseParser(responseMessage []byte) []byte {
 
 	var response models.ResponseMessage
 
@@ -15,35 +16,37 @@ func ResponseParserBytes(responseMessage []byte) []byte {
 	response.CodecID = responseMessage[8]
 	response.ResponseQuantity1 = responseMessage[9]
 	response.Type = responseMessage[10]
-	response.ResponseSize = responseMessage[11:15]
-	response.Response = responseMessage[15 : len(responseMessage)-5]
+	response.ResponseAndImeiSize = responseMessage[11:15]
+	response.IMEI = responseMessage[15:23]
+	response.Response = responseMessage[23 : len(responseMessage)-5]
 	response.ResponseQuantity2 = responseMessage[len(responseMessage)-5]
 	response.CRC16 = responseMessage[len(responseMessage)-4:]
 
 	return response.Response
 }
 
-func CreateCommandBytes(command string) []byte {
+func c14CreateCommand(command string) []byte {
 	var commandMessage models.CommandMessage
 
-	commandMessage.Preamble = PREAMBLE
-	commandMessage.CodecID = CODEC_ID_12
-	commandMessage.Type = TYPE_COMMAND
-	commandMessage.CommandQuantity1 = COMMAND_QUANTITY
+	commandMessage.Preamble = constant.PREAMBLE
+	commandMessage.CodecID = hex.EncodeToString([]byte{constant.CODEC_14})
+	commandMessage.Type = constant.TYPE_COMMAND
+	commandMessage.CommandQuantity1 = constant.COMMAND_QUANTITY
 	commandMessage.CommandQuantity2 = commandMessage.CommandQuantity1
 
 	commandMessage.Command = commandBuilder(command)
-	commandMessage.CommandSize = commandSize(commandMessage.Command)
-	commandMessage.DataSize = dataSize(&commandMessage)
+	commandMessage.CommandAndImeiSize = commandSize(commandMessage.Command)
+	commandMessage.DataSize = c14dataSize(&commandMessage)
 
-	commandMessage.CRC16 = crc16builder(&commandMessage)
+	commandMessage.CRC16 = c14crc16builder(&commandMessage)
 
 	messageToSend := commandMessage.Preamble +
 		commandMessage.DataSize +
 		commandMessage.CodecID +
 		commandMessage.CommandQuantity1 +
 		commandMessage.Type +
-		commandMessage.CommandSize +
+		commandMessage.CommandAndImeiSize +
+		commandMessage.IMEI +
 		commandMessage.Command +
 		commandMessage.CommandQuantity2 +
 		commandMessage.CRC16
