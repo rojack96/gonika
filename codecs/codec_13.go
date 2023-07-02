@@ -3,8 +3,8 @@ package codecs
 import (
 	"encoding/hex"
 
-	"github.com/rojack96/teltonika-parser/constant"
-	modelsCodec13 "github.com/rojack96/teltonika-parser/models/codec_13"
+	"github.com/rojack96/gotlk/constant"
+	modelsCodec13 "github.com/rojack96/gotlk/models/codec_13"
 )
 
 func c13CreateCommand(command string) []byte {

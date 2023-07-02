@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/getrak/crc16"
-	modelsCodec12 "github.com/rojack96/teltonika-parser/models/codec_12"
-	modelsCodec13 "github.com/rojack96/teltonika-parser/models/codec_13"
-	modelsCodec14 "github.com/rojack96/teltonika-parser/models/codec_14"
+	modelsCodec12 "github.com/rojack96/gotlk/models/codec_12"
+	modelsCodec13 "github.com/rojack96/gotlk/models/codec_13"
+	modelsCodec14 "github.com/rojack96/gotlk/models/codec_14"
 )
 
 func timestampBuilder() string {

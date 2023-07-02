@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"errors"
 
-	"github.com/rojack96/teltonika-parser/constant"
+	"github.com/rojack96/gotlk/constant"
 )
 
 // Analyze buffer passed, returns the following values:

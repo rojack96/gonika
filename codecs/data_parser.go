@@ -1,6 +1,6 @@
 package codecs
 
-import "github.com/rojack96/teltonika-parser/models"
+import "github.com/rojack96/gotlk/models"
 
 func dataBytesParser(dataPacket *[]byte) models.AVLDataPacket {
 	var avlDataPacket models.AVLDataPacket

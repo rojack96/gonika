@@ -3,8 +3,8 @@ package codecs
 import (
 	"encoding/hex"
 
-	"github.com/rojack96/teltonika-parser/constant"
-	modelsCodec12 "github.com/rojack96/teltonika-parser/models/codec_12"
+	"github.com/rojack96/gotlk/constant"
+	modelsCodec12 "github.com/rojack96/gotlk/models/codec_12"
 )
 
 // Return a response from device

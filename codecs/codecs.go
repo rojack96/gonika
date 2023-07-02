@@ -1,9 +1,9 @@
 package codecs
 
 import (
-	modelsC16 "github.com/rojack96/teltonika-parser/models/codec_16"
-	modelsC8 "github.com/rojack96/teltonika-parser/models/codec_8"
-	modelsC8E "github.com/rojack96/teltonika-parser/models/codec_8E"
+	modelsC16 "github.com/rojack96/gotlk/models/codec_16"
+	modelsC8 "github.com/rojack96/gotlk/models/codec_8"
+	modelsC8E "github.com/rojack96/gotlk/models/codec_8E"
 )
 
 type codec8 struct{}

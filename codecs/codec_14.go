@@ -3,8 +3,8 @@ package codecs
 import (
 	"encoding/hex"
 
-	"github.com/rojack96/teltonika-parser/constant"
-	models "github.com/rojack96/teltonika-parser/models/codec_14"
+	"github.com/rojack96/gotlk/constant"
+	models "github.com/rojack96/gotlk/models/codec_14"
 )
 
 func c14ResponseParser(responseMessage []byte) []byte {

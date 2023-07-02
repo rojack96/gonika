@@ -1,6 +1,6 @@
 package codec16
 
-import "github.com/rojack96/teltonika-parser/models"
+import "github.com/rojack96/gotlk/models"
 
 type AVLDataArray struct {
 	models.AVLDataArray

@@ -3,7 +3,7 @@ package codecs
 import (
 	"encoding/binary"
 
-	models "github.com/rojack96/teltonika-parser/models/codec_8E"
+	models "github.com/rojack96/gotlk/models/codec_8E"
 )
 
 func c8eAVLData(dataPacket []byte) models.AVLDataArray {

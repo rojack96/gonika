@@ -3,7 +3,7 @@ package codecs
 import (
 	"encoding/binary"
 
-	models "github.com/rojack96/teltonika-parser/models/codec_16"
+	models "github.com/rojack96/gotlk/models/codec_16"
 )
 
 func c16AVLData(dataPacket []byte) models.AVLDataArray {

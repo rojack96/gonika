@@ -1,6 +1,6 @@
 package codec12
 
-import "github.com/rojack96/teltonika-parser/models"
+import "github.com/rojack96/gotlk/models"
 
 type CommandMessage struct {
 	// Premble (4 bytes) the packet starts with four zero bytes.

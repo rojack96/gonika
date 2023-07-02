@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/rojack96/teltonika-parser/models"
+	"github.com/rojack96/gotlk/models"
 )
 
 // This function parse the timestamp from AVL data.

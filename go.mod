@@ -1,4 +1,4 @@
-module github.com/rojack96/teltonika-parser
+module github.com/rojack96/gotlk
 
 go 1.20
 
