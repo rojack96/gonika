@@ -1,8 +1,8 @@
-package helpers
+package codecs
 
 import "github.com/rojack96/teltonika-parser/models"
 
-func DataBytesParser(dataPacket *[]byte) models.AVLDataPacket {
+func dataBytesParser(dataPacket *[]byte) models.AVLDataPacket {
 	var avlDataPacket models.AVLDataPacket
 
 	data := *dataPacket

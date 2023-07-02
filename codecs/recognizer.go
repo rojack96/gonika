@@ -1,4 +1,4 @@
-package teltonikaparser
+package codecs
 
 import (
 	"bytes"

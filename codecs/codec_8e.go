@@ -3,14 +3,13 @@ package codecs
 import (
 	"encoding/binary"
 
-	"github.com/rojack96/teltonika-parser/helpers"
 	models "github.com/rojack96/teltonika-parser/models/codec_8E"
 )
 
 func c8eAVLData(dataPacket []byte) models.AVLDataArray {
 	var avlDataArray models.AVLDataArray
 
-	avlDataPacket := helpers.DataBytesParser(&dataPacket)
+	avlDataPacket := dataBytesParser(&dataPacket)
 
 	avlDataArray.Preamble = binary.BigEndian.Uint32(avlDataPacket.Preamble)
 	avlDataArray.CodecID = avlDataPacket.CodecID
