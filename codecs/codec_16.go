@@ -7,7 +7,7 @@ import (
 	models "github.com/rojack96/teltonika-parser/models/codec_16"
 )
 
-func Codec16(dataPacket []byte) models.AVLDataArray {
+func c16AVLData(dataPacket []byte) models.AVLDataArray {
 	var avlDataArray models.AVLDataArray
 
 	avlDataPacket := helpers.DataBytesParser(&dataPacket)
@@ -36,25 +36,25 @@ func Codec16(dataPacket []byte) models.AVLDataArray {
 			avlData.GPSElement, gpsEndIndex = parseGPSElement(priorityIndex, body)
 
 			var eventIOIDIndexEnd int
-			avlData.EventIOID, eventIOIDIndexEnd = codec16ParseEventIO(gpsEndIndex, body)
+			avlData.EventIOID, eventIOIDIndexEnd = c16ParseEventIO(gpsEndIndex, body)
 
 			var generationTypeIndexEnd int
-			avlData.GenerationType, generationTypeIndexEnd = codec16ParseGenerationType(eventIOIDIndexEnd, body)
+			avlData.GenerationType, generationTypeIndexEnd = c16ParseGenerationType(eventIOIDIndexEnd, body)
 
 			var noOfTotalIOIndexEnd int
-			avlData.NoOfTotalIO, noOfTotalIOIndexEnd = codec16ParseTotalNumberOfIO(generationTypeIndexEnd, body)
+			avlData.NoOfTotalIO, noOfTotalIOIndexEnd = c16ParseTotalNumberOfIO(generationTypeIndexEnd, body)
 
 			var oneByteIOEndIndex int
-			avlData.NoOfOneByte, avlData.OneByteIO, oneByteIOEndIndex = codec16ParseOneByteIO(noOfTotalIOIndexEnd, body)
+			avlData.NoOfOneByte, avlData.OneByteIO, oneByteIOEndIndex = c16ParseOneByteIO(noOfTotalIOIndexEnd, body)
 
 			var twoByteIOEndIndex int
-			avlData.NoOfTwoByte, avlData.TwoByteIO, twoByteIOEndIndex = codec16ParseTwoByteIO(oneByteIOEndIndex, body)
+			avlData.NoOfTwoByte, avlData.TwoByteIO, twoByteIOEndIndex = c16ParseTwoByteIO(oneByteIOEndIndex, body)
 
 			var fourByteIOEndIndex int
-			avlData.NoOfFourByte, avlData.FourByteIO, fourByteIOEndIndex = codec16ParseFourByteIO(twoByteIOEndIndex, body)
+			avlData.NoOfFourByte, avlData.FourByteIO, fourByteIOEndIndex = c16ParseFourByteIO(twoByteIOEndIndex, body)
 
 			var eightByteIOEndIndex int
-			avlData.NoOfEightByte, avlData.EightByteIO, eightByteIOEndIndex = codec16ParseEightByteIO(fourByteIOEndIndex, body)
+			avlData.NoOfEightByte, avlData.EightByteIO, eightByteIOEndIndex = c16ParseEightByteIO(fourByteIOEndIndex, body)
 
 			startIndex = eightByteIOEndIndex
 

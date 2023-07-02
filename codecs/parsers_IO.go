@@ -4,14 +4,13 @@ import (
 	"encoding/binary"
 )
 
-/* CODEC 8 EXTENDED */
-
+/* CODEC 8  */
 // This function parse the Event IO data from AVL data.
 //
 // Event IO changed
 // if data is acquired on event
 // this field defines which IO property has changed and generated an event.
-func codec8ParseEventIO(startIndex int, body []byte) (uint8, int) {
+func c8ParseEventIO(startIndex int, body []byte) (uint8, int) {
 	eventIOID := body[startIndex]
 
 	return eventIOID, startIndex + 1
@@ -20,7 +19,7 @@ func codec8ParseEventIO(startIndex int, body []byte) (uint8, int) {
 // Total Number of IO.
 //
 // A total number of properties coming with record (N = N1 + N2 + N4 + N8).
-func codec8ParseTotalNumberOfIO(startIndex int, body []byte) (uint8, int) {
+func c8ParseTotalNumberOfIO(startIndex int, body []byte) (uint8, int) {
 	noOfTotalIO := body[startIndex]
 
 	return noOfTotalIO, startIndex + 1
@@ -30,7 +29,7 @@ func codec8ParseTotalNumberOfIO(startIndex int, body []byte) (uint8, int) {
 //
 // N1
 // number of properties, which length is 1 byte.
-func codec8ParseOneByteIO(startIndex int, body []byte) (uint8, map[uint8]uint8, int) {
+func c8ParseOneByteIO(startIndex int, body []byte) (uint8, map[uint8]uint8, int) {
 	IOelements := map[uint8]uint8{}
 	splitByte := 2 // ID 1 byte + VALUE 1 byte
 
@@ -57,7 +56,7 @@ func codec8ParseOneByteIO(startIndex int, body []byte) (uint8, map[uint8]uint8, 
 //
 // N2
 // number of properties, which length is 2 byte.
-func codec8ParseTwoByteIO(startIndex int, body []byte) (uint8, map[uint8]uint16, int) {
+func c8ParseTwoByteIO(startIndex int, body []byte) (uint8, map[uint8]uint16, int) {
 	IOelements := map[uint8]uint16{}
 	splitByte := 3 // ID 1 byte + VALUE 2 bytes
 	if startIndex < len(body) {
@@ -83,7 +82,7 @@ func codec8ParseTwoByteIO(startIndex int, body []byte) (uint8, map[uint8]uint16,
 //
 // N4
 // number of properties, which length is 4 byte.
-func codec8ParseFourByteIO(startIndex int, body []byte) (uint8, map[uint8]uint32, int) {
+func c8ParseFourByteIO(startIndex int, body []byte) (uint8, map[uint8]uint32, int) {
 	IOelements := map[uint8]uint32{}
 	splitByte := 5 // ID 1 byte + VALUE 4 bytes
 
@@ -112,7 +111,7 @@ func codec8ParseFourByteIO(startIndex int, body []byte) (uint8, map[uint8]uint32
 // N8
 // number of properties, which length is 8 byte.
 // Eight Byte IO Number
-func codec8ParseEightByteIO(startIndex int, body []byte) (uint8, map[uint8]uint64, int) {
+func c8ParseEightByteIO(startIndex int, body []byte) (uint8, map[uint8]uint64, int) {
 	IOelements := map[uint8]uint64{}
 	splitByte := 9 // ID 1 byte + VALUE 8 bytes
 
@@ -144,7 +143,7 @@ func codec8ParseEightByteIO(startIndex int, body []byte) (uint8, map[uint8]uint6
 // Event IO changed
 // if data is acquired on event
 // this field defines which IO property has changed and generated an event.
-func codec8eParseEventIO(startIndex int, body []byte) (uint16, int) {
+func c8extParseEventIO(startIndex int, body []byte) (uint16, int) {
 	endIndex := startIndex + 2
 	eventIOID := binary.BigEndian.Uint16(body[startIndex:endIndex])
 
@@ -154,7 +153,7 @@ func codec8eParseEventIO(startIndex int, body []byte) (uint16, int) {
 // Total Number of IO.
 //
 // A total number of properties coming with record (N = N1 + N2 + N4 + N8).
-func codec8eParseTotalNumberOfIO(startIndex int, body []byte) (uint16, int) {
+func c8extParseTotalNumberOfIO(startIndex int, body []byte) (uint16, int) {
 	endIndex := startIndex + 2
 	noOfTotalIO := binary.BigEndian.Uint16(body[startIndex:endIndex])
 
@@ -165,7 +164,7 @@ func codec8eParseTotalNumberOfIO(startIndex int, body []byte) (uint16, int) {
 //
 // N1
 // number of properties, which length is 1 byte.
-func codec8eParseOneByteIO(startIndex int, body []byte) (uint16, map[uint16]uint8, int) {
+func c8extParseOneByteIO(startIndex int, body []byte) (uint16, map[uint16]uint8, int) {
 	IOelements := map[uint16]uint8{}
 	splitByte := 3
 	// One Byte IO Number
@@ -191,7 +190,7 @@ func codec8eParseOneByteIO(startIndex int, body []byte) (uint16, map[uint16]uint
 //
 // N2
 // number of properties, which length is 2 byte.
-func codec8eParseTwoByteIO(startIndex int, body []byte) (uint16, map[uint16]uint16, int) {
+func c8extParseTwoByteIO(startIndex int, body []byte) (uint16, map[uint16]uint16, int) {
 	IOelements := map[uint16]uint16{}
 	splitByte := 4
 	// Two Byte IO Number
@@ -217,7 +216,7 @@ func codec8eParseTwoByteIO(startIndex int, body []byte) (uint16, map[uint16]uint
 //
 // N4
 // number of properties, which length is 4 byte.
-func codec8eParseFourByteIO(startIndex int, body []byte) (uint16, map[uint16]uint32, int) {
+func c8extParseFourByteIO(startIndex int, body []byte) (uint16, map[uint16]uint32, int) {
 	IOelements := map[uint16]uint32{}
 	splitByte := 6
 	// Four Byte IO Number
@@ -244,7 +243,7 @@ func codec8eParseFourByteIO(startIndex int, body []byte) (uint16, map[uint16]uin
 // N8
 // number of properties, which length is 8 byte.
 // Eight Byte IO Number
-func codec8eParseEightByteIO(startIndex int, body []byte) (uint16, map[uint16]uint64, int) {
+func c8extParseEightByteIO(startIndex int, body []byte) (uint16, map[uint16]uint64, int) {
 	IOelements := map[uint16]uint64{}
 	splitByte := 10
 	// Eight Byte IO Number
@@ -271,7 +270,7 @@ func codec8eParseEightByteIO(startIndex int, body []byte) (uint16, map[uint16]ui
 // NX
 // a number of properties, which length is defined by length element.
 // X Byte IO Number
-func codec8eParseXByteIO(startIndex int, body []byte) (uint16, map[uint16]uint, int) {
+func c8extParseXByteIO(startIndex int, body []byte) (uint16, map[uint16]uint, int) {
 	IOelements := map[uint16]uint{}
 
 	// Eight Byte IO Number
@@ -325,14 +324,14 @@ func codec8eParseXByteIO(startIndex int, body []byte) (uint16, map[uint16]uint, 
 // Event IO changed
 // if data is acquired on event
 // this field defines which IO property has changed and generated an event.
-func codec16ParseEventIO(startIndex int, body []byte) (uint16, int) {
+func c16ParseEventIO(startIndex int, body []byte) (uint16, int) {
 	endIndex := startIndex + 2
 	eventIOID := binary.BigEndian.Uint16(body[startIndex:endIndex])
 
 	return eventIOID, endIndex
 }
 
-func codec16ParseGenerationType(startIndex int, body []byte) (uint8, int) {
+func c16ParseGenerationType(startIndex int, body []byte) (uint8, int) {
 	generationType := body[startIndex]
 
 	return generationType, startIndex + 1
@@ -341,7 +340,7 @@ func codec16ParseGenerationType(startIndex int, body []byte) (uint8, int) {
 // Total Number of IO.
 //
 // A total number of properties coming with record (N = N1 + N2 + N4 + N8).
-func codec16ParseTotalNumberOfIO(startIndex int, body []byte) (uint8, int) {
+func c16ParseTotalNumberOfIO(startIndex int, body []byte) (uint8, int) {
 	noOfTotalIO := body[startIndex]
 
 	return noOfTotalIO, startIndex + 1
@@ -351,7 +350,7 @@ func codec16ParseTotalNumberOfIO(startIndex int, body []byte) (uint8, int) {
 //
 // N1
 // number of properties, which length is 1 byte.
-func codec16ParseOneByteIO(startIndex int, body []byte) (uint8, map[uint16]uint8, int) {
+func c16ParseOneByteIO(startIndex int, body []byte) (uint8, map[uint16]uint8, int) {
 	IOelements := map[uint16]uint8{}
 	splitByte := 3
 	// One Byte IO Number
@@ -375,7 +374,7 @@ func codec16ParseOneByteIO(startIndex int, body []byte) (uint8, map[uint16]uint8
 //
 // N2
 // number of properties, which length is 2 byte.
-func codec16ParseTwoByteIO(startIndex int, body []byte) (uint8, map[uint16]uint16, int) {
+func c16ParseTwoByteIO(startIndex int, body []byte) (uint8, map[uint16]uint16, int) {
 	IOelements := map[uint16]uint16{}
 	splitByte := 4
 	// Two Byte IO Number
@@ -399,7 +398,7 @@ func codec16ParseTwoByteIO(startIndex int, body []byte) (uint8, map[uint16]uint1
 //
 // N4
 // number of properties, which length is 4 byte.
-func codec16ParseFourByteIO(startIndex int, body []byte) (uint8, map[uint16]uint32, int) {
+func c16ParseFourByteIO(startIndex int, body []byte) (uint8, map[uint16]uint32, int) {
 	IOelements := map[uint16]uint32{}
 	splitByte := 6
 	// Four Byte IO Number
@@ -424,7 +423,7 @@ func codec16ParseFourByteIO(startIndex int, body []byte) (uint8, map[uint16]uint
 // N8
 // number of properties, which length is 8 byte.
 // Eight Byte IO Number
-func codec16ParseEightByteIO(startIndex int, body []byte) (uint8, map[uint16]uint64, int) {
+func c16ParseEightByteIO(startIndex int, body []byte) (uint8, map[uint16]uint64, int) {
 	IOelements := map[uint16]uint64{}
 	splitByte := 10
 	// Eight Byte IO Number

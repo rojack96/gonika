@@ -8,7 +8,7 @@ import (
 )
 
 // Return a response from device
-func C12ResponseParser(responseMessage []byte) []byte {
+func c12responseParser(responseMessage []byte) []byte {
 
 	var response modelsCodec12.ResponseMessage
 
@@ -25,7 +25,7 @@ func C12ResponseParser(responseMessage []byte) []byte {
 	return response.Response
 }
 
-func C12CreateCommandBytes(command string) []byte {
+func c12CreateCommand(command string) []byte {
 	var commandMessage modelsCodec12.CommandMessage
 
 	commandMessage.Preamble = constant.PREAMBLE
@@ -36,9 +36,9 @@ func C12CreateCommandBytes(command string) []byte {
 
 	commandMessage.Command = commandBuilder(command)
 	commandMessage.CommandSize = commandSize(commandMessage.Command)
-	commandMessage.DataSize = dataSize(&commandMessage)
+	commandMessage.DataSize = c12dataSize(&commandMessage)
 
-	commandMessage.CRC16 = crc16builder(&commandMessage)
+	commandMessage.CRC16 = c12crc16builder(&commandMessage)
 
 	messageToSend := commandMessage.Preamble +
 		commandMessage.DataSize +

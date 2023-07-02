@@ -1,10 +1,13 @@
 package codecs
 
 import (
+	"encoding/hex"
+
+	"github.com/rojack96/teltonika-parser/constant"
 	models "github.com/rojack96/teltonika-parser/models/codec_14"
 )
 
-func C14ResponseParser(responseMessage []byte) []byte {
+func c14ResponseParser(responseMessage []byte) []byte {
 
 	var response models.ResponseMessage
 
@@ -22,35 +25,35 @@ func C14ResponseParser(responseMessage []byte) []byte {
 	return response.Response
 }
 
-// func C14CreateCommand(command string) []byte {
-// 	var commandMessage models.CommandMessage
+func c14CreateCommand(command string) []byte {
+	var commandMessage models.CommandMessage
 
-// 	commandMessage.Preamble = constant.PREAMBLE
-// 	commandMessage.CodecID = hex.EncodeToString([]byte{constant.CODEC_14})
-// 	commandMessage.Type = constant.TYPE_COMMAND
-// 	commandMessage.CommandQuantity1 = constant.COMMAND_QUANTITY
-// 	commandMessage.CommandQuantity2 = commandMessage.CommandQuantity1
+	commandMessage.Preamble = constant.PREAMBLE
+	commandMessage.CodecID = hex.EncodeToString([]byte{constant.CODEC_14})
+	commandMessage.Type = constant.TYPE_COMMAND
+	commandMessage.CommandQuantity1 = constant.COMMAND_QUANTITY
+	commandMessage.CommandQuantity2 = commandMessage.CommandQuantity1
 
-// 	commandMessage.Command = commandBuilder(command)
-// 	commandMessage.CommandAndImeiSize = commandSize(commandMessage.Command)
-// 	commandMessage.DataSize = dataSize(&commandMessage)
+	commandMessage.Command = commandBuilder(command)
+	commandMessage.CommandAndImeiSize = commandSize(commandMessage.Command)
+	commandMessage.DataSize = c14dataSize(&commandMessage)
 
-// 	commandMessage.CRC16 = crc16builder(&commandMessage)
+	commandMessage.CRC16 = c14crc16builder(&commandMessage)
 
-// 	messageToSend := commandMessage.Preamble +
-// 		commandMessage.DataSize +
-// 		commandMessage.CodecID +
-// 		commandMessage.CommandQuantity1 +
-// 		commandMessage.Type +
-// 		commandMessage.CommandAndImeiSize +
-// 		commandMessage.IMEI +
-// 		commandMessage.Command +
-// 		commandMessage.CommandQuantity2 +
-// 		commandMessage.CRC16
+	messageToSend := commandMessage.Preamble +
+		commandMessage.DataSize +
+		commandMessage.CodecID +
+		commandMessage.CommandQuantity1 +
+		commandMessage.Type +
+		commandMessage.CommandAndImeiSize +
+		commandMessage.IMEI +
+		commandMessage.Command +
+		commandMessage.CommandQuantity2 +
+		commandMessage.CRC16
 
-// 	mes, e := hex.DecodeString(messageToSend)
-// 	if e != nil {
-// 		return nil
-// 	}
-// 	return mes
-// }
+	mes, e := hex.DecodeString(messageToSend)
+	if e != nil {
+		return nil
+	}
+	return mes
+}
