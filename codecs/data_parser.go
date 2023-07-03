@@ -2,7 +2,7 @@ package codecs
 
 import "github.com/rojack96/gotlk/models"
 
-func dataBytesParser(dataPacket *[]byte) models.AVLDataPacket {
+func dataParser(dataPacket *[]byte) models.AVLDataPacket {
 	var avlDataPacket models.AVLDataPacket
 
 	data := *dataPacket

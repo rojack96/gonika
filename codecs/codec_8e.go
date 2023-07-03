@@ -9,7 +9,7 @@ import (
 func c8eAVLData(dataPacket []byte) models.AVLDataArray {
 	var avlDataArray models.AVLDataArray
 
-	avlDataPacket := dataBytesParser(&dataPacket)
+	avlDataPacket := dataParser(&dataPacket)
 
 	avlDataArray.Preamble = binary.BigEndian.Uint32(avlDataPacket.Preamble)
 	avlDataArray.CodecID = avlDataPacket.CodecID
