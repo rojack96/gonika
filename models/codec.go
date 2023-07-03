@@ -4,8 +4,8 @@ import (
 	"time"
 )
 
-type AVLDataPacket struct {
-	// Premble (4 bytes)
+type DataPacket struct {
+	// Preamble (4 bytes)
 	//
 	// the packet starts with four zero bytes.
 	Preamble []byte `json:"preamble"`
@@ -37,7 +37,7 @@ type AVLDataPacket struct {
 }
 
 type AVLDataArray struct {
-	// Premble (4 bytes)
+	// Preamble (4 bytes)
 	//
 	// the packet starts with four zero bytes.
 	Preamble uint32 `json:"preamble"`
@@ -79,6 +79,7 @@ type GPSElement struct {
 	// Speed will be 0x0000 if GPS data is invalid.
 	Speed uint16 `json:"speed"`
 }
+
 type AVLDataTsToGps struct {
 	// Timestamp (8 bytes)
 	//
@@ -99,7 +100,7 @@ type AVLDataTsToGps struct {
 }
 
 type CodecMessage struct {
-	// Premble (4 bytes) the packet starts with four zero bytes.
+	// Preamble (4 bytes) the packet starts with four zero bytes.
 	Preamble []byte `json:"preamble"`
 	// Data Size (4 bytes)  size is calculated from Codec ID field to the second command or response quantity field.
 	DataSize []byte `json:"data_size"`
