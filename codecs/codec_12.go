@@ -3,8 +3,8 @@ package codecs
 import (
 	"encoding/hex"
 
-	"github.com/rojack96/gotlk/constant"
-	modelsCodec12 "github.com/rojack96/gotlk/models/codec_12"
+	"github.com/rojack96/gonika/constant"
+	modelsCodec12 "github.com/rojack96/gonika/models/codec_12"
 )
 
 // Return a response from device
@@ -28,10 +28,10 @@ func c12responseParser(responseMessage []byte) []byte {
 func c12CreateCommand(command string) []byte {
 	var commandMessage modelsCodec12.CommandMessage
 
-	commandMessage.Preamble = constant.PREAMBLE
-	commandMessage.CodecID = hex.EncodeToString([]byte{constant.CODEC_12})
-	commandMessage.Type = constant.TYPE_COMMAND
-	commandMessage.CommandQuantity1 = constant.COMMAND_QUANTITY
+	commandMessage.Preamble = constant.Preamble
+	commandMessage.CodecID = hex.EncodeToString([]byte{constant.Codec12})
+	commandMessage.Type = constant.TypeCommand
+	commandMessage.CommandQuantity1 = constant.CommandQuantity
 	commandMessage.CommandQuantity2 = commandMessage.CommandQuantity1
 
 	commandMessage.Command = commandBuilder(command)

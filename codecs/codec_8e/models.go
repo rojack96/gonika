@@ -1,6 +1,6 @@
 package codec8e
 
-import "github.com/rojack96/gotlk/models"
+import "github.com/rojack96/gonika/models"
 
 type AVLDataArray struct {
 	models.AVLDataArray
