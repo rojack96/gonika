@@ -1,8 +1,8 @@
-package codecs
+package parsers
 
-import "github.com/rojack96/gotlk/models"
+import "github.com/rojack96/gonika/models"
 
-func dataParser(dataPacket *[]byte) models.DataPacket {
+func DataParser(dataPacket *[]byte) models.DataPacket {
 	var avlDataPacket models.DataPacket
 
 	data := *dataPacket

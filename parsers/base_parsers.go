@@ -1,15 +1,15 @@
-package codecs
+package parsers
 
 import (
 	"encoding/binary"
 	"fmt"
 	"time"
 
-	"github.com/rojack96/gotlk/models"
+	"github.com/rojack96/gonika/models"
 )
 
-// This function parse the timestamp from AVL data.
-func parseTimestamp(startIndex int, body []byte) (time.Time, int) {
+// ParseTimestamp This function parse the timestamp from AVL data.
+func ParseTimestamp(startIndex int, body []byte) (time.Time, int) {
 	endIndex := startIndex + 8
 	ts := body[startIndex:endIndex]
 
@@ -17,22 +17,22 @@ func parseTimestamp(startIndex int, body []byte) (time.Time, int) {
 	return time.UnixMilli(int64(unixTs)), endIndex
 }
 
-// This function parse the priority from AVL data.
-func parsePriority(index int, body []byte) (byte, int) {
+// ParsePriority This function parse the priority from AVL data.
+func ParsePriority(index int, body []byte) (byte, int) {
 	priority := body[index]
 
 	return priority, index + 1
 }
 
-// This function parse the GPS data from AVL data.
-func parseGPSElement(startIndex int, body []byte) (models.GPSElement, int) {
+// ParseGPSElement This function parse the GPS data from AVL data.
+func ParseGPSElement(startIndex int, body []byte) (models.GPSElement, int) {
 
 	endIndex := startIndex + 15
 	data := body[startIndex:endIndex]
 	var gps models.GPSElement
 
-	gps.Longitude = positionAnalyzer(data[0:4])
-	gps.Latitude = positionAnalyzer(data[4:8])
+	gps.Longitude = PositionAnalyzer(data[0:4])
+	gps.Latitude = PositionAnalyzer(data[4:8])
 	gps.Altitude = binary.BigEndian.Uint16(data[8:10])
 	gps.Angle = binary.BigEndian.Uint16(data[10:12])
 	gps.Satellites = data[12]
@@ -41,11 +41,11 @@ func parseGPSElement(startIndex int, body []byte) (models.GPSElement, int) {
 	return gps, endIndex
 }
 
-// This function return a position negative.
+// PositionAnalyzer This function return a position negative.
 //
 // To determine if the coordinate is negative, convert it to binary format and check the very first bit.
 // If it is 0, coordinate is positive, if it is 1, coordinate is negative.
-func positionAnalyzer(position []byte) int32 {
+func PositionAnalyzer(position []byte) int32 {
 	var bits string
 	firstByte := position[0]
 	bits = fmt.Sprintf("%08b", byte(firstByte))

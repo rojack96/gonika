@@ -1,53 +1,23 @@
 package codecs
 
 import (
-	modelsC16 "github.com/rojack96/gotlk/models/codec_16"
-	modelsC8 "github.com/rojack96/gotlk/models/codec_8"
-	modelsC8E "github.com/rojack96/gotlk/models/codec_8E"
+	"github.com/rojack96/gonika/codecs/codec_16"
+	codec8 "github.com/rojack96/gonika/codecs/codec_8"
+	codec8e "github.com/rojack96/gonika/codecs/codec_8e"
 )
 
-type codec8 struct{}
-type codec8e struct{}
-type codec16 struct{}
-type codec12 struct{}
-type codec13 struct{}
-type codec14 struct{}
-
-var Codec8 codec8
-var Codec8E codec8e
-var Codec16 codec16
-var Codec12 codec12
-var Codec13 codec13
-var Codec14 codec14
-
-func (c *codec8) DecodeAVLData(dataPacket []byte) modelsC8.AVLDataArray {
-	return c8AVLData(dataPacket)
+type Codecs struct {
+	c8  codec8.Codec8
+	c8e codec8e.Codec8e
+	c16 codec16.Codec16
 }
 
-func (c *codec8e) DecodeAVLData(dataPacket []byte) modelsC8E.AVLDataArray {
-	return c8eAVLData(dataPacket)
+func (c *Codecs) BufferAnalyzer(dataBuffer *[]byte) (*uint8, error) {
+	return BufferAnalyzer(dataBuffer)
 }
 
-func (c *codec16) DecodeAVLData(dataPacket []byte) modelsC16.AVLDataArray {
-	return c16AVLData(dataPacket)
-}
+func (c *Codecs) Decode8(dataPacket []byte) codec8.AVLDataArray { return c.c8.Decode(dataPacket) }
 
-func (c *codec12) ResponseParser(responseMessage []byte) []byte {
-	return c12responseParser(responseMessage)
-}
+func (c *Codecs) Decode8ext(dataPacket []byte) codec8e.AVLDataArray { return c.c8e.Decode(dataPacket) }
 
-func (c *codec12) CreateCommand(command string) []byte {
-	return c12CreateCommand(command)
-}
-
-func (c *codec13) CreateCommand(command string) []byte {
-	return c13CreateCommand(command)
-}
-
-func (c *codec14) ResponseParser(responseMessage []byte) []byte {
-	return c14ResponseParser(responseMessage)
-}
-
-func (c *codec14) CreateCommand(command string) []byte {
-	return c14CreateCommand(command)
-}
+func (c *Codecs) Decode16(dataPacket []byte) codec16.AVLDataArray { return c.c16.Decode(dataPacket) }

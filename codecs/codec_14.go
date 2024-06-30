@@ -3,8 +3,8 @@ package codecs
 import (
 	"encoding/hex"
 
-	"github.com/rojack96/gotlk/constant"
-	models "github.com/rojack96/gotlk/models/codec_14"
+	"github.com/rojack96/gonika/constant"
+	models "github.com/rojack96/gonika/models/codec_14"
 )
 
 func c14ResponseParser(responseMessage []byte) []byte {
@@ -28,10 +28,10 @@ func c14ResponseParser(responseMessage []byte) []byte {
 func c14CreateCommand(command string) []byte {
 	var commandMessage models.CommandMessage
 
-	commandMessage.Preamble = constant.PREAMBLE
-	commandMessage.CodecID = hex.EncodeToString([]byte{constant.CODEC_14})
-	commandMessage.Type = constant.TYPE_COMMAND
-	commandMessage.CommandQuantity1 = constant.COMMAND_QUANTITY
+	commandMessage.Preamble = constant.Preamble
+	commandMessage.CodecID = hex.EncodeToString([]byte{constant.Codec14})
+	commandMessage.Type = constant.TypeCommand
+	commandMessage.CommandQuantity1 = constant.CommandQuantity
 	commandMessage.CommandQuantity2 = commandMessage.CommandQuantity1
 
 	commandMessage.Command = commandBuilder(command)
