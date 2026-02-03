@@ -2,18 +2,19 @@ package codec16
 
 import (
 	"encoding/binary"
+
 	"github.com/rojack96/gonika/parsers"
 )
 
 type Codec16 struct{}
 
-func (c *Codec16) Decode(dataPacket []byte) AVLDataArray {
-	var avlDataArray AVLDataArray
+func (c *Codec16) Decode(dataPacket []byte) interface{} {
+	var avlDataArray AvlDataArray[uint8]
 
 	avlDataPacket := parsers.DataParser(&dataPacket)
 
 	avlDataArray.Preamble = binary.BigEndian.Uint32(avlDataPacket.Preamble)
-	avlDataArray.CodecID = avlDataPacket.CodecID
+	avlDataArray.CodecId = avlDataPacket.CodecId
 	avlDataArray.NumberOfData1 = avlDataPacket.NumberOfData1
 	avlDataArray.NumberOfData2 = avlDataPacket.NumberOfData2
 	avlDataArray.CRC16 = binary.BigEndian.Uint32(avlDataPacket.CRC16)
@@ -33,7 +34,7 @@ func (c *Codec16) Decode(dataPacket []byte) AVLDataArray {
 			avlData.Priority, priorityIndex = parsers.ParsePriority(timestampEndIndex, body)
 
 			var gpsEndIndex int
-			avlData.GPSElement, gpsEndIndex = parsers.ParseGPSElement(priorityIndex, body)
+			avlData.GPSElement, gpsEndIndex = parsers.ParseGpsElement(priorityIndex, body)
 
 			var eventIOIDIndexEnd int
 			avlData.EventIOID, eventIOIDIndexEnd = c.parseEventIO(gpsEndIndex, body)

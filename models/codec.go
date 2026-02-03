@@ -1,10 +1,6 @@
 package models
 
-import (
-	"time"
-)
-
-type DataPacket struct {
+type AvlDataPacket struct {
 	// Preamble (4 bytes)
 	//
 	// the packet starts with four zero bytes.
@@ -14,7 +10,7 @@ type DataPacket struct {
 	// size is calculated starting from Codec ID to Number of Data 2.
 	DataFieldLength []byte `json:"data_field_length"`
 	// Codec ID (1 byte)
-	CodecID byte `json:"codec_id"`
+	CodecId byte `json:"codec_id"`
 	// Number of Data 1 (1 byte)
 	//
 	// a number which defines how many records is in the packet.
@@ -36,7 +32,7 @@ type DataPacket struct {
 	CRC16 []byte `json:"crc_16"`
 }
 
-type AVLDataArray struct {
+type AvlDataArray struct {
 	// Preamble (4 bytes)
 	//
 	// the packet starts with four zero bytes.
@@ -46,12 +42,13 @@ type AVLDataArray struct {
 	// size is calculated starting from Codec ID to Number of Data 2.
 	DataFieldLength uint32 `json:"data_field_length"`
 	// Codec ID (1 byte)
-	CodecID uint8 `json:"codec_id"`
+	CodecId uint8 `json:"codec_id"`
 	// Number of Data 1 (1 byte)
 	//
 	// a number which defines how many records is in the packet.
-	NumberOfData1 uint8 `json:"no_of_data_1"`
-	// Number of Data 12 (1 byte)
+	NumberOfData1 uint8     `json:"no_of_data_1"`
+	AvlData       []AvlData `json:"avl_data"`
+	// Number of Data 2 (1 byte)
 	//
 	// number which defines how many records is in the packet.
 	// This number must be the same as “Number of Data 1”.
@@ -64,20 +61,34 @@ type AVLDataArray struct {
 	CRC16 uint32 `json:"crc_16"`
 }
 
-type GPSElement struct {
-	// Longitude (4 bytes) east – west position.
-	Longitude int32 `json:"lon"`
-	// Latitude (4 bytes) north – south position.
-	Latitude int32 `json:"lat"`
-	// Altitude (2 bytes) meters above sea level.
-	Altitude uint16 `json:"alt"`
-	// Angle (2 bytes) degrees from north pole.
-	Angle uint16 `json:"angle"`
-	// Satellites (1 byte)  number of visible satellites.
-	Satellites uint8 `json:"sat"`
-	// Speed (2 bytes) speed calculated from satellites.
-	// Speed will be 0x0000 if GPS data is invalid.
-	Speed uint16 `json:"speed"`
+type AvlData struct {
+	AVLDataTsToGps
+	// Event IO ID (2 bytes) this field defines which IO property has changed and generated an event.
+	EventIOId uint16 `json:"event_IO_id"`
+	// Data event generation type
+	GenerationType uint8 `json:"generation_type"`
+	// Number of Total IO (2 bytes) a total number of properties coming with record (N = N1 + N2 + N4 + N8).
+	NoOfTotalIO uint16 `json:"-"`
+	// Number of One Byte IO (2 bytes) number of properties which length is 1 byte.
+	NoOfOneByte uint16 `json:"-"`
+	// Number of Two Byte IO (2 bytes) number of properties which length is 2 bytes.
+	NoOfTwoByte uint16 `json:"-"`
+	// Number of Four Byte IO (2 bytes) number of properties which length is 4 bytes.
+	NoOfFourByte uint16 `json:"-"`
+	// Number of Eight Byte IO (2 bytes) number of properties which length is 8 bytes.
+	NoOfEightByte uint16 `json:"-"`
+	// Number of X Byte IO (2 bytes)  a number of properties which length is defined by length element.
+	NoOfXByte uint16 `json:"-"`
+	// Map id:value with properties which length is 1 byte.
+	OneByteIO map[uint16]interface{} `json:"-"`
+	// Map id:value with properties which length is 2 bytes.
+	TwoByteIO map[uint16]interface{} `json:"-"`
+	// Map id:value with properties which length is 4 bytes.
+	FourByteIO map[uint16]interface{} `json:"-"`
+	// Map id:value with properties which length is 8 bytes.
+	EightByteIO map[uint16]interface{} `json:"-"`
+	// Map id:value with properties which length is defined by length element.
+	XByteIO map[uint16]interface{} `json:"-"`
 }
 
 type AVLDataTsToGps struct {
@@ -85,7 +96,7 @@ type AVLDataTsToGps struct {
 	//
 	// A difference, in milliseconds,
 	// between the current time and midnight, January, 1970 UTC (UNIX time).
-	Timestamp time.Time `json:"timestamp"`
+	Timestamp uint64 `json:"timestamp"`
 	// Priority (1 byte)
 	//
 	// Field which define AVL data priority.
@@ -96,7 +107,23 @@ type AVLDataTsToGps struct {
 	// GPS (15 bytes)
 	//
 	// Location information of the AVL data.
-	GPSElement GPSElement `json:"gps"`
+	GpsElement GpsElement `json:"gps"`
+}
+
+type GpsElement struct {
+	// Longitude (4 bytes) east – west position.
+	Longitude float64 `json:"lon"`
+	// Latitude (4 bytes) north – south position.
+	Latitude float64 `json:"lat"`
+	// Altitude (2 bytes) meters above sea level.
+	Altitude uint16 `json:"alt"`
+	// Angle (2 bytes) degrees from north pole.
+	Angle uint16 `json:"angle"`
+	// Satellites (1 byte)  number of visible satellites.
+	Satellites uint8 `json:"sat"`
+	// Speed (2 bytes) speed calculated from satellites.
+	// Speed will be 0x0000 if GPS data is invalid.
+	Speed uint16 `json:"speed"`
 }
 
 type CodecMessage struct {

@@ -2,8 +2,8 @@ package codec16
 
 import "github.com/rojack96/gonika/models"
 
-type AVLDataArray struct {
-	models.AVLDataArray
+type AvlDataArray[CodecType models.CodecId] struct {
+	models.AvlDataArray[CodecType]
 	AVLData []AVLData `json:"avl_data"`
 }
 
@@ -24,11 +24,11 @@ type AVLData struct {
 	// Number of Eight Byte IO (1 byte) number of properties which length is 8 bytes.
 	NoOfEightByte uint8 `json:"-"`
 	// Map id:value with properties which length is 1 byte.
-	OneByteIO map[uint16]uint8 `json:"-"`
+	OneByteIO map[uint16]interface{} `json:"-"`
 	// Map id:value with properties which length is 2 bytes.
-	TwoByteIO map[uint16]uint16 `json:"-"`
+	TwoByteIO map[uint16]interface{} `json:"-"`
 	// Map id:value with properties which length is 4 bytes.
-	FourByteIO map[uint16]uint32 `json:"-"`
+	FourByteIO map[uint16]interface{} `json:"-"`
 	// Map id:value with properties which length is 8 bytes.
-	EightByteIO map[uint16]uint64 `json:"-"`
+	EightByteIO map[uint16]interface{} `json:"-"`
 }
