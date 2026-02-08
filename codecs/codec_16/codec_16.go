@@ -48,19 +48,10 @@ func (c *Codec16) Decode() *models.AvlDataArray {
 		avlData.NoOfTotalIO = c.parseTotalNumberOfIO(index, body)
 		index += 1
 
-		var oneByteIOEndIndex int
-		avlData.NoOfOneByte, avlData.OneByteIO, oneByteIOEndIndex = c.parseIo(1, index, body)
-
-		var twoByteIOEndIndex int
-		avlData.NoOfTwoByte, avlData.TwoByteIO, twoByteIOEndIndex = c.parseIo(2, oneByteIOEndIndex, body)
-
-		var fourByteIOEndIndex int
-		avlData.NoOfFourByte, avlData.FourByteIO, fourByteIOEndIndex = c.parseIo(4, twoByteIOEndIndex, body)
-
-		var eightByteIOEndIndex int
-		avlData.NoOfEightByte, avlData.EightByteIO, eightByteIOEndIndex = c.parseIo(8, fourByteIOEndIndex, body)
-
-		index = eightByteIOEndIndex
+		avlData.NoOfOneByte, avlData.OneByteIO, index = c.parseIo(1, index, body)
+		avlData.NoOfTwoByte, avlData.TwoByteIO, index = c.parseIo(2, index, body)
+		avlData.NoOfFourByte, avlData.FourByteIO, index = c.parseIo(4, index, body)
+		avlData.NoOfEightByte, avlData.EightByteIO, index = c.parseIo(8, index, body)
 
 		result.AvlData = append(result.AvlData, avlData)
 	}
