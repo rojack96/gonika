@@ -32,6 +32,112 @@ type AvlDataPacket struct {
 	Crc16 []byte `json:"crc16"`
 }
 
+type AvlData interface {
+	isAvlData()
+}
+
+type AvlDataArray struct {
+	Preamble        `json:"preamble"`
+	DataFieldLength `json:"dataFieldLength"`
+	CodecID         `json:"codecId"`
+	NumberOfData1   NumberOfData `json:"numberOfData1"`
+	AvlData         []AvlData    `json:"avlData"`
+	// Number of Data 2 (1 byte)
+	//
+	// number which defines how many records is in the packet.
+	// This number must be the same as “Number of Data 1”.
+	NumberOfData2 NumberOfData `json:"numberOfData2"`
+	Crc16         `json:"crc16"`
+}
+
+type AvlData8 struct {
+	Timestamp  `json:"timestamp"`
+	Priority   `json:"priority"`
+	GpsElement `json:"gpsElement"`
+	// Event IO ID (1 byte) this field defines which IO property has changed and generated an event.
+	EventIOID uint8 `json:"eventIoID"`
+	// Number of Total IO (1 byte) a total number of properties coming with record (N = N1 + N2 + N4 + N8).
+	NoOfTotalIO uint8 `json:"numberOfTotalIO"`
+	// Number of One Byte IO (1 byte) number of properties which length is 1 byte.
+	NoOfOneByte uint8 `json:"numberOfOneByte"`
+	// Map id:value with properties which length is 1 byte.
+	OneByteIO map[uint8]string `json:"oneByteIO"`
+	// Number of Two Byte IO (1 byte) number of properties which length is 2 bytes.
+	NoOfTwoByte uint8 `json:"numberOfTwoByte"`
+	// Map id:value with properties which length is 2 bytes.
+	TwoByteIO map[uint8]string `json:"twoByteIO"`
+	// Number of Four Byte IO (1 byte) number of properties which length is 4 bytes.
+	NoOfFourByte uint8 `json:"numberOfFourByte"`
+	// Map id:value with properties which length is 4 bytes.
+	FourByteIO map[uint8]string `json:"fourByteIO"`
+	// Number of Eight Byte IO (1 byte) number of properties which length is 8 bytes.
+	NoOfEightByte uint8 `json:"numberOfEightByte"`
+	// Map id:value with properties which length is 8 bytes.
+	EightByteIO map[uint8]string `json:"eightByteIO"`
+}
+
+type AvlData8ext struct {
+	Timestamp  `json:"timestamp"`
+	Priority   `json:"priority"`
+	GpsElement `json:"gpsElement"`
+	// Event IO ID (2 bytes) this field defines which IO property has changed and generated an event.
+	EventIOID uint16 `json:"eventIoID"`
+	// Number of Total IO (2 bytes) a total number of properties coming with record (N = N1 + N2 + N4 + N8).
+	NoOfTotalIO uint16 `json:"numberOfTotalIO"`
+	// Number of One Byte IO (2 bytes) number of properties which length is 1 byte.
+	NoOfOneByte uint16 `json:"numberOfOneByte"`
+	// Map id:value with properties which length is 1 byte.
+	OneByteIO map[uint16]string `json:"oneByteIO"`
+	// Number of Two Byte IO (2 bytes) number of properties which length is 2 bytes.
+	NoOfTwoByte uint16 `json:"numberOfTwoByte"`
+	// Map id:value with properties which length is 2 bytes.
+	TwoByteIO map[uint16]string `json:"twoByteIO"`
+	// Number of Four Byte IO (2 bytes) number of properties which length is 4 bytes.
+	NoOfFourByte uint16 `json:"numberOfFourByte"`
+	// Map id:value with properties which length is 4 bytes.
+	FourByteIO map[uint16]string `json:"fourByteIO"`
+	// Number of Eight Byte IO (2 bytes) number of properties which length is 8 bytes.
+	NoOfEightByte uint16 `json:"numberOfEightByte"`
+	// Map id:value with properties which length is 8 bytes.
+	EightByteIO map[uint16]string `json:"eightByteIO"`
+	// Number of X Byte IO (2 bytes)  a number of properties which length is defined by length element.
+	NoOfXByte uint16 `json:"numberOfXByte"`
+	// Map id:value with properties which length is defined by length element.
+	XByteIO map[uint16]string `json:"xByteIO"`
+}
+
+type AvlData16 struct {
+	Timestamp  `json:"timestamp"`
+	Priority   `json:"priority"`
+	GpsElement `json:"gpsElement"`
+	// Event IO ID (1 byte) this field defines which IO property has changed and generated an event.
+	EventIOID uint16 `json:"eventIoID"`
+	// Data event generation type
+	GenerationType uint8 `json:"generationType"`
+	// Number of Total IO (1 byte) a total number of properties coming with record (N = N1 + N2 + N4 + N8).
+	NoOfTotalIO uint8 `json:"numberOfTotalIO"`
+	// Number of One Byte IO (1 byte) number of properties which length is 1 byte.
+	NoOfOneByte uint8 `json:"numberOfOneByte"`
+	// Map id:value with properties which length is 1 byte.
+	OneByteIO map[uint16]string `json:"oneByteIO"`
+	// Number of Two Byte IO (1 byte) number of properties which length is 2 bytes.
+	NoOfTwoByte uint8 `json:"numberOfTwoByte"`
+	// Map id:value with properties which length is 2 bytes.
+	TwoByteIO map[uint16]string `json:"twoByteIO"`
+	// Number of Four Byte IO (1 byte) number of properties which length is 4 bytes.
+	NoOfFourByte uint8 `json:"numberOfFourByte"`
+	// Map id:value with properties which length is 4 bytes.
+	FourByteIO map[uint16]string `json:"fourByteIO"`
+	// Number of Eight Byte IO (1 byte) number of properties which length is 8 bytes.
+	NoOfEightByte uint8 `json:"numberOfEightByte"`
+	// Map id:value with properties which length is 8 bytes.
+	EightByteIO map[uint16]string `json:"eightByteIO"`
+}
+
+func (AvlData8) isAvlData()    {}
+func (AvlData8ext) isAvlData() {}
+func (AvlData16) isAvlData()   {}
+
 type CodecMessage struct {
 	// Preamble (4 bytes) the packet starts with four zero bytes.
 	Preamble []byte `json:"preamble"`

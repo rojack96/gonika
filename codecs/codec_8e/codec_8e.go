@@ -6,58 +6,14 @@ import (
 	"github.com/rojack96/gonika/parsers"
 )
 
-type AvlDataArray struct {
-	models.Preamble        `json:"preamble"`
-	models.DataFieldLength `json:"dataFieldLength"`
-	models.CodecID         `json:"codecId"`
-	NumberOfData1          models.NumberOfData `json:"numberOfData1"`
-	AvlData                []AvlData           `json:"avlData"`
-	// Number of Data 2 (1 byte)
-	//
-	// number which defines how many records is in the packet.
-	// This number must be the same as “Number of Data 1”.
-	NumberOfData2 models.NumberOfData `json:"numberOfData2"`
-	models.Crc16  `json:"crc16"`
-}
-
-type AvlData struct {
-	models.Timestamp  `json:"timestamp"`
-	models.Priority   `json:"priority"`
-	models.GpsElement `json:"gpsElement"`
-	// Event IO ID (2 bytes) this field defines which IO property has changed and generated an event.
-	EventIOID uint16 `json:"eventIoID"`
-	// Number of Total IO (2 bytes) a total number of properties coming with record (N = N1 + N2 + N4 + N8).
-	NoOfTotalIO uint16 `json:"numberOfTotalIO"`
-	// Number of One Byte IO (2 bytes) number of properties which length is 1 byte.
-	NoOfOneByte uint16 `json:"numberOfOneByte"`
-	// Map id:value with properties which length is 1 byte.
-	OneByteIO map[uint16]uint8 `json:"oneByteIO"`
-	// Number of Two Byte IO (2 bytes) number of properties which length is 2 bytes.
-	NoOfTwoByte uint16 `json:"numberOfTwoByte"`
-	// Map id:value with properties which length is 2 bytes.
-	TwoByteIO map[uint16]uint16 `json:"twoByteIO"`
-	// Number of Four Byte IO (2 bytes) number of properties which length is 4 bytes.
-	NoOfFourByte uint16 `json:"numberOfFourByte"`
-	// Map id:value with properties which length is 4 bytes.
-	FourByteIO map[uint16]uint32 `json:"fourByteIO"`
-	// Number of Eight Byte IO (2 bytes) number of properties which length is 8 bytes.
-	NoOfEightByte uint16 `json:"numberOfEightByte"`
-	// Map id:value with properties which length is 8 bytes.
-	EightByteIO map[uint16]uint64 `json:"eightByteIO"`
-	// Number of X Byte IO (2 bytes)  a number of properties which length is defined by length element.
-	NoOfXByte uint16 `json:"numberOfXByte"`
-	// Map id:value with properties which length is defined by length element.
-	XByteIO map[uint16]uint `json:"xByteIO"`
-}
-
 type Codec8e struct{ avlDataPacket []byte }
 
 func New(avlDataPacket []byte) *Codec8e {
 	return &Codec8e{avlDataPacket: avlDataPacket}
 }
 
-func (c *Codec8e) Decode() any {
-	var result AvlDataArray
+func (c *Codec8e) Decode() *models.AvlDataArray {
+	var result models.AvlDataArray
 
 	data := utils.DataMapping(c.avlDataPacket)
 
@@ -78,7 +34,7 @@ func (c *Codec8e) Decode() any {
 	}
 
 	for i := 0; i < int(result.NumberOfData1); i++ {
-		avlData := AvlData{}
+		avlData := models.AvlData8ext{}
 
 		var timestampEndIndex int
 		avlData.Timestamp, timestampEndIndex = parsers.Timestamp(startIndex, body)
@@ -120,5 +76,5 @@ func (c *Codec8e) Decode() any {
 		result.AvlData = append(result.AvlData, avlData)
 	}
 
-	return result
+	return &result
 }

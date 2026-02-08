@@ -6,54 +6,14 @@ import (
 	"github.com/rojack96/gonika/parsers"
 )
 
-type AvlDataArray struct {
-	models.Preamble        `json:"preamble"`
-	models.DataFieldLength `json:"dataFieldLength"`
-	models.CodecID         `json:"codecId"`
-	NumberOfData1          models.NumberOfData `json:"numberOfData1"`
-	AvlData                []AvlData           `json:"avlData"`
-	// Number of Data 2 (1 byte)
-	//
-	// number which defines how many records is in the packet.
-	// This number must be the same as “Number of Data 1”.
-	NumberOfData2 models.NumberOfData `json:"numberOfData2"`
-	models.Crc16  `json:"crc16"`
-}
-
-type AvlData struct {
-	models.Timestamp  `json:"timestamp"`
-	models.Priority   `json:"priority"`
-	models.GpsElement `json:"gpsElement"`
-	// Event IO ID (1 byte) this field defines which IO property has changed and generated an event.
-	EventIOID uint8 `json:"eventIoID"`
-	// Number of Total IO (1 byte) a total number of properties coming with record (N = N1 + N2 + N4 + N8).
-	NoOfTotalIO uint8 `json:"numberOfTotalIO"`
-	// Number of One Byte IO (1 byte) number of properties which length is 1 byte.
-	NoOfOneByte uint8 `json:"numberOfOneByte"`
-	// Map id:value with properties which length is 1 byte.
-	OneByteIO map[uint8]uint8 `json:"oneByteIO"`
-	// Number of Two Byte IO (1 byte) number of properties which length is 2 bytes.
-	NoOfTwoByte uint8 `json:"numberOfTwoByte"`
-	// Map id:value with properties which length is 2 bytes.
-	TwoByteIO map[uint8]uint16 `json:"twoByteIO"`
-	// Number of Four Byte IO (1 byte) number of properties which length is 4 bytes.
-	NoOfFourByte uint8 `json:"numberOfFourByte"`
-	// Map id:value with properties which length is 4 bytes.
-	FourByteIO map[uint8]uint32 `json:"fourByteIO"`
-	// Number of Eight Byte IO (1 byte) number of properties which length is 8 bytes.
-	NoOfEightByte uint8 `json:"numberOfEightByte"`
-	// Map id:value with properties which length is 8 bytes.
-	EightByteIO map[uint8]uint64 `json:"eightByteIO"`
-}
-
 type Codec8 struct{ avlDataPacket []byte }
 
 func New(avlDataPacket []byte) *Codec8 {
 	return &Codec8{avlDataPacket: avlDataPacket}
 }
 
-func (c *Codec8) Decode() any {
-	var result AvlDataArray
+func (c *Codec8) Decode() *models.AvlDataArray {
+	var result models.AvlDataArray
 
 	data := utils.DataMapping(c.avlDataPacket)
 
@@ -74,7 +34,7 @@ func (c *Codec8) Decode() any {
 	}
 
 	for i := 0; i < int(result.NumberOfData1); i++ {
-		avlData := AvlData{}
+		avlData := models.AvlData8{}
 
 		var timestampEndIndex int
 		avlData.Timestamp, timestampEndIndex = parsers.Timestamp(startIndex, body)
@@ -113,5 +73,5 @@ func (c *Codec8) Decode() any {
 		result.AvlData = append(result.AvlData, avlData)
 	}
 
-	return result
+	return &result
 }

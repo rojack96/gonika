@@ -5,10 +5,11 @@ import (
 	"fmt"
 
 	codec8 "github.com/rojack96/gonika/codecs/codec_8"
+	"github.com/rojack96/gonika/models"
 )
 
 type Decoder interface {
-	Decode() any
+	Decode() *models.AvlDataArray
 }
 
 type Encoder interface {

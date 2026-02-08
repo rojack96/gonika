@@ -1,6 +1,8 @@
 package codec8
 
-import "encoding/binary"
+import (
+	"encoding/hex"
+)
 
 // ParseEventIO  This function parse the Event IO data from AVL data.
 //
@@ -26,8 +28,8 @@ func (c *Codec8) parseTotalNumberOfIO(startIndex int, body []byte) (uint8, int) 
 //
 // N1
 // number of properties, which length is 1 byte.
-func (c *Codec8) parseOneByteIO(startIndex int, body []byte) (uint8, map[uint8]uint8, int) {
-	IOelements := map[uint8]uint8{}
+func (c *Codec8) parseOneByteIO(startIndex int, body []byte) (uint8, map[uint8]string, int) {
+	IOelements := map[uint8]string{}
 	splitByte := 2 // ID 1 byte + VALUE 1 byte
 
 	if startIndex < len(body) {
@@ -40,7 +42,7 @@ func (c *Codec8) parseOneByteIO(startIndex int, body []byte) (uint8, map[uint8]u
 
 		for i := 0; i < len(data); i += splitByte {
 			id := data[i]
-			value := data[i+1]
+			value := hex.EncodeToString([]byte{data[i+1]})
 
 			IOelements[id] = value
 		}
@@ -53,8 +55,8 @@ func (c *Codec8) parseOneByteIO(startIndex int, body []byte) (uint8, map[uint8]u
 //
 // N2
 // number of properties, which length is 2 byte.
-func (c *Codec8) parseTwoByteIO(startIndex int, body []byte) (uint8, map[uint8]uint16, int) {
-	IOelements := map[uint8]uint16{}
+func (c *Codec8) parseTwoByteIO(startIndex int, body []byte) (uint8, map[uint8]string, int) {
+	IOelements := map[uint8]string{}
 	splitByte := 3 // ID 1 byte + VALUE 2 bytes
 	if startIndex < len(body) {
 		// Two Byte IO Number
@@ -66,7 +68,7 @@ func (c *Codec8) parseTwoByteIO(startIndex int, body []byte) (uint8, map[uint8]u
 
 		for i := 0; i < len(data); i += splitByte {
 			id := data[i]
-			value := binary.BigEndian.Uint16(data[i+1 : i+splitByte])
+			value := hex.EncodeToString(data[i+1 : i+splitByte])
 
 			IOelements[id] = value
 		}
@@ -79,8 +81,8 @@ func (c *Codec8) parseTwoByteIO(startIndex int, body []byte) (uint8, map[uint8]u
 //
 // N4
 // number of properties, which length is 4 byte.
-func (c *Codec8) parseFourByteIO(startIndex int, body []byte) (uint8, map[uint8]uint32, int) {
-	IOelements := map[uint8]uint32{}
+func (c *Codec8) parseFourByteIO(startIndex int, body []byte) (uint8, map[uint8]string, int) {
+	IOelements := map[uint8]string{}
 	splitByte := 5 // ID 1 byte + VALUE 4 bytes
 
 	if startIndex < len(body) {
@@ -93,7 +95,7 @@ func (c *Codec8) parseFourByteIO(startIndex int, body []byte) (uint8, map[uint8]
 
 		for i := 0; i < len(data); i += splitByte {
 			id := data[i]
-			value := binary.BigEndian.Uint32(data[i+1 : i+splitByte])
+			value := hex.EncodeToString(data[i+1 : i+splitByte])
 
 			IOelements[id] = value
 		}
@@ -108,8 +110,8 @@ func (c *Codec8) parseFourByteIO(startIndex int, body []byte) (uint8, map[uint8]
 // N8
 // number of properties, which length is 8 byte.
 // Eight Byte IO Number
-func (c *Codec8) parseEightByteIO(startIndex int, body []byte) (uint8, map[uint8]uint64, int) {
-	IOelements := map[uint8]uint64{}
+func (c *Codec8) parseEightByteIO(startIndex int, body []byte) (uint8, map[uint8]string, int) {
+	IOelements := map[uint8]string{}
 	splitByte := 9 // ID 1 byte + VALUE 8 bytes
 
 	if startIndex < len(body) {
@@ -122,7 +124,7 @@ func (c *Codec8) parseEightByteIO(startIndex int, body []byte) (uint8, map[uint8
 
 		for i := 0; i < len(data); i += splitByte {
 			id := data[i]
-			value := binary.BigEndian.Uint64(data[i+1 : i+splitByte])
+			value := hex.EncodeToString(data[i+1 : i+splitByte])
 
 			IOelements[id] = value
 		}
