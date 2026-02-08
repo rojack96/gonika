@@ -13,10 +13,10 @@ func (c *Codec8) parseEventIO(startIndex int, body []byte) (uint8, int) {
 	return eventIOID, startIndex + 1
 }
 
-// ParseTotalNumberOfIO Total Number of IO.
+// parseTotalNumberOfIO Total Number of IO.
 //
 // A total number of properties coming with record (N = N1 + N2 + N4 + N8).
-func (c *Codec8) ParseTotalNumberOfIO(startIndex int, body []byte) (uint8, int) {
+func (c *Codec8) parseTotalNumberOfIO(startIndex int, body []byte) (uint8, int) {
 	noOfTotalIO := body[startIndex]
 
 	return noOfTotalIO, startIndex + 1

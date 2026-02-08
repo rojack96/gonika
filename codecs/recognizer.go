@@ -2,41 +2,38 @@ package codecs
 
 import (
 	"bytes"
-	"errors"
+	"encoding/hex"
+	"fmt"
 
 	"github.com/rojack96/gonika/constant"
 )
 
-// BufferAnalyzer Analyze buffer passed, returns the following values:
-//
-// 15=IMEI
-//
-// 8=Codec 8
-//
-// 142=Codec 8 Extended
-//
-// 16=Codec 16
-//
-// 12=Codec 12
-//
-// 13=Codec 13
-//
-// 14=Codec 14
-func BufferAnalyzer(dataBuffer *[]byte) (*uint8, error) {
-	var codec *uint8
-	var imei *uint8
-	data := *dataBuffer
+// ImeiChecker This function checks if the data buffer contains a valid IMEI number and returns it if found.
+func ImeiChecker(dataBuffer any) ([]byte, bool, error) {
+	var (
+		data []byte
+		err  error
+	)
 
-	if bytes.HasPrefix(*dataBuffer, []byte(constant.ImeiPrefix)) {
-		if len(*dataBuffer) == 17 {
-			*imei = 15
-			return imei, nil
+	// Convert string to []byte if necessary
+	switch v := dataBuffer.(type) {
+	case []byte:
+		data = v
+	case string:
+		if data, err = hex.DecodeString(v); err != nil {
+			return nil, false, fmt.Errorf("invalid hex string: %v", err)
 		}
-	} else if bytes.HasPrefix(data, []byte(constant.DataPacketPrefix)) {
-		codec = &data[8]
-
-		return codec, nil
+	default:
+		return nil, false, fmt.Errorf("invalid packet type: expected []byte or string, got %T", dataBuffer)
 	}
 
-	return nil, errors.New("buffer unanalyzable")
+	if len(data) == 0 {
+		return nil, false, nil
+	}
+
+	if bytes.HasPrefix(data, []byte(constant.ImeiPrefix)) && len(data) == 17 {
+		return data[2:], true, nil
+	}
+
+	return nil, false, nil
 }
