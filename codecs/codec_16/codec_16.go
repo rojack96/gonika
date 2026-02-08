@@ -26,8 +26,7 @@ func (c *Codec16) Decode() *models.AvlDataArray {
 
 	body := data.Avldata
 
-	startIndex := 0
-	//index := 0
+	index := 0
 
 	if result.NumberOfData1 != result.NumberOfData2 {
 		return nil
@@ -36,32 +35,21 @@ func (c *Codec16) Decode() *models.AvlDataArray {
 	for i := 0; i < int(result.NumberOfData1); i++ {
 		avlData := models.AvlData16{}
 
-		var timestampEndIndex int
-		avlData.Timestamp, timestampEndIndex = parsers.Timestamp(startIndex, body)
-		//index += 8
+		avlData.Timestamp, index = parsers.Timestamp(index, body)
+		avlData.Priority, index = parsers.Priority(index, body)
+		avlData.GpsElement, index = parsers.GpsElement(index, body)
 
-		var priorityIndex int
-		avlData.Priority, priorityIndex = parsers.Priority(timestampEndIndex, body)
-		//index += 1
+		avlData.EventIOID = c.parseEventIO(index, body)
+		index += 2
 
-		var gpsEndIndex int
-		avlData.GpsElement, gpsEndIndex = parsers.GpsElement(priorityIndex, body)
-		// index += 15
+		avlData.GenerationType = c.parseGenerationType(index, body)
+		index += 1
 
-		var eventIOIDIndexEnd int
-		avlData.EventIOID, eventIOIDIndexEnd = c.parseEventIO(gpsEndIndex, body)
-		//index += 2
-
-		var generationTypeIndexEnd int
-		avlData.GenerationType, generationTypeIndexEnd = c.parseGenerationType(eventIOIDIndexEnd, body)
-		//index += 1
-
-		var noOfTotalIOIndexEnd int
-		avlData.NoOfTotalIO, noOfTotalIOIndexEnd = c.parseTotalNumberOfIO(generationTypeIndexEnd, body)
-		//index += 1
+		avlData.NoOfTotalIO = c.parseTotalNumberOfIO(index, body)
+		index += 1
 
 		var oneByteIOEndIndex int
-		avlData.NoOfOneByte, avlData.OneByteIO, oneByteIOEndIndex = c.parseIo(1, noOfTotalIOIndexEnd, body)
+		avlData.NoOfOneByte, avlData.OneByteIO, oneByteIOEndIndex = c.parseIo(1, index, body)
 
 		var twoByteIOEndIndex int
 		avlData.NoOfTwoByte, avlData.TwoByteIO, twoByteIOEndIndex = c.parseIo(2, oneByteIOEndIndex, body)
@@ -72,7 +60,7 @@ func (c *Codec16) Decode() *models.AvlDataArray {
 		var eightByteIOEndIndex int
 		avlData.NoOfEightByte, avlData.EightByteIO, eightByteIOEndIndex = c.parseIo(8, fourByteIOEndIndex, body)
 
-		startIndex = eightByteIOEndIndex
+		index = eightByteIOEndIndex
 
 		result.AvlData = append(result.AvlData, avlData)
 	}

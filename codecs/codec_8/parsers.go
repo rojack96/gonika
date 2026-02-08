@@ -9,19 +9,19 @@ import (
 // Event IO changed
 // if data is acquired on event
 // this field defines which IO property has changed and generated an event.
-func (c *Codec8) parseEventIO(startIndex int, body []byte) (uint8, int) {
+func (c *Codec8) parseEventIO(startIndex int, body []byte) uint8 {
 	eventIOID := body[startIndex]
 
-	return eventIOID, startIndex + 1
+	return eventIOID
 }
 
 // parseTotalNumberOfIO Total Number of IO.
 //
 // A total number of properties coming with record (N = N1 + N2 + N4 + N8).
-func (c *Codec8) parseTotalNumberOfIO(startIndex int, body []byte) (uint8, int) {
+func (c *Codec8) parseTotalNumberOfIO(startIndex int, body []byte) uint8 {
 	noOfTotalIO := body[startIndex]
 
-	return noOfTotalIO, startIndex + 1
+	return noOfTotalIO
 }
 
 // parseIo This function parse byte IO.

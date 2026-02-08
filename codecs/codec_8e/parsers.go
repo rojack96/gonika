@@ -10,21 +10,21 @@ import (
 // Event IO changed
 // if data is acquired on event
 // this field defines which IO property has changed and generated an event.
-func (c *Codec8e) parseEventIO(startIndex int, body []byte) (uint16, int) {
+func (c *Codec8e) parseEventIO(startIndex int, body []byte) uint16 {
 	endIndex := startIndex + 2
 	eventIOID := binary.BigEndian.Uint16(body[startIndex:endIndex])
 
-	return eventIOID, endIndex
+	return eventIOID
 }
 
 // ParseTotalNumberOfIO Total Number of IO.
 //
 // A total number of properties coming with record (N = N1 + N2 + N4 + N8).
-func (c *Codec8e) parseTotalNumberOfIO(startIndex int, body []byte) (uint16, int) {
+func (c *Codec8e) parseTotalNumberOfIO(startIndex int, body []byte) uint16 {
 	endIndex := startIndex + 2
 	noOfTotalIO := binary.BigEndian.Uint16(body[startIndex:endIndex])
 
-	return noOfTotalIO, endIndex
+	return noOfTotalIO
 }
 
 // parseIo This function parse byte IO.

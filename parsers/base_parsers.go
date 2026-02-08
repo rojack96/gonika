@@ -37,24 +37,30 @@ func Crc16(data []byte) models.Crc16 {
 
 // Timestamp This function parse the timestamp from AVL data.
 func Timestamp(startIndex int, body []byte) (models.Timestamp, int) {
-	endIndex := startIndex + 8
+	const timestampLength = 8
+
+	endIndex := startIndex + timestampLength
 	ts := body[startIndex:endIndex]
 
 	unixTs := binary.BigEndian.Uint64(ts)
+
 	return models.Timestamp(unixTs), endIndex
 }
 
 // Priority This function parse the priority from AVL data.
 func Priority(index int, body []byte) (models.Priority, int) {
+	const priorityLength = 1
+
 	priority := body[index]
 
-	return models.Priority(priority), index + 1
+	return models.Priority(priority), index + priorityLength
 }
 
 // GpsElement This function parse the GPS data from AVL data.
 func GpsElement(startIndex int, body []byte) (models.GpsElement, int) {
+	const gpsElementLength = 15
 
-	endIndex := startIndex + 15
+	endIndex := startIndex + gpsElementLength
 	data := body[startIndex:endIndex]
 	var gps models.GpsElement
 
