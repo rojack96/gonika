@@ -10,26 +10,26 @@ import (
 // Event IO changed
 // if data is acquired on event
 // this field defines which IO property has changed and generated an event.
-func (c *Codec16) parseEventIO(startIndex int, body []byte) uint16 {
+func (c *Codec16) parseEventIO(startIndex int, body []byte) (uint16, int) {
 	endIndex := startIndex + 2
 	eventIOID := binary.BigEndian.Uint16(body[startIndex:endIndex])
 
-	return eventIOID
+	return eventIOID, endIndex
 }
 
-func (c *Codec16) parseGenerationType(startIndex int, body []byte) uint8 {
+func (c *Codec16) parseGenerationType(startIndex int, body []byte) (uint8, int) {
 	generationType := body[startIndex]
 
-	return generationType
+	return generationType, startIndex + 1
 }
 
 // Total Number of IO.
 //
 // A total number of properties coming with record (N = N1 + N2 + N4 + N8).
-func (c *Codec16) parseTotalNumberOfIO(startIndex int, body []byte) uint8 {
+func (c *Codec16) parseTotalNumberOfIO(startIndex int, body []byte) (uint8, int) {
 	noOfTotalIO := body[startIndex]
 
-	return noOfTotalIO
+	return noOfTotalIO, startIndex + 1
 }
 
 // parseIo This function parse byte IO.

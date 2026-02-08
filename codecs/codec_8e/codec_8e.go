@@ -33,26 +33,21 @@ func (c *Codec8e) Decode() *models.AvlDataArray {
 	}
 
 	for i := 0; i < int(result.NumberOfData1); i++ {
-		avlData := models.AvlData8ext{}
+		avl := models.AvlData8ext{}
 
-		avlData.Timestamp, index = parsers.Timestamp(index, body)
-		avlData.Priority, index = parsers.Priority(index, body)
-		avlData.GpsElement, index = parsers.GpsElement(index, body)
+		avl.Timestamp, index = parsers.Timestamp(index, body)
+		avl.Priority, index = parsers.Priority(index, body)
+		avl.GpsElement, index = parsers.GpsElement(index, body)
+		avl.EventIOID, index = c.parseEventIO(index, body)
+		avl.NoOfTotalIO, index = c.parseTotalNumberOfIO(index, body)
+		avl.NoOfOneByte, avl.OneByteIO, index = c.parseIo(1, index, body)
+		avl.NoOfTwoByte, avl.TwoByteIO, index = c.parseIo(2, index, body)
+		avl.NoOfFourByte, avl.FourByteIO, index = c.parseIo(4, index, body)
+		avl.NoOfFourByte, avl.FourByteIO, index = c.parseIo(4, index, body)
+		avl.NoOfEightByte, avl.EightByteIO, index = c.parseIo(8, index, body)
+		avl.NoOfXByte, avl.XByteIO, index = c.parseXByteIO(index, body)
 
-		avlData.EventIOID = c.parseEventIO(index, body)
-		index += 2
-
-		avlData.NoOfTotalIO = c.parseTotalNumberOfIO(index, body)
-		index += 2
-
-		avlData.NoOfOneByte, avlData.OneByteIO, index = c.parseIo(1, index, body)
-		avlData.NoOfTwoByte, avlData.TwoByteIO, index = c.parseIo(2, index, body)
-		avlData.NoOfFourByte, avlData.FourByteIO, index = c.parseIo(4, index, body)
-		avlData.NoOfFourByte, avlData.FourByteIO, index = c.parseIo(4, index, body)
-		avlData.NoOfEightByte, avlData.EightByteIO, index = c.parseIo(8, index, body)
-		avlData.NoOfXByte, avlData.XByteIO, index = c.parseXByteIO(index, body)
-
-		result.AvlData = append(result.AvlData, avlData)
+		result.AvlData = append(result.AvlData, avl)
 	}
 
 	return &result
