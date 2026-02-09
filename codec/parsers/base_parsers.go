@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	"github.com/rojack96/gonika/models"
+	"github.com/rojack96/gonika/codec/models"
 )
 
 // Preamble This function parse the preamble from AVL data.
@@ -19,6 +19,12 @@ func DataFieldLength(data []byte) models.DataFieldLength {
 	return models.DataFieldLength(dataFieldLength)
 }
 
+// DataSize This function parse the data field length from AVL data.
+func DataSize(data []byte) models.DataSize {
+	dataFieldLength := binary.BigEndian.Uint32(data)
+	return models.DataSize(dataFieldLength)
+}
+
 // CodecId This function parse the codec id from AVL data.
 func CodecId(data byte) models.CodecID {
 	return models.CodecID(data)
@@ -27,6 +33,22 @@ func CodecId(data byte) models.CodecID {
 // NumberOfData This function parse the number of data from AVL data.
 func NumberOfData(data byte) models.NumberOfData {
 	return models.NumberOfData(data)
+}
+
+// Quantity This function parse the number of data from AVL data.
+func Quantity(data byte) models.Quantity {
+	return models.Quantity(data)
+}
+
+// Type This function parse the type from AVL data.
+func Type(data byte) models.Type {
+	return models.Type(data)
+}
+
+// ResponseSize This function parse the response size from AVL data.
+func ResponseSize(data []byte) models.ResponseSize {
+	responseSize := binary.BigEndian.Uint32(data)
+	return models.ResponseSize(responseSize)
 }
 
 // Crc16 This function parse the crc16 from AVL data.

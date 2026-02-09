@@ -10,8 +10,35 @@ type Preamble uint32
 // size is calculated starting from Codec ID to Number of Data 2.
 type DataFieldLength uint32
 
+// Data Size (4 bytes)
+//
+// size is calculated from Codec ID field to the second command or response quantity field.
+type DataSize uint32
+
 // Codec ID (1 byte)
 type CodecID uint8
+
+// Quantity (1 byte)
+//
+// a number which defines how many records is in the packet.
+type Quantity uint8
+
+// Type (1 byte)
+//
+// a field which defines if the message is a command or a response.
+// 0x00 -> Command
+// 0x01 -> Response
+type Type uint8
+
+// Command Size (4 bytes)
+//
+// command or response length.
+type CommandSize uint32
+
+// Response Size (4 bytes)
+//
+// command or response length.
+type ResponseSize uint32
 
 // Number of Data
 //

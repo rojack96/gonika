@@ -1,6 +1,6 @@
 package models
 
-type AvlDataPacket struct {
+type AvlDataPacketByte struct {
 	// Preamble (4 bytes)
 	//
 	// the packet starts with four zero bytes.
@@ -36,7 +36,7 @@ type AvlData interface {
 	isAvlData()
 }
 
-type AvlDataArray struct {
+type AvlDataPacket struct {
 	Preamble        `json:"preamble"`
 	DataFieldLength `json:"dataFieldLength"`
 	CodecID         `json:"codecId"`
@@ -138,27 +138,66 @@ func (AvlData8) isAvlData()    {}
 func (AvlData8ext) isAvlData() {}
 func (AvlData16) isAvlData()   {}
 
-type CodecMessage struct {
+type CommandMessage struct {
 	// Preamble (4 bytes) the packet starts with four zero bytes.
 	Preamble []byte `json:"preamble"`
 	// Data Size (4 bytes)  size is calculated from Codec ID field to the second command or response quantity field.
-	DataSize []byte `json:"data_size"`
+	DataSize []byte `json:"dataSize"`
 	// Codec ID (1 byte)
-	CodecID byte `json:"codec_id"`
+	CodecID byte `json:"codecId"`
+	// Command Quantity 1 (1 byte) it is ignored when parsing the message.
+	CommandQuantity1 byte `json:"commandQuantity1"`
 	// Type (1 byte) it can be 0x05 to denote command or 0x06 to denote response.
 	Type byte `json:"type"`
+	// Command Size (4 bytes) command or response length.
+	CommandSize []byte `json:"commandSize"`
+	// Command (X bytes) command or response in HEX.
+	Command []byte `json:"command"`
+	// Command Quantity 2 (1 byte) a byte which defines how many records (commands or responses) is in the packet.
+	// This byte will not be parsed but it’s recommended that it should contain same value as Command/Response Quantity 1.
+	CommandQuantity2 byte `json:"commandQuantity2"`
 	// CRC-16 (4 bytes) calculated from Codec ID to the Second Number of Data.
 	// CRC (Cyclic Redundancy Check) is an error-detecting code using for detect accidental changes to RAW data.
-	// For calculation we are using CRC-16/IBM.
-	CRC16 []byte `json:"crc_16"`
+	// For calculation, we are using CRC-16/IBM.
+	Crc16 []byte `json:"crc16"`
 }
 
-type CodecResponse struct {
+type ResponseMessageByte struct {
+	// Preamble (4 bytes) the packet starts with four zero bytes.
+	Preamble []byte `json:"preamble"`
+	// Data Size (4 bytes)  size is calculated from Codec ID field to the second command or response quantity field.
+	DataSize []byte `json:"dataSize"`
+	// Codec ID (1 byte)
+	CodecID byte `json:"codecId"`
 	// Command Quantity 1 (1 byte) it is ignored when parsing the message.
-	ResponseQuantity1 byte `json:"response_quantity_1"`
+	ResponseQuantity1 byte `json:"responseQuantity1"`
+	// Type (1 byte) it can be 0x05 to denote command or 0x06 to denote response.
+	Type byte `json:"type"`
+	// Command Size (4 bytes) command or response length.
+	ResponseSize []byte `json:"responseSize"`
 	// Command (X bytes) command or response in HEX.
 	Response []byte `json:"response"`
 	// Command Quantity 2 (1 byte) a byte which defines how many records (commands or responses) is in the packet.
 	// This byte will not be parsed but it’s recommended that it should contain same value as Command/Response Quantity 1.
-	ResponseQuantity2 byte `json:"response_quantity_2"`
+	ResponseQuantity2 byte `json:"responseQuantity2"`
+	// CRC-16 (4 bytes) calculated from Codec ID to the Second Number of Data.
+	// CRC (Cyclic Redundancy Check) is an error-detecting code using for detect accidental changes to RAW data.
+	// For calculation, we are using CRC-16/IBM.
+	Crc16 []byte `json:"crc16"`
+}
+
+type ResponseMessage struct {
+	Preamble `json:"preamble"`
+	DataSize `json:"dataSize"`
+	CodecID  `json:"codecId"`
+	// Command Quantity 1 (1 byte) it is ignored when parsing the message.
+	ResponseQuantity1 Quantity     `json:"responseQuantity1"`
+	Type              Type         `json:"type"`
+	ResponseSize      ResponseSize `json:"responseSize"`
+	// Command (X bytes) command or response in HEX.
+	Response string `json:"response"`
+	// Command Quantity 2 (1 byte) a byte which defines how many records (commands or responses) is in the packet.
+	// This byte will not be parsed but it’s recommended that it should contain same value as Command/Response Quantity 1.
+	ResponseQuantity2 Quantity `json:"responseQuantity2"`
+	Crc16             `json:"crc16"`
 }

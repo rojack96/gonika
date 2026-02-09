@@ -1,15 +1,15 @@
-package main
+package codecs
 
 import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/rojack96/gonika/codecs"
+	"github.com/rojack96/gonika/codec"
 )
 
 func main() {
 
-	imei, found, err := codecs.ImeiChecker("000F333536333037303432343431303133")
+	imei, found, err := codec.ImeiChecker("000F333536333037303432343431303133")
 	if err != nil {
 		fmt.Println("Error checking IMEI:", err)
 		return
@@ -20,13 +20,13 @@ func main() {
 		fmt.Println("IMEI not found in the data.")
 	}
 
-	c, err := codecs.DecoderFactory("000000000000003608010000016B40D8EA30010000000000000000000000000000000105021503010101425E0F01F10000601A014E0000000000000000010000C7CF")
+	c, err := codec.DecoderFactory("000000000000003608010000016B40D8EA3001000000000000000000000001425E5F2C77C93A8A23C7CF")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	t := c.Decode()
+	t := c.(codec.AvlDecoder).Decode()
 
 	jsonData, err := json.MarshalIndent(t, "", "  ")
 	if err != nil {

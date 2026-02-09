@@ -62,49 +62,49 @@ func (c *Codec8e) parseIo(valueLength int, startIndex int, body []byte) (uint16,
 // a number of properties, which length is defined by length element.
 // X Byte IO Number
 func (c *Codec8e) parseXByteIO(startIndex int, body []byte) (uint16, map[uint16]string, int) {
-	// TODO questo codice va cambiato perché ora cé quello funzionante
-	IOelements := map[uint16]string{}
+	result := map[uint16]string{}
 
 	// Eight Byte IO Number
 	nOfIOstartIndex := startIndex
 	nOfIOendIndex := nOfIOstartIndex + 2
-	nOfIOelements := binary.BigEndian.Uint16(body[nOfIOstartIndex:nOfIOendIndex])
-	// Eight Byte IO Data
-	if nOfIOelements != 0 {
-		IOelementsStartIndex := nOfIOendIndex
+	noOfXByteIO := binary.BigEndian.Uint16(body[nOfIOstartIndex:nOfIOendIndex])
+	// X Byte IO Data
 
-		var i uint16 = 0
-		j := 0
-
-		for i < nOfIOelements {
-			IOelementsIDstartIndex := j + IOelementsStartIndex
-			IOelementsIDendIndex := IOelementsIDstartIndex + 2
-
-			id := binary.BigEndian.Uint16(body[IOelementsIDstartIndex:IOelementsIDendIndex])
-
-			valueLengthStartIndex := IOelementsIDendIndex
-			valueLengthEndIndex := valueLengthStartIndex + 2
-
-			valueLength := binary.BigEndian.Uint16(body[valueLengthStartIndex:valueLengthEndIndex])
-
-			if valueLength == 0 {
-				return nOfIOelements, IOelements, valueLengthEndIndex
-			}
-
-			valueStartIndex := valueLengthEndIndex
-			valueEndIndex := valueStartIndex + int(valueLength)
-
-			value := hex.EncodeToString(body[valueStartIndex:valueEndIndex])
-
-			IOelements[id] = value
-
-			i = i + 1
-			j = j + valueEndIndex
-		}
-
-		IOelementsEndIndex := j
-		return nOfIOelements, IOelements, IOelementsEndIndex
+	if noOfXByteIO == 0 { // if there is no X byte IO, return the index after reading number of X byte IO
+		return noOfXByteIO, result, startIndex + 2
 	}
 
-	return nOfIOelements, IOelements, startIndex + 2
+	xByteIOStartIndex := nOfIOendIndex
+
+	var i uint16 = 0
+	j := 0
+
+	for i < noOfXByteIO {
+		xIOIDStartIndex := j + xByteIOStartIndex
+		xIOIDEndIndex := xIOIDStartIndex + 2
+
+		xValueLengthStartIndex := xIOIDEndIndex
+		xValueLengthEndIndex := xValueLengthStartIndex + 2
+
+		valueLength := binary.BigEndian.Uint16(body[xValueLengthStartIndex:xValueLengthEndIndex])
+
+		if valueLength == 0 {
+			return noOfXByteIO, result, xValueLengthEndIndex
+		}
+
+		xValueStartIndex := xValueLengthEndIndex
+		xValueEndIndex := xValueStartIndex + int(valueLength)
+
+		id := binary.BigEndian.Uint16(body[xIOIDStartIndex:xIOIDEndIndex])
+		value := hex.EncodeToString(body[xValueStartIndex:xValueEndIndex])
+
+		result[id] = value
+
+		i = i + 1
+		xByteIOStartIndex = xValueEndIndex
+	}
+
+	xByteIOEndIndex := xByteIOStartIndex
+	return noOfXByteIO, result, xByteIOEndIndex
+
 }

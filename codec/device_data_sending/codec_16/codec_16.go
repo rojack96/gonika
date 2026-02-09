@@ -1,19 +1,19 @@
-package codec8e
+package codec16
 
 import (
-	"github.com/rojack96/gonika/codecs/utils"
-	"github.com/rojack96/gonika/models"
-	"github.com/rojack96/gonika/parsers"
+	"github.com/rojack96/gonika/codec/models"
+	"github.com/rojack96/gonika/codec/parsers"
+	"github.com/rojack96/gonika/codec/utils"
 )
 
-type Codec8e struct{ avlDataPacket []byte }
+type Codec16 struct{ avlDataPacket []byte }
 
-func New(avlDataPacket []byte) *Codec8e {
-	return &Codec8e{avlDataPacket: avlDataPacket}
+func New(avlDataPacket []byte) *Codec16 {
+	return &Codec16{avlDataPacket: avlDataPacket}
 }
 
-func (c *Codec8e) Decode() *models.AvlDataArray {
-	var result models.AvlDataArray
+func (c *Codec16) Decode() *models.AvlDataPacket {
+	var result models.AvlDataPacket
 
 	data := utils.DataMapping(c.avlDataPacket)
 
@@ -33,19 +33,18 @@ func (c *Codec8e) Decode() *models.AvlDataArray {
 	}
 
 	for i := 0; i < int(result.NumberOfData1); i++ {
-		avl := models.AvlData8ext{}
+		avl := models.AvlData16{}
 
 		avl.Timestamp, index = parsers.Timestamp(index, body)
 		avl.Priority, index = parsers.Priority(index, body)
 		avl.GpsElement, index = parsers.GpsElement(index, body)
 		avl.EventIOID, index = c.parseEventIO(index, body)
+		avl.GenerationType, index = c.parseGenerationType(index, body)
 		avl.NoOfTotalIO, index = c.parseTotalNumberOfIO(index, body)
 		avl.NoOfOneByte, avl.OneByteIO, index = c.parseIo(1, index, body)
 		avl.NoOfTwoByte, avl.TwoByteIO, index = c.parseIo(2, index, body)
 		avl.NoOfFourByte, avl.FourByteIO, index = c.parseIo(4, index, body)
-		avl.NoOfFourByte, avl.FourByteIO, index = c.parseIo(4, index, body)
 		avl.NoOfEightByte, avl.EightByteIO, index = c.parseIo(8, index, body)
-		avl.NoOfXByte, avl.XByteIO, index = c.parseXByteIO(index, body)
 
 		result.AvlData = append(result.AvlData, avl)
 	}
