@@ -24,7 +24,7 @@ func main() {
 		fmt.Println("IMEI not found in the data.")
 	}
 
-	decoder, err := cdc.AvlDataDecoderFactory(raw)
+	decoder, err := cdc.AvlDataDecoderFactory(raw8ext)
 	if err != nil {
 		fmt.Println(err)
 		return

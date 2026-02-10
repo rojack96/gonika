@@ -2,7 +2,6 @@ package parsers
 
 import (
 	"encoding/binary"
-	"fmt"
 
 	"github.com/rojack96/gonika/codec/models"
 )
@@ -86,8 +85,8 @@ func GpsElement(startIndex int, body []byte) (models.GpsElement, int) {
 	data := body[startIndex:endIndex]
 	var gps models.GpsElement
 
-	gps.Longitude = models.Longitude(PositionAnalyzer(data[0:4]))
-	gps.Latitude = models.Latitude(PositionAnalyzer(data[4:8]))
+	gps.Longitude = models.Longitude(decodeCoordinate(data[0:4]))
+	gps.Latitude = models.Latitude(decodeCoordinate(data[4:8]))
 	gps.Altitude = models.Altitude(binary.BigEndian.Uint16(data[8:10]))
 	gps.Angle = models.Angle(binary.BigEndian.Uint16(data[10:12]))
 	gps.Satellites = models.Satellites(data[12])
@@ -96,20 +95,11 @@ func GpsElement(startIndex int, body []byte) (models.GpsElement, int) {
 	return gps, endIndex
 }
 
-// PositionAnalyzer This function return a position negative.
+// decodeCoordinate This function return a position negative.
 //
 // To determine if the coordinate is negative, convert it to binary format and check the very first bit.
 // If it is 0, coordinate is positive, if it is 1, coordinate is negative.
-func PositionAnalyzer(position []byte) int32 {
-	var bits string
-	firstByte := position[0]
-	bits = fmt.Sprintf("%08b", byte(firstByte))
-
-	if bits[0:1] == "1" {
-		r := binary.BigEndian.Uint32(position)
-		res := -(int32(r))
-		return res
-	}
-	res := binary.BigEndian.Uint32(position)
-	return int32(res)
+func decodeCoordinate(position []byte) float64 {
+	raw := int32(binary.BigEndian.Uint32(position))
+	return float64(raw) / 1e7
 }

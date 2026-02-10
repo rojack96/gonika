@@ -67,10 +67,10 @@ type Timestamp uint64
 type Priority uint8
 
 // Longitude (4 bytes) east – west position.
-type Longitude int32
+type Longitude float64
 
 // Latitude (4 bytes) north – south position.
-type Latitude int32
+type Latitude float64
 
 // Altitude (2 bytes) meters above sea level.
 type Altitude uint16
