@@ -9,7 +9,6 @@ import (
 	codec8ext "github.com/rojack96/gonika/codec/device_data_sending/codec_8e"
 	codec12 "github.com/rojack96/gonika/codec/gprs_message/codec_12"
 	"github.com/rojack96/gonika/codec/models"
-	"github.com/rojack96/gonika/codec/utils"
 )
 
 type AvlDecoder interface {
@@ -28,7 +27,7 @@ func AvlDataDecoderFactory(avlDataPacket any) (AvlDecoder, error) {
 		err  error
 	)
 
-	if data, err = utils.TransformData(avlDataPacket); err != nil {
+	if data, err = transformData(avlDataPacket); err != nil {
 		return nil, fmt.Errorf("failed to transform data: %v", err)
 	}
 
@@ -59,7 +58,7 @@ func GprsMessageDecoderFactory(gprsMessagePacket any) (GprsDecoder, error) {
 		err  error
 	)
 
-	if data, err = utils.TransformData(gprsMessagePacket); err != nil {
+	if data, err = transformData(gprsMessagePacket); err != nil {
 		return nil, fmt.Errorf("failed to transform data: %v", err)
 	}
 

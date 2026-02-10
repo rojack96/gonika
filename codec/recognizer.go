@@ -7,7 +7,6 @@ import (
 
 	"github.com/getrak/crc16"
 	"github.com/rojack96/gonika/codec/constant"
-	"github.com/rojack96/gonika/codec/utils"
 )
 
 // ImeiChecker This function checks if the data buffer contains a valid IMEI number and returns it if found.
@@ -17,7 +16,7 @@ func ImeiChecker(dataBuffer any) ([]byte, bool, error) {
 		err  error
 	)
 
-	if data, err = utils.TransformData(dataBuffer); err != nil {
+	if data, err = transformData(dataBuffer); err != nil {
 		return nil, false, fmt.Errorf("failed to transform data: %v", err)
 	}
 
@@ -38,7 +37,7 @@ func Crc16Checker(dataBuffer any) error {
 		err  error
 	)
 
-	if data, err = utils.TransformData(dataBuffer); err != nil {
+	if data, err = transformData(dataBuffer); err != nil {
 		return fmt.Errorf("failed to transform data: %v", err)
 	}
 
@@ -67,7 +66,7 @@ func CodecRecognizer(avlDataPacket any) (byte, error) {
 		err  error
 	)
 
-	if data, err = utils.TransformData(avlDataPacket); err != nil {
+	if data, err = transformData(avlDataPacket); err != nil {
 		return 0x00, fmt.Errorf("failed to transform data: %v", err)
 	}
 

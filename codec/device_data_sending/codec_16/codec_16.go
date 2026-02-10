@@ -1,9 +1,9 @@
 package codec16
 
 import (
+	"github.com/rojack96/gonika/codec/device_data_sending/utils"
 	"github.com/rojack96/gonika/codec/models"
 	"github.com/rojack96/gonika/codec/parsers"
-	"github.com/rojack96/gonika/codec/utils"
 )
 
 type codec16 struct{ avlDataPacket []byte }

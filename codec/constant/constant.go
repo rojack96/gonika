@@ -16,13 +16,5 @@ const (
 )
 
 const (
-	Preamble        = "00000000"
-	TypeCommand     = "05"
-	TypeResponse    = "06"
-	CommandQuantity = "01"
-)
-
-const (
-	ImeiPrefix       = "\x00\x0F"
-	DataPacketPrefix = "\x00\x00\x00\x00"
+	ImeiPrefix = "\x00\x0F"
 )

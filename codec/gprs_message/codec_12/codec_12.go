@@ -2,9 +2,9 @@ package codec12
 
 import (
 	"github.com/rojack96/gonika/codec/constant"
+	"github.com/rojack96/gonika/codec/gprs_message/utils"
 	"github.com/rojack96/gonika/codec/models"
 	"github.com/rojack96/gonika/codec/parsers"
-	"github.com/rojack96/gonika/codec/utils"
 )
 
 type codec12 struct {
