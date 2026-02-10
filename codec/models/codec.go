@@ -1,5 +1,13 @@
 package models
 
+type AvlData interface {
+	isAvlData()
+}
+
+func (AvlData8) isAvlData()    {}
+func (AvlData8ext) isAvlData() {}
+func (AvlData16) isAvlData()   {}
+
 type AvlDataPacketByte struct {
 	// Preamble (4 bytes)
 	//
@@ -30,10 +38,6 @@ type AvlDataPacketByte struct {
 	// CRC (Cyclic Redundancy Check) is an error-detecting code using for detect accidental changes to RAW data.
 	// For calculation we are using CRC-16/IBM.
 	Crc16 []byte `json:"crc16"`
-}
-
-type AvlData interface {
-	isAvlData()
 }
 
 type AvlDataPacket struct {
@@ -133,10 +137,6 @@ type AvlData16 struct {
 	// Map id:value with properties which length is 8 bytes.
 	EightByteIO map[uint16]string `json:"eightByteIO"`
 }
-
-func (AvlData8) isAvlData()    {}
-func (AvlData8ext) isAvlData() {}
-func (AvlData16) isAvlData()   {}
 
 type CommandMessage struct {
 	// Preamble (4 bytes) the packet starts with four zero bytes.

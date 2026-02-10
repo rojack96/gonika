@@ -60,21 +60,3 @@ func (c *Codec12) Decode() *models.ResponseMessage {
 
 	return &result
 }
-
-// Return a response from device
-/*func c12responseParser(responseMessage []byte) []byte {
-
-	var response modelsCodec12.ResponseMessage
-
-	response.Preamble = responseMessage[0:4]
-	response.DataSize = responseMessage[4:8]
-	response.CodecID = responseMessage[8]
-	response.ResponseQuantity1 = responseMessage[9]
-	response.Type = responseMessage[10]
-	response.ResponseSize = responseMessage[11:15]
-	response.Response = responseMessage[15 : len(responseMessage)-5]
-	response.ResponseQuantity2 = responseMessage[len(responseMessage)-5]
-	response.CRC16 = responseMessage[len(responseMessage)-4:]
-
-	return response.Response
-}*/

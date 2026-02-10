@@ -22,10 +22,9 @@ type GprsDecoder interface {
 
 type Encoder interface {
 	Encode() []byte
-	EncodeString() string
 }
 
-func DecoderFactory(avlDataPacket any) (any, error) {
+func AvlDataDecoderFactory(avlDataPacket any) (AvlDecoder, error) {
 	const codecIdIndex = 8
 
 	var (
@@ -43,13 +42,41 @@ func DecoderFactory(avlDataPacket any) (any, error) {
 
 	codecID := data[codecIdIndex]
 
-	var decoders = map[byte]func([]byte) any{
-		constant.Codec8:    func(b []byte) any { return codec8.New(b) },
-		constant.Codec8ext: func(b []byte) any { return codec8ext.New(b) },
-		constant.Codec16:   func(b []byte) any { return codec16.New(b) },
-		constant.Codec12:   func(b []byte) any { return codec12.New(b) },
-		constant.Codec13:   func(b []byte) any { return nil },
-		constant.Codec14:   func(b []byte) any { return nil },
+	var decoders = map[byte]func([]byte) AvlDecoder{
+		constant.Codec8:    func(b []byte) AvlDecoder { return codec8.New(b) },
+		constant.Codec8ext: func(b []byte) AvlDecoder { return codec8ext.New(b) },
+		constant.Codec16:   func(b []byte) AvlDecoder { return codec16.New(b) },
+	}
+
+	if ctor, ok := decoders[codecID]; ok {
+		return ctor(data), nil
+	}
+
+	return nil, fmt.Errorf("unsupported codec: 0x%X", codecID)
+}
+
+func GprsMessageDecoderFactory(gprsMessagePacket any) (GprsDecoder, error) {
+	const codecIdIndex = 8
+
+	var (
+		data []byte
+		err  error
+	)
+
+	if data, err = utils.TransformData(gprsMessagePacket); err != nil {
+		return nil, fmt.Errorf("failed to transform data: %v", err)
+	}
+
+	if len(data) <= codecIdIndex {
+		return nil, fmt.Errorf("invalid packet length: %d", len(data))
+	}
+
+	codecID := data[codecIdIndex]
+
+	var decoders = map[byte]func([]byte) GprsDecoder{
+		constant.Codec12: func(b []byte) GprsDecoder { return codec12.New(b) },
+		constant.Codec13: func(b []byte) GprsDecoder { return nil },
+		constant.Codec14: func(b []byte) GprsDecoder { return nil },
 	}
 
 	if ctor, ok := decoders[codecID]; ok {

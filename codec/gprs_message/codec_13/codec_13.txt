@@ -1,4 +1,4 @@
-package codecs
+package codec13
 
 import (
 	"encoding/hex"

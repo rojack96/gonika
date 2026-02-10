@@ -1,6 +1,8 @@
 package utils
 
-import "github.com/rojack96/gonika/codec/models"
+import (
+	"github.com/rojack96/gonika/codec/models"
+)
 
 func DataMapping(avlDataPacket []byte) *models.AvlDataPacketByte {
 	var result models.AvlDataPacketByte

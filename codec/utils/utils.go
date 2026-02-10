@@ -6,20 +6,22 @@ import (
 )
 
 func TransformData(dataBuffer any) ([]byte, error) {
-	var (
-		data []byte
-		err  error
-	)
-	// Convert string to []byte if necessary
 	switch v := dataBuffer.(type) {
+
 	case []byte:
-		data = v
+		return v, nil
+
 	case string:
-		if data, err = hex.DecodeString(v); err != nil {
-			return nil, fmt.Errorf("invalid hex string: %v", err)
+		data, err := hex.DecodeString(v)
+		if err != nil {
+			return nil, fmt.Errorf("invalid hex string: %w", err)
 		}
+		return data, nil
+
 	default:
-		return nil, fmt.Errorf("invalid packet type: expected []byte or string, got %T", dataBuffer)
+		return nil, fmt.Errorf(
+			"invalid packet type: expected []byte or hex string, got %T",
+			dataBuffer,
+		)
 	}
-	return data, nil
 }

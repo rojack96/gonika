@@ -2,7 +2,7 @@ package constant
 
 // Codecs
 const (
-	Codec8    = 0x08
+	Codec8    = 0x8
 	Codec8ext = 0x8E
 	Codec16   = 0x10
 	Codec12   = 0x0C
