@@ -6,13 +6,13 @@ import (
 	"github.com/rojack96/gonika/codec/utils"
 )
 
-type Codec8 struct{ avlDataPacket []byte }
+type codec8 struct{ avlDataPacket []byte }
 
-func New(avlDataPacket []byte) *Codec8 {
-	return &Codec8{avlDataPacket: avlDataPacket}
+func New(avlDataPacket []byte) *codec8 {
+	return &codec8{avlDataPacket: avlDataPacket}
 }
 
-func (c *Codec8) Decode() *models.AvlDataPacket {
+func (c *codec8) Decode() *models.AvlDataPacket {
 	var result models.AvlDataPacket
 
 	data := utils.DataMapping(c.avlDataPacket)

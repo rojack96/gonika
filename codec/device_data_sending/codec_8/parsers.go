@@ -9,7 +9,7 @@ import (
 // Event IO changed
 // if data is acquired on event
 // this field defines which IO property has changed and generated an event.
-func (c *Codec8) parseEventIO(startIndex int, body []byte) (uint8, int) {
+func (c *codec8) parseEventIO(startIndex int, body []byte) (uint8, int) {
 	eventIOID := body[startIndex]
 
 	return eventIOID, startIndex + 1
@@ -18,14 +18,14 @@ func (c *Codec8) parseEventIO(startIndex int, body []byte) (uint8, int) {
 // parseTotalNumberOfIO Total Number of IO.
 //
 // A total number of properties coming with record (N = N1 + N2 + N4 + N8).
-func (c *Codec8) parseTotalNumberOfIO(startIndex int, body []byte) (uint8, int) {
+func (c *codec8) parseTotalNumberOfIO(startIndex int, body []byte) (uint8, int) {
 	noOfTotalIO := body[startIndex]
 
 	return noOfTotalIO, startIndex + 1
 }
 
 // parseIo This function parse byte IO.
-func (c *Codec8) parseIo(valueLength int, startIndex int, body []byte) (uint8, map[uint8]string, int) {
+func (c *codec8) parseIo(valueLength int, startIndex int, body []byte) (uint8, map[uint8]string, int) {
 	const idLength = 1
 	splitByte := idLength + valueLength
 	result := map[uint8]string{}

@@ -6,13 +6,13 @@ import (
 	"github.com/rojack96/gonika/codec/utils"
 )
 
-type Codec8e struct{ avlDataPacket []byte }
+type codec8ext struct{ avlDataPacket []byte }
 
-func New(avlDataPacket []byte) *Codec8e {
-	return &Codec8e{avlDataPacket: avlDataPacket}
+func New(avlDataPacket []byte) *codec8ext {
+	return &codec8ext{avlDataPacket: avlDataPacket}
 }
 
-func (c *Codec8e) Decode() *models.AvlDataPacket {
+func (c *codec8ext) Decode() *models.AvlDataPacket {
 	var result models.AvlDataPacket
 
 	data := utils.DataMapping(c.avlDataPacket)
@@ -42,7 +42,6 @@ func (c *Codec8e) Decode() *models.AvlDataPacket {
 		avl.NoOfTotalIO, index = c.parseTotalNumberOfIO(index, body)
 		avl.NoOfOneByte, avl.OneByteIO, index = c.parseIo(1, index, body)
 		avl.NoOfTwoByte, avl.TwoByteIO, index = c.parseIo(2, index, body)
-		avl.NoOfFourByte, avl.FourByteIO, index = c.parseIo(4, index, body)
 		avl.NoOfFourByte, avl.FourByteIO, index = c.parseIo(4, index, body)
 		avl.NoOfEightByte, avl.EightByteIO, index = c.parseIo(8, index, body)
 		avl.NoOfXByte, avl.XByteIO, index = c.parseXByteIO(index, body)

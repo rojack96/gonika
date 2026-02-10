@@ -10,7 +10,7 @@ import (
 // Event IO changed
 // if data is acquired on event
 // this field defines which IO property has changed and generated an event.
-func (c *Codec8e) parseEventIO(startIndex int, body []byte) (uint16, int) {
+func (c *codec8ext) parseEventIO(startIndex int, body []byte) (uint16, int) {
 	endIndex := startIndex + 2
 	eventIOID := binary.BigEndian.Uint16(body[startIndex:endIndex])
 
@@ -20,7 +20,7 @@ func (c *Codec8e) parseEventIO(startIndex int, body []byte) (uint16, int) {
 // ParseTotalNumberOfIO Total Number of IO.
 //
 // A total number of properties coming with record (N = N1 + N2 + N4 + N8).
-func (c *Codec8e) parseTotalNumberOfIO(startIndex int, body []byte) (uint16, int) {
+func (c *codec8ext) parseTotalNumberOfIO(startIndex int, body []byte) (uint16, int) {
 	endIndex := startIndex + 2
 	noOfTotalIO := binary.BigEndian.Uint16(body[startIndex:endIndex])
 
@@ -28,7 +28,7 @@ func (c *Codec8e) parseTotalNumberOfIO(startIndex int, body []byte) (uint16, int
 }
 
 // parseIo This function parse byte IO.
-func (c *Codec8e) parseIo(valueLength int, startIndex int, body []byte) (uint16, map[uint16]string, int) {
+func (c *codec8ext) parseIo(valueLength int, startIndex int, body []byte) (uint16, map[uint16]string, int) {
 	const idLength = 2
 	splitByte := idLength + valueLength
 	result := map[uint16]string{}
@@ -61,7 +61,7 @@ func (c *Codec8e) parseIo(valueLength int, startIndex int, body []byte) (uint16,
 // NX
 // a number of properties, which length is defined by length element.
 // X Byte IO Number
-func (c *Codec8e) parseXByteIO(startIndex int, body []byte) (uint16, map[uint16]string, int) {
+func (c *codec8ext) parseXByteIO(startIndex int, body []byte) (uint16, map[uint16]string, int) {
 	result := map[uint16]string{}
 
 	// Eight Byte IO Number

@@ -7,22 +7,22 @@ import (
 	"github.com/rojack96/gonika/codec/utils"
 )
 
-type Codec12 struct {
+type codec12 struct {
 	command       string
 	avlDataPacket []byte
 	builders      *utils.Builders
 }
 
-func New(avlDataPacket []byte) *Codec12 {
-	return &Codec12{avlDataPacket: avlDataPacket, builders: utils.NewBuilders()}
+func New(avlDataPacket []byte) *codec12 {
+	return &codec12{avlDataPacket: avlDataPacket, builders: utils.NewBuilders()}
 }
 
-func (c *Codec12) SetCommand(cmd string) {
+func (c *codec12) SetCommand(cmd string) {
 	c.command = cmd
 }
 
 // Encode build the message received in a message to write in Codec12
-func (c *Codec12) Encode() []byte {
+func (c *codec12) Encode() []byte {
 	var cmd models.CommandMessage
 
 	cmd.Preamble = []byte{0x00, 0x00, 0x00, 0x00}
@@ -43,7 +43,7 @@ func (c *Codec12) Encode() []byte {
 	return result
 }
 
-func (c *Codec12) Decode() *models.ResponseMessage {
+func (c *codec12) Decode() *models.ResponseMessage {
 	var result models.ResponseMessage
 
 	data := utils.ResponseDataMapping(c.avlDataPacket)
