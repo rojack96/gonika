@@ -11,26 +11,12 @@ import (
 	"github.com/rojack96/gonika/codec/models"
 )
 
-// configuration for the decoder
-type Config struct {
-	timestampLayout string
-}
-
-type Option func(*Config)
-
-// WithTimestampLayout sets the timestamp layout for the decoder.
-func WithTimestampLayout(timestampLayout string) Option {
-	return func(c *Config) {
-		c.timestampLayout = timestampLayout
-	}
-}
-
 // Decoder is the main struct responsible for decoding AVL data packets and GPRS messages.
 
 type AvlDecoder interface {
-	// Decode decodes the AVL data packet and returns a structured AvlDataPacket.
+	// Decode decodes the AVL data packet and returns all information based on Teltonika documentation.
 	Decode() *models.AvlDataPacket
-	// DecodeFlat decodes the AVL data packet and returns a structured AvlDataPacketFlat.
+	// DecodeFlat decodes the AVL data packet and returns a flat structured representation.
 	DecodeFlat() *models.AvlDataPacketFlat
 }
 

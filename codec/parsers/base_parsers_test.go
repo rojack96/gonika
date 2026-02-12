@@ -3,7 +3,6 @@ package parsers
 import (
 	"encoding/binary"
 	"testing"
-	"time"
 
 	"github.com/rojack96/gonika/codec/models"
 )
@@ -67,9 +66,9 @@ func TestTimestamp(t *testing.T) {
 	bp := NewBaseParser()
 	data := []byte{0x00, 0x00, 0x01, 0x6B, 0x40, 0xD8, 0xEA, 0x30}
 	timestamp, bytesRead := bp.Timestamp(0, data)
-	expectedTimestamp := time.UnixMilli(1560161086000).UTC()
+	expectedTimestamp := models.Timestamp(1560161086000)
 
-	if timestamp != models.Timestamp(expectedTimestamp) {
+	if timestamp != expectedTimestamp {
 		t.Errorf("Expected timestamp %v, got %v", expectedTimestamp, timestamp)
 	}
 

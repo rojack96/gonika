@@ -2,7 +2,6 @@ package parsers
 
 import (
 	"encoding/binary"
-	"time"
 
 	"github.com/rojack96/gonika/codec/models"
 )
@@ -85,11 +84,9 @@ func (bp *baseParser) Timestamp(startIndex int, body []byte) (models.Timestamp, 
 	endIndex := startIndex + timestampLength
 	ts := body[startIndex:endIndex]
 
-	unixTs := int64(binary.BigEndian.Uint64(ts))
+	unixTs := binary.BigEndian.Uint64(ts)
 
-	t := time.UnixMilli(unixTs).UTC()
-
-	return models.Timestamp(t), endIndex
+	return models.Timestamp(unixTs), endIndex
 }
 
 // Priority This function parse the priority from AVL data.
