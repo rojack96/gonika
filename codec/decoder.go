@@ -24,7 +24,7 @@ type GprsDecoder interface {
 	Decode() *models.ResponseMessage
 }
 
-func AvlDataDecoderFactory(avlDataPacket any) (AvlDecoder, error) {
+func DeviceDataSendingDecoderFactory(avlDataPacket any) (AvlDecoder, error) {
 	const codecIdIndex = 8
 
 	var (
