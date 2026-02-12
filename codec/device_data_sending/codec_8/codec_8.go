@@ -26,14 +26,14 @@ func (c *codec8) Decode() *models.AvlDataPacket {
 
 	data := utils.DataMapping(c.avlDataPacket)
 
-	result.Preamble = c.parser.Preamble(data.Preamble)
-	result.DataFieldLength = c.parser.DataFieldLength(data.DataFieldLength)
-	result.CodecID = c.parser.CodecId(data.CodecID)
-	result.NumberOfData1 = c.parser.NumberOfData(data.NumberOfData1)
-	result.NumberOfData2 = c.parser.NumberOfData(data.NumberOfData2)
+	result.Preamble = c.parser.Preamble(data.AvlDataPacketHeader.Preamble)
+	result.DataFieldLength = c.parser.DataFieldLength(data.AvlDataPacketHeader.DataFieldLength)
+	result.CodecID = c.parser.CodecId(data.AvlDataArray.CodecID)
+	result.NumberOfData1 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData1)
+	result.NumberOfData2 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData2)
 	result.Crc16 = c.parser.Crc16(data.Crc16)
 
-	body := data.Avldata
+	body := data.AvlDataArray.AvlData
 
 	index := 0
 
@@ -65,14 +65,14 @@ func (c *codec8) DecodeFlat() *models.AvlDataPacketFlat {
 
 	data := utils.DataMapping(c.avlDataPacket)
 
-	result.Preamble = c.parser.Preamble(data.Preamble)
-	result.DataFieldLength = c.parser.DataFieldLength(data.DataFieldLength)
-	result.CodecID = c.parser.CodecId(data.CodecID)
-	result.NumberOfData1 = c.parser.NumberOfData(data.NumberOfData1)
-	result.NumberOfData2 = c.parser.NumberOfData(data.NumberOfData2)
+	result.Preamble = c.parser.Preamble(data.AvlDataPacketHeader.Preamble)
+	result.DataFieldLength = c.parser.DataFieldLength(data.AvlDataPacketHeader.DataFieldLength)
+	result.CodecID = c.parser.CodecId(data.AvlDataArray.CodecID)
+	result.NumberOfData1 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData1)
+	result.NumberOfData2 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData2)
 	result.Crc16 = c.parser.Crc16(data.Crc16)
 
-	body := data.Avldata
+	body := data.AvlDataArray.AvlData
 
 	index := 0
 
