@@ -31,7 +31,7 @@ func main() {
 	}
 
 	//fmt.Println("decoder", decoder)
-	resp := decoder.Decode()
+	resp := decoder.DecodeFlat()
 	fmt.Println("resp", resp)
 	jsonData, err := json.MarshalIndent(resp, "", "  ")
 	if err != nil {

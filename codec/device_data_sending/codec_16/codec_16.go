@@ -1,6 +1,9 @@
 package codec16
 
 import (
+	"maps"
+
+	"github.com/rojack96/gonika/codec/constant"
 	"github.com/rojack96/gonika/codec/device_data_sending/utils"
 	"github.com/rojack96/gonika/codec/models"
 	"github.com/rojack96/gonika/codec/parsers"
@@ -47,10 +50,68 @@ func (c *codec16) Decode() *models.AvlDataPacket {
 		avl.EventIOID, index = c.parseEventIO(index, body)
 		avl.GenerationType, index = c.parseGenerationType(index, body)
 		avl.NoOfTotalIO, index = c.parseTotalNumberOfIO(index, body)
-		avl.NoOfOneByte, avl.OneByteIO, index = c.parseIo(1, index, body)
-		avl.NoOfTwoByte, avl.TwoByteIO, index = c.parseIo(2, index, body)
-		avl.NoOfFourByte, avl.FourByteIO, index = c.parseIo(4, index, body)
-		avl.NoOfEightByte, avl.EightByteIO, index = c.parseIo(8, index, body)
+		avl.NoOfOneByte, avl.OneByteIO, index = c.parseIo(constant.OneByteIo, index, body)
+		avl.NoOfTwoByte, avl.TwoByteIO, index = c.parseIo(constant.TwoByteIo, index, body)
+		avl.NoOfFourByte, avl.FourByteIO, index = c.parseIo(constant.FourByteIo, index, body)
+		avl.NoOfEightByte, avl.EightByteIO, index = c.parseIo(constant.EightByteIo, index, body)
+
+		result.AvlData = append(result.AvlData, avl)
+	}
+
+	return &result
+}
+
+func (c *codec16) DecodeFlat() *models.AvlDataPacketFlat {
+	var result models.AvlDataPacketFlat
+
+	data := utils.DataMapping(c.avlDataPacket)
+
+	result.Preamble = c.parser.Preamble(data.Preamble)
+	result.DataFieldLength = c.parser.DataFieldLength(data.DataFieldLength)
+	result.CodecID = c.parser.CodecId(data.CodecID)
+	result.NumberOfData1 = c.parser.NumberOfData(data.NumberOfData1)
+	result.NumberOfData2 = c.parser.NumberOfData(data.NumberOfData2)
+	result.Crc16 = c.parser.Crc16(data.Crc16)
+
+	body := data.Avldata
+
+	index := 0
+
+	if result.NumberOfData1 != result.NumberOfData2 {
+		return nil
+	}
+
+	for i := 0; i < int(result.NumberOfData1); i++ {
+		avl := models.AvlData8extFlat{}
+
+		avl.Timestamp, index = c.parser.Timestamp(index, body)
+		avl.Priority, index = c.parser.Priority(index, body)
+
+		var gps models.GpsElement
+		gps, index = c.parser.GpsElement(index, body)
+		avl.Latitude = gps.Latitude
+		avl.Longitude = gps.Longitude
+		avl.Altitude = gps.Altitude
+		avl.Angle = gps.Angle
+		avl.Satellites = gps.Satellites
+		avl.Speed = gps.Speed
+
+		_, index = c.parseEventIO(index, body)
+		_, index = c.parseGenerationType(index, body)
+		_, index = c.parseTotalNumberOfIO(index, body)
+
+		var ioData map[uint16]string
+
+		avl.IO = make(map[uint16]string)
+
+		_, ioData, index = c.parseIo(constant.OneByteIo, index, body)
+		maps.Copy(avl.IO, ioData)
+		_, ioData, index = c.parseIo(constant.TwoByteIo, index, body)
+		maps.Copy(avl.IO, ioData)
+		_, ioData, index = c.parseIo(constant.FourByteIo, index, body)
+		maps.Copy(avl.IO, ioData)
+		_, ioData, index = c.parseIo(constant.EightByteIo, index, body)
+		maps.Copy(avl.IO, ioData)
 
 		result.AvlData = append(result.AvlData, avl)
 	}

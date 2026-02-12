@@ -19,37 +19,37 @@ type AvlDataPacketFlat struct {
 }
 
 type AvlData8Flat struct {
-	Timestamp  Timestamp          `json:"timestamp"`
-	Priority   Priority           `json:"priority"`
-	Longitude  Longitude          `json:"longitude"`
-	Latitude   Latitude           `json:"latitude"`
-	Altitude   Altitude           `json:"altitude"`
-	Angle      Angle              `json:"angle"`
-	Satellites Satellites         `json:"satellites"`
-	Speed      Speed              `json:"speed"`
-	Elements   []map[uint8]string `json:"elements"`
+	Timestamp  Timestamp        `json:"timestamp"`
+	Priority   Priority         `json:"priority"`
+	Longitude  Longitude        `json:"longitude"`
+	Latitude   Latitude         `json:"latitude"`
+	Altitude   Altitude         `json:"altitude"`
+	Angle      Angle            `json:"angle"`
+	Satellites Satellites       `json:"satellites"`
+	Speed      Speed            `json:"speed"`
+	IO         map[uint8]string `json:"ioData"`
 }
 
 type AvlData8extFlat struct {
-	Timestamp  Timestamp           `json:"timestamp"`
-	Priority   Priority            `json:"priority"`
-	Longitude  Longitude           `json:"longitude"`
-	Latitude   Latitude            `json:"latitude"`
-	Altitude   Altitude            `json:"altitude"`
-	Angle      Angle               `json:"angle"`
-	Satellites Satellites          `json:"satellites"`
-	Speed      Speed               `json:"speed"`
-	Elements   []map[uint16]string `json:"elements"`
+	Timestamp  Timestamp         `json:"timestamp"`
+	Priority   Priority          `json:"priority"`
+	Longitude  Longitude         `json:"longitude"`
+	Latitude   Latitude          `json:"latitude"`
+	Altitude   Altitude          `json:"altitude"`
+	Angle      Angle             `json:"angle"`
+	Satellites Satellites        `json:"satellites"`
+	Speed      Speed             `json:"speed"`
+	IO         map[uint16]string `json:"ioData"`
 }
 
 type AvlData16Flat struct {
-	Timestamp  Timestamp           `json:"timestamp"`
-	Priority   Priority            `json:"priority"`
-	Longitude  Longitude           `json:"longitude"`
-	Latitude   Latitude            `json:"latitude"`
-	Altitude   Altitude            `json:"altitude"`
-	Angle      Angle               `json:"angle"`
-	Satellites Satellites          `json:"satellites"`
-	Speed      Speed               `json:"speed"`
-	Elements   []map[uint16]string `json:"elements"`
+	Timestamp  Timestamp         `json:"timestamp"`
+	Priority   Priority          `json:"priority"`
+	Longitude  Longitude         `json:"longitude"`
+	Latitude   Latitude          `json:"latitude"`
+	Altitude   Altitude          `json:"altitude"`
+	Angle      Angle             `json:"angle"`
+	Satellites Satellites        `json:"satellites"`
+	Speed      Speed             `json:"speed"`
+	IO         map[uint16]string `json:"ioData"`
 }

@@ -18,3 +18,10 @@ const (
 const (
 	ImeiPrefix = "\x00\x0F"
 )
+
+const (
+	OneByteIo   = 1
+	TwoByteIo   = 2
+	FourByteIo  = 4
+	EightByteIo = 8
+)

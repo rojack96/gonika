@@ -1,5 +1,10 @@
 package models
 
+type Result struct {
+	AvlDataPacket     *AvlDataPacket
+	AvlDataPacketFlat *AvlDataPacketFlat
+}
+
 type AvlData interface {
 	isAvlData()
 }
