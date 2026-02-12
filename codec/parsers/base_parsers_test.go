@@ -3,13 +3,15 @@ package parsers
 import (
 	"encoding/binary"
 	"testing"
+	"time"
 
 	"github.com/rojack96/gonika/codec/models"
 )
 
 func TestPreamble(t *testing.T) {
+	bp := NewBaseParser()
 	data := []byte{0x00, 0x00, 0x00, 0x00}
-	got := Preamble(data)
+	got := bp.Preamble(data)
 	want := models.Preamble(0)
 
 	if got != want {
@@ -18,8 +20,9 @@ func TestPreamble(t *testing.T) {
 }
 
 func TestDataFieldLength(t *testing.T) {
+	bp := NewBaseParser()
 	data := []byte{0x00, 0x00, 0x00, 0x9A}
-	got := DataFieldLength(data)
+	got := bp.DataFieldLength(data)
 	want := models.DataFieldLength(154)
 
 	if got != want {
@@ -28,8 +31,9 @@ func TestDataFieldLength(t *testing.T) {
 }
 
 func TestDataSize(t *testing.T) {
+	bp := NewBaseParser()
 	data := []byte{0x00, 0x00, 0x00, 0x9A}
-	got := DataSize(data)
+	got := bp.DataSize(data)
 	want := models.DataSize(154)
 
 	if got != want {
@@ -38,8 +42,9 @@ func TestDataSize(t *testing.T) {
 }
 
 func TestResponseSize(t *testing.T) {
+	bp := NewBaseParser()
 	data := []byte{0x00, 0x00, 0x00, 0x9A}
-	got := ResponseSize(data)
+	got := bp.ResponseSize(data)
 	want := models.ResponseSize(154)
 
 	if got != want {
@@ -48,8 +53,9 @@ func TestResponseSize(t *testing.T) {
 }
 
 func TestCrc16(t *testing.T) {
+	bp := NewBaseParser()
 	data := []byte{0x00, 0x00, 0xBF, 0x30}
-	got := Crc16(data)
+	got := bp.Crc16(data)
 	want := models.Crc16(48944)
 
 	if got != want {
@@ -58,12 +64,13 @@ func TestCrc16(t *testing.T) {
 }
 
 func TestTimestamp(t *testing.T) {
+	bp := NewBaseParser()
 	data := []byte{0x00, 0x00, 0x01, 0x6B, 0x40, 0xD8, 0xEA, 0x30}
-	timestamp, bytesRead := Timestamp(0, data)
-	expectedTimestamp := 1560161086000
+	timestamp, bytesRead := bp.Timestamp(0, data)
+	expectedTimestamp := time.UnixMilli(1560161086000).UTC()
 
 	if timestamp != models.Timestamp(expectedTimestamp) {
-		t.Errorf("Expected timestamp %d, got %d", expectedTimestamp, timestamp)
+		t.Errorf("Expected timestamp %v, got %v", expectedTimestamp, timestamp)
 	}
 
 	if bytesRead != 8 {
@@ -73,8 +80,9 @@ func TestTimestamp(t *testing.T) {
 
 func TestGpsElement(t *testing.T) {
 	// TODO
+	bp := NewBaseParser()
 	data := []byte{0x0F, 0x0D, 0xC3, 0x9B, 0x20, 0x95, 0x96, 0x4A, 0x00, 0xAC, 0x00, 0xF8, 0x0B, 0x00, 0x00} // Type byte for GPS element
-	got, _ := GpsElement(0, data)
+	got, _ := bp.GpsElement(0, data)
 	want := models.GpsElement{
 		Latitude:   54.667425,
 		Longitude:  25.2560283,

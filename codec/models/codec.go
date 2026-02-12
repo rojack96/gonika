@@ -41,17 +41,17 @@ type AvlDataPacketByte struct {
 }
 
 type AvlDataPacket struct {
-	Preamble        `json:"preamble"`
-	DataFieldLength `json:"dataFieldLength"`
-	CodecID         `json:"codecId"`
-	NumberOfData1   NumberOfData `json:"numberOfData1"`
-	AvlData         []AvlData    `json:"avlData"`
+	Preamble        Preamble        `json:"preamble"`
+	DataFieldLength DataFieldLength `json:"dataFieldLength"`
+	CodecID         CodecID         `json:"codecId"`
+	NumberOfData1   NumberOfData    `json:"numberOfData1"`
+	AvlData         []AvlData       `json:"avlData"`
 	// Number of Data 2 (1 byte)
 	//
 	// number which defines how many records is in the packet.
 	// This number must be the same as “Number of Data 1”.
 	NumberOfData2 NumberOfData `json:"numberOfData2"`
-	Crc16         `json:"crc16"`
+	Crc16         Crc16        `json:"crc16"`
 }
 
 type AvlData8 struct {

@@ -11,10 +11,15 @@ type codec12 struct {
 	command       string
 	avlDataPacket []byte
 	builders      *utils.Builders
+	parser        parsers.BaseParser
 }
 
 func New(avlDataPacket []byte) *codec12 {
-	return &codec12{avlDataPacket: avlDataPacket, builders: utils.NewBuilders()}
+	return &codec12{
+		avlDataPacket: avlDataPacket,
+		builders:      utils.NewBuilders(),
+		parser:        parsers.NewBaseParser(),
+	}
 }
 
 func (c *codec12) SetCommand(cmd string) {
@@ -48,15 +53,15 @@ func (c *codec12) Decode() *models.ResponseMessage {
 
 	data := utils.ResponseDataMapping(c.avlDataPacket)
 
-	result.Preamble = parsers.Preamble(data.Preamble)
-	result.DataSize = parsers.DataSize(data.DataSize)
-	result.CodecID = parsers.CodecId(data.CodecID)
-	result.ResponseQuantity1 = parsers.Quantity(data.ResponseQuantity1)
-	result.Type = parsers.Type(data.Type)
-	result.ResponseSize = parsers.ResponseSize(data.ResponseSize)
+	result.Preamble = c.parser.Preamble(data.Preamble)
+	result.DataSize = c.parser.DataSize(data.DataSize)
+	result.CodecID = c.parser.CodecId(data.CodecID)
+	result.ResponseQuantity1 = c.parser.Quantity(data.ResponseQuantity1)
+	result.Type = c.parser.Type(data.Type)
+	result.ResponseSize = c.parser.ResponseSize(data.ResponseSize)
 	result.Response = string(data.Response)
-	result.ResponseQuantity2 = parsers.Quantity(data.ResponseQuantity2)
-	result.Crc16 = parsers.Crc16(data.Crc16)
+	result.ResponseQuantity2 = c.parser.Quantity(data.ResponseQuantity2)
+	result.Crc16 = c.parser.Crc16(data.Crc16)
 
 	return &result
 }

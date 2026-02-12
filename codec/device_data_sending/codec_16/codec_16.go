@@ -6,10 +6,16 @@ import (
 	"github.com/rojack96/gonika/codec/parsers"
 )
 
-type codec16 struct{ avlDataPacket []byte }
+type codec16 struct {
+	avlDataPacket []byte
+	parser        parsers.BaseParser
+}
 
 func New(avlDataPacket []byte) *codec16 {
-	return &codec16{avlDataPacket: avlDataPacket}
+	return &codec16{
+		avlDataPacket: avlDataPacket,
+		parser:        parsers.NewBaseParser(),
+	}
 }
 
 func (c *codec16) Decode() *models.AvlDataPacket {
@@ -17,12 +23,12 @@ func (c *codec16) Decode() *models.AvlDataPacket {
 
 	data := utils.DataMapping(c.avlDataPacket)
 
-	result.Preamble = parsers.Preamble(data.Preamble)
-	result.CodecID = parsers.CodecId(data.CodecID)
-	result.DataFieldLength = parsers.DataFieldLength(data.DataFieldLength)
-	result.NumberOfData1 = parsers.NumberOfData(data.NumberOfData1)
-	result.NumberOfData2 = parsers.NumberOfData(data.NumberOfData2)
-	result.Crc16 = parsers.Crc16(data.Crc16)
+	result.Preamble = c.parser.Preamble(data.Preamble)
+	result.CodecID = c.parser.CodecId(data.CodecID)
+	result.DataFieldLength = c.parser.DataFieldLength(data.DataFieldLength)
+	result.NumberOfData1 = c.parser.NumberOfData(data.NumberOfData1)
+	result.NumberOfData2 = c.parser.NumberOfData(data.NumberOfData2)
+	result.Crc16 = c.parser.Crc16(data.Crc16)
 
 	body := data.Avldata
 
@@ -35,9 +41,9 @@ func (c *codec16) Decode() *models.AvlDataPacket {
 	for i := 0; i < int(result.NumberOfData1); i++ {
 		avl := models.AvlData16{}
 
-		avl.Timestamp, index = parsers.Timestamp(index, body)
-		avl.Priority, index = parsers.Priority(index, body)
-		avl.GpsElement, index = parsers.GpsElement(index, body)
+		avl.Timestamp, index = c.parser.Timestamp(index, body)
+		avl.Priority, index = c.parser.Priority(index, body)
+		avl.GpsElement, index = c.parser.GpsElement(index, body)
 		avl.EventIOID, index = c.parseEventIO(index, body)
 		avl.GenerationType, index = c.parseGenerationType(index, body)
 		avl.NoOfTotalIO, index = c.parseTotalNumberOfIO(index, body)

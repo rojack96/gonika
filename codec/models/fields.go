@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 // Preamble (4 bytes)
 //
 // the packet starts with four zero bytes.
@@ -56,7 +58,7 @@ type Crc16 uint32
 //
 // A difference, in milliseconds,
 // between the current time and midnight, January, 1970 UTC (UNIX time).
-type Timestamp uint64
+type Timestamp time.Time
 
 // Priority (1 byte)
 //
