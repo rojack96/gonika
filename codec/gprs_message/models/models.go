@@ -9,9 +9,9 @@ func (Codec14) isSpecificMapperParam() {}
 
 type CommandMessage struct {
 	// Preamble (4 bytes) the packet starts with four zero bytes.
-	Preamble []byte
+	Preamble [4]byte
 	// Data Size (4 bytes)  size is calculated from Codec ID field to the second command or response quantity field.
-	DataSize []byte
+	DataSize [4]byte
 	// Codec ID (1 byte)
 	CodecID byte
 	// Command Quantity 1 (1 byte) it is ignored when parsing the message.
@@ -19,7 +19,7 @@ type CommandMessage struct {
 	// Type (1 byte) it can be 0x05 to denote command or 0x06 to denote response.
 	Type byte
 	// Command Size (4 bytes) command or response length.
-	CommandSize []byte
+	CommandSize [4]byte
 	CodeSpecificMapperParam
 	// Command (X bytes) command or response in HEX.
 	Command []byte
@@ -29,14 +29,14 @@ type CommandMessage struct {
 	// CRC-16 (4 bytes) calculated from Codec ID to the Second Number of Data.
 	// CRC (Cyclic Redundancy Check) is an error-detecting code using for detect accidental changes to RAW data.
 	// For calculation, we are using CRC-16/IBM.
-	Crc16 []byte
+	Crc16 [4]byte
 }
 
 type ResponseMessage struct {
 	// Preamble (4 bytes) the packet starts with four zero bytes.
-	Preamble []byte
+	Preamble [4]byte
 	// Data Size (4 bytes)  size is calculated from Codec ID field to the second command or response quantity field.
-	DataSize []byte
+	DataSize [4]byte
 	// Codec ID (1 byte)
 	CodecID byte
 	// Command Quantity 1 (1 byte) it is ignored when parsing the message.
@@ -44,7 +44,7 @@ type ResponseMessage struct {
 	// Type (1 byte) it can be 0x05 to denote command or 0x06 to denote response.
 	Type byte
 	// Command Size (4 bytes) command or response length.
-	ResponseSize []byte
+	ResponseSize [4]byte
 	CodeSpecificMapperParam
 	// Command (X bytes) command or response in HEX.
 	Response []byte
@@ -54,7 +54,7 @@ type ResponseMessage struct {
 	// CRC-16 (4 bytes) calculated from Codec ID to the Second Number of Data.
 	// CRC (Cyclic Redundancy Check) is an error-detecting code using for detect accidental changes to RAW data.
 	// For calculation, we are using CRC-16/IBM.
-	Crc16 []byte
+	Crc16 [4]byte
 }
 
 type Codec13 struct {
