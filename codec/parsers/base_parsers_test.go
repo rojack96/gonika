@@ -9,7 +9,7 @@ import (
 
 func TestPreamble(t *testing.T) {
 	bp := NewBaseParser()
-	data := []byte{0x00, 0x00, 0x00, 0x00}
+	data := [4]byte{0x00, 0x00, 0x00, 0x00}
 	got := bp.Preamble(data)
 	want := models.Preamble(0)
 
@@ -20,7 +20,7 @@ func TestPreamble(t *testing.T) {
 
 func TestCrc16(t *testing.T) {
 	bp := NewBaseParser()
-	data := []byte{0x00, 0x00, 0xBF, 0x30}
+	data := [4]byte{0x00, 0x00, 0xBF, 0x30}
 	got := bp.Crc16(data)
 	want := models.Crc16(48944)
 

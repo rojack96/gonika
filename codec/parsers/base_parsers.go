@@ -7,14 +7,14 @@ import (
 )
 
 type BaseParser interface {
-	Parse2bytes(data []byte) uint16
-	Parse4bytes(data []byte) uint32
-	Preamble(data []byte) models.Preamble
+	Parse2bytes(data [2]byte) uint16
+	Parse4bytes(data [4]byte) uint32
+	Preamble(data [4]byte) models.Preamble
 	CodecId(data byte) models.CodecID
 	NumberOfData(data byte) models.NumberOfData
 	Quantity(data byte) models.Quantity
 	Type(data byte) models.Type
-	Crc16(data []byte) models.Crc16
+	Crc16(data [4]byte) models.Crc16
 	Timestamp(startIndex int, body []byte) (models.Timestamp, int)
 	Priority(index int, body []byte) (models.Priority, int)
 	GpsElement(startIndex int, body []byte) (models.GpsElement, int)
@@ -26,16 +26,16 @@ func NewBaseParser() *baseParser {
 	return &baseParser{}
 }
 
-func (bp *baseParser) Parse2bytes(data []byte) uint16 {
-	return binary.BigEndian.Uint16(data)
+func (bp *baseParser) Parse2bytes(data [2]byte) uint16 {
+	return binary.BigEndian.Uint16(data[:])
 }
 
-func (bp *baseParser) Parse4bytes(data []byte) uint32 {
-	return binary.BigEndian.Uint32(data)
+func (bp *baseParser) Parse4bytes(data [4]byte) uint32 {
+	return binary.BigEndian.Uint32(data[:])
 }
 
 // Preamble This function parse the preamble from AVL data.
-func (bp *baseParser) Preamble(data []byte) models.Preamble {
+func (bp *baseParser) Preamble(data [4]byte) models.Preamble {
 	preamble := bp.Parse4bytes(data)
 	return models.Preamble(preamble)
 }
@@ -61,7 +61,7 @@ func (bp *baseParser) Type(data byte) models.Type {
 }
 
 // Crc16 This function parse the crc16 from AVL data.
-func (bp *baseParser) Crc16(data []byte) models.Crc16 {
+func (bp *baseParser) Crc16(data [4]byte) models.Crc16 {
 	crc16 := bp.Parse4bytes(data)
 	return models.Crc16(crc16)
 }
@@ -97,10 +97,10 @@ func (bp *baseParser) GpsElement(startIndex int, body []byte) (models.GpsElement
 
 	gps.Longitude = models.Longitude(decodeCoordinate(data[0:4]))
 	gps.Latitude = models.Latitude(decodeCoordinate(data[4:8]))
-	gps.Altitude = models.Altitude(bp.Parse2bytes(data[8:10]))
-	gps.Angle = models.Angle(bp.Parse2bytes(data[10:12]))
+	gps.Altitude = models.Altitude(bp.Parse2bytes([2]byte{data[8], data[9]}))
+	gps.Angle = models.Angle(bp.Parse2bytes([2]byte{data[10], data[11]}))
 	gps.Satellites = models.Satellites(data[12])
-	gps.Speed = models.Speed(bp.Parse2bytes(data[13:15]))
+	gps.Speed = models.Speed(bp.Parse2bytes([2]byte{data[13], data[14]}))
 
 	return gps, endIndex
 }
