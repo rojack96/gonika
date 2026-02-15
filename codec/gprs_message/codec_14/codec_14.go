@@ -1,6 +1,9 @@
-package codec12
+package codec14
 
 import (
+	"encoding/hex"
+	"errors"
+
 	"github.com/rojack96/gonika/codec/constant"
 	mapper "github.com/rojack96/gonika/codec/gprs_message/models"
 	"github.com/rojack96/gonika/codec/gprs_message/utils"
@@ -8,15 +11,15 @@ import (
 	"github.com/rojack96/gonika/codec/parsers"
 )
 
-type codec12 struct {
+type codec14 struct {
 	command       string
 	avlDataPacket []byte
 	builders      *utils.Builders
 	parser        parsers.BaseParser
 }
 
-func New(avlDataPacket []byte) *codec12 {
-	return &codec12{
+func New(avlDataPacket []byte) *codec14 {
+	return &codec14{
 		avlDataPacket: avlDataPacket,
 		builders:      utils.NewBuilders(),
 		parser:        parsers.NewBaseParser(),
@@ -25,10 +28,10 @@ func New(avlDataPacket []byte) *codec12 {
 
 /* ---------- Response ----------*/
 
-func (c *codec12) DecodeResponse() *models.ResponseMessage {
+func (c *codec14) DecodeResponse() *models.ResponseMessage {
 	var result models.ResponseMessage
 
-	data := utils.ResponseDataMappingCodec12(c.avlDataPacket)
+	data := utils.ResponseDataMappingCodec14(c.avlDataPacket)
 
 	result.Preamble = c.parser.Preamble(data.Preamble)
 	result.DataSize = c.parser.Parse4bytes(data.DataSize)
@@ -39,36 +42,25 @@ func (c *codec12) DecodeResponse() *models.ResponseMessage {
 	result.Response = string(data.Response)
 	result.ResponseQuantity2 = c.parser.Quantity(data.ResponseQuantity2)
 	result.Crc16 = c.parser.Crc16(data.Crc16)
+	imei := data.CodeSpecificMapperParam.(mapper.Codec14).Imei
+	codecSpecificParam := models.Codec14{Imei: hex.EncodeToString(imei[:])}
+	result.CodecSpecificParam = codecSpecificParam
 
 	return &result
 }
 
 /* ---------- Command ----------*/
 
-func (c *codec12) DecodeCommand() (*models.CommandMessage, error) {
-	var result models.CommandMessage
-
-	data := utils.CommandDataMappingCodec12(c.avlDataPacket)
-
-	result.Preamble = c.parser.Preamble(data.Preamble)
-	result.DataSize = c.parser.Parse4bytes(data.DataSize)
-	result.CodecID = c.parser.CodecId(data.CodecID)
-	result.CommandQuantity1 = c.parser.Quantity(data.CommandQuantity1)
-	result.Type = c.parser.Type(data.Type)
-	result.CommandSize = c.parser.Parse4bytes(data.CommandSize)
-	result.Command = string(data.Command)
-	result.CommandQuantity2 = c.parser.Quantity(data.CommandQuantity2)
-	result.Crc16 = c.parser.Crc16(data.Crc16)
-
-	return &result, nil
+func (c *codec14) DecodeCommand() (*models.CommandMessage, error) {
+	return nil, errors.New("DecodeCommand is not supported for codec14")
 }
 
-func (c *codec12) SetCommand(cmd string) {
+func (c *codec14) SetCommand(cmd string) {
 	c.command = cmd
 }
 
 // Encode build the message received in a message to write in Codec12
-func (c *codec12) Encode() []byte {
+func (c *codec14) Encode() []byte {
 	var cmd mapper.CommandMessage
 
 	cmd.Preamble = [4]byte{0x00, 0x00, 0x00, 0x00}

@@ -125,7 +125,7 @@ func (c *codec8ext) DecodeUDP() *models.AvlDataPacketUDP {
 	result.NotUsableByte = data.UdpChannelHeader.NotUsableByte
 	result.AvlPacketId = data.UdpAvlPacketHeader.AvlPacketId
 	result.ImeiLength = c.parser.Parse2bytes(data.UdpAvlPacketHeader.ImeiLength)
-	result.Imei = hex.EncodeToString(data.UdpAvlPacketHeader.Imei)
+	result.Imei = hex.EncodeToString(data.UdpAvlPacketHeader.Imei[:])
 	result.CodecID = c.parser.CodecId(data.AvlDataArray.CodecID)
 	result.NumberOfData1 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData1)
 	result.NumberOfData2 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData2)

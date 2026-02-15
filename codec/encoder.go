@@ -5,7 +5,12 @@ import (
 	"fmt"
 )
 
-type Encoder interface {
+type AvlEncoder interface {
+	EncodeTCP() []byte
+	EncodeUDP() []byte
+}
+
+type GprsEncoder interface {
 	Encode() []byte
 }
 

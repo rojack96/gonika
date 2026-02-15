@@ -4,11 +4,11 @@ type AvlDataPacketHeader struct {
 	// Preamble (4 bytes)
 	//
 	// the packet starts with four zero bytes.
-	Preamble []byte
+	Preamble [4]byte
 	// Data Field Length (4 bytes)
 	//
 	// size is calculated starting from Codec ID to Number of Data 2.
-	DataFieldLength []byte
+	DataFieldLength [4]byte
 }
 
 type AvlDataArray struct {
@@ -37,19 +37,19 @@ type AvlDataPacketByte struct {
 	// calculated from Codec ID to the Second Number of Data.
 	// CRC (Cyclic Redundancy Check) is an error-detecting code using for detect accidental changes to RAW data.
 	// For calculation we are using CRC-16/IBM.
-	Crc16 []byte
+	Crc16 [4]byte
 }
 
 type UdpChannelHeader struct {
-	Length        []byte
-	PacketId      []byte
+	Length        [2]byte
+	PacketId      [2]byte
 	NotUsableByte byte
 }
 
 type UdpAvlPacketHeader struct {
 	AvlPacketId byte
-	ImeiLength  []byte
-	Imei        []byte
+	ImeiLength  [2]byte
+	Imei        [15]byte
 }
 
 type UdpAvlDataPacketByte struct {
