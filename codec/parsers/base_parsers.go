@@ -36,7 +36,7 @@ func (bp *baseParser) Parse4bytes(data []byte) uint32 {
 
 // Preamble This function parse the preamble from AVL data.
 func (bp *baseParser) Preamble(data []byte) models.Preamble {
-	preamble := binary.BigEndian.Uint32(data)
+	preamble := bp.Parse4bytes(data)
 	return models.Preamble(preamble)
 }
 
@@ -62,7 +62,7 @@ func (bp *baseParser) Type(data byte) models.Type {
 
 // Crc16 This function parse the crc16 from AVL data.
 func (bp *baseParser) Crc16(data []byte) models.Crc16 {
-	crc16 := binary.BigEndian.Uint32(data)
+	crc16 := bp.Parse4bytes(data)
 	return models.Crc16(crc16)
 }
 
@@ -97,10 +97,10 @@ func (bp *baseParser) GpsElement(startIndex int, body []byte) (models.GpsElement
 
 	gps.Longitude = models.Longitude(decodeCoordinate(data[0:4]))
 	gps.Latitude = models.Latitude(decodeCoordinate(data[4:8]))
-	gps.Altitude = models.Altitude(binary.BigEndian.Uint16(data[8:10]))
-	gps.Angle = models.Angle(binary.BigEndian.Uint16(data[10:12]))
+	gps.Altitude = models.Altitude(bp.Parse2bytes(data[8:10]))
+	gps.Angle = models.Angle(bp.Parse2bytes(data[10:12]))
 	gps.Satellites = models.Satellites(data[12])
-	gps.Speed = models.Speed(binary.BigEndian.Uint16(data[13:15]))
+	gps.Speed = models.Speed(bp.Parse2bytes(data[13:15]))
 
 	return gps, endIndex
 }

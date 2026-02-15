@@ -102,14 +102,11 @@ func (c *codec16) DecodeTCPflat() *models.AvlDataPacketFlat {
 
 		avl.IO = make(map[uint16]string)
 
-		_, ioData, index = c.parseIo(constant.OneByteIo, index, body)
-		maps.Copy(avl.IO, ioData)
-		_, ioData, index = c.parseIo(constant.TwoByteIo, index, body)
-		maps.Copy(avl.IO, ioData)
-		_, ioData, index = c.parseIo(constant.FourByteIo, index, body)
-		maps.Copy(avl.IO, ioData)
-		_, ioData, index = c.parseIo(constant.EightByteIo, index, body)
-		maps.Copy(avl.IO, ioData)
+		ioByteLen := []int{constant.OneByteIo, constant.TwoByteIo, constant.FourByteIo, constant.EightByteIo}
+		for _, t := range ioByteLen {
+			_, ioData, index = c.parseIo(t, index, body)
+			maps.Copy(avl.IO, ioData)
+		}
 
 		result.AvlData = append(result.AvlData, avl)
 	}
@@ -200,14 +197,11 @@ func (c *codec16) DecodeUDPflat() *models.AvlDataPacketFlat {
 
 		avl.IO = make(map[uint16]string)
 
-		_, ioData, index = c.parseIo(constant.OneByteIo, index, body)
-		maps.Copy(avl.IO, ioData)
-		_, ioData, index = c.parseIo(constant.TwoByteIo, index, body)
-		maps.Copy(avl.IO, ioData)
-		_, ioData, index = c.parseIo(constant.FourByteIo, index, body)
-		maps.Copy(avl.IO, ioData)
-		_, ioData, index = c.parseIo(constant.EightByteIo, index, body)
-		maps.Copy(avl.IO, ioData)
+		ioByteLen := []int{constant.OneByteIo, constant.TwoByteIo, constant.FourByteIo, constant.EightByteIo}
+		for _, t := range ioByteLen {
+			_, ioData, index = c.parseIo(t, index, body)
+			maps.Copy(avl.IO, ioData)
+		}
 
 		result.AvlData = append(result.AvlData, avl)
 	}
