@@ -1,0 +1,59 @@
+package codec14
+
+import (
+	"encoding/hex"
+
+	"github.com/rojack96/gonika/constant"
+	models "github.com/rojack96/gonika/models/codec_14"
+)
+
+func c14ResponseParser(responseMessage []byte) []byte {
+
+	var response models.ResponseMessage
+
+	response.Preamble = responseMessage[0:4]
+	response.DataSize = responseMessage[4:8]
+	response.CodecID = responseMessage[8]
+	response.ResponseQuantity1 = responseMessage[9]
+	response.Type = responseMessage[10]
+	response.ResponseAndImeiSize = responseMessage[11:15]
+	response.IMEI = responseMessage[15:23]
+	response.Response = responseMessage[23 : len(responseMessage)-5]
+	response.ResponseQuantity2 = responseMessage[len(responseMessage)-5]
+	response.CRC16 = responseMessage[len(responseMessage)-4:]
+
+	return response.Response
+}
+
+func c14CreateCommand(command string) []byte {
+	var commandMessage models.CommandMessage
+
+	commandMessage.Preamble = constant.Preamble
+	commandMessage.CodecID = hex.EncodeToString([]byte{constant.Codec14})
+	commandMessage.Type = constant.TypeCommand
+	commandMessage.CommandQuantity1 = constant.CommandQuantity
+	commandMessage.CommandQuantity2 = commandMessage.CommandQuantity1
+
+	commandMessage.Command = commandBuilder(command)
+	commandMessage.CommandAndImeiSize = commandSize(commandMessage.Command)
+	commandMessage.DataSize = c14dataSize(&commandMessage)
+
+	commandMessage.CRC16 = c14crc16builder(&commandMessage)
+
+	messageToSend := commandMessage.Preamble +
+		commandMessage.DataSize +
+		commandMessage.CodecID +
+		commandMessage.CommandQuantity1 +
+		commandMessage.Type +
+		commandMessage.CommandAndImeiSize +
+		commandMessage.IMEI +
+		commandMessage.Command +
+		commandMessage.CommandQuantity2 +
+		commandMessage.CRC16
+
+	mes, e := hex.DecodeString(messageToSend)
+	if e != nil {
+		return nil
+	}
+	return mes
+}
