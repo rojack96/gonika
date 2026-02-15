@@ -1,15 +1,17 @@
 package utils
 
-import "github.com/rojack96/gonika/codec/models"
+import "github.com/rojack96/gonika/codec/gprs_message/models"
 
-func CommandDataMapping(responseData []byte) *models.CommandMessageByte {
-	var result models.CommandMessageByte
+/* ---------- Codec12 ---------- */
+
+func CommandDataMappingCodec12(responseData []byte) *models.CommandMessage {
+	var result models.CommandMessage
 
 	if len(responseData) == 0 {
 		return nil
 	}
 
-	result = models.CommandMessageByte{
+	result = models.CommandMessage{
 		Preamble:         responseData[0:4],
 		DataSize:         responseData[4:8],
 		CodecID:          responseData[8],
@@ -24,14 +26,14 @@ func CommandDataMapping(responseData []byte) *models.CommandMessageByte {
 	return &result
 }
 
-func ResponseDataMapping(responseData []byte) *models.ResponseMessageByte {
-	var result models.ResponseMessageByte
+func ResponseDataMappingCodec12(responseData []byte) *models.ResponseMessage {
+	var result models.ResponseMessage
 
 	if len(responseData) == 0 {
 		return nil
 	}
 
-	result = models.ResponseMessageByte{
+	result = models.ResponseMessage{
 		Preamble:          responseData[0:4],
 		DataSize:          responseData[4:8],
 		CodecID:           responseData[8],
@@ -46,48 +48,79 @@ func ResponseDataMapping(responseData []byte) *models.ResponseMessageByte {
 	return &result
 }
 
-func ResponseDataMappingCodec13(responseData []byte) *models.ResponseMessageCodec13Byte {
-	var result models.ResponseMessageCodec13Byte
+/* ---------- Codec13 ---------- */
+
+func ResponseDataMappingCodec13(responseData []byte) *models.ResponseMessage {
+	var result models.ResponseMessage
 
 	if len(responseData) == 0 {
 		return nil
 	}
 
-	result = models.ResponseMessageCodec13Byte{
+	result = models.ResponseMessage{
 		Preamble:          responseData[0:4],
 		DataSize:          responseData[4:8],
 		CodecID:           responseData[8],
 		ResponseQuantity1: responseData[9],
 		Type:              responseData[10],
 		ResponseSize:      responseData[11:15],
-		Timestamp:         responseData[15:19],
 		Response:          responseData[19 : len(responseData)-5],
 		ResponseQuantity2: responseData[len(responseData)-5],
 		Crc16:             responseData[len(responseData)-4:],
 	}
 
+	timestamp := models.Codec13{Timestamp: [4]byte(responseData[15:19])}
+
+	result.CodeSpecificMapperParam = timestamp
+
 	return &result
 }
 
-func ResponseDataMappingCodec14(responseData []byte) *models.ResponseMessageCodec14Byte {
-	var result models.ResponseMessageCodec14Byte
+/* ----------Codec14 ---------- */
+
+func CommandDataMappingCodec13(responseData []byte) *models.CommandMessage {
+	var result models.CommandMessage
 
 	if len(responseData) == 0 {
 		return nil
 	}
 
-	result = models.ResponseMessageCodec14Byte{
+	result = models.CommandMessage{
+		Preamble:         responseData[0:4],
+		DataSize:         responseData[4:8],
+		CodecID:          responseData[8],
+		CommandQuantity1: responseData[9],
+		Type:             responseData[10],
+		CommandSize:      responseData[11:15],
+		Command:          responseData[15 : len(responseData)-5],
+		CommandQuantity2: responseData[len(responseData)-5],
+		Crc16:            responseData[len(responseData)-4:],
+	}
+
+	return &result
+}
+
+func ResponseDataMappingCodec14(responseData []byte) *models.ResponseMessage {
+	var result models.ResponseMessage
+
+	if len(responseData) == 0 {
+		return nil
+	}
+
+	result = models.ResponseMessage{
 		Preamble:          responseData[0:4],
 		DataSize:          responseData[4:8],
 		CodecID:           responseData[8],
 		ResponseQuantity1: responseData[9],
 		Type:              responseData[10],
 		ResponseSize:      responseData[11:15],
-		Imei:              responseData[15:23],
 		Response:          responseData[23 : len(responseData)-5],
 		ResponseQuantity2: responseData[len(responseData)-5],
 		Crc16:             responseData[len(responseData)-4:],
 	}
+
+	imei := models.Codec14{Imei: [8]byte(responseData[15:23])}
+	result.CodeSpecificMapperParam = imei
 
 	return &result
 }

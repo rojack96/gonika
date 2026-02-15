@@ -1,6 +1,7 @@
-package codec13
+package codec14
 
 import (
+	"encoding/hex"
 	"errors"
 
 	"github.com/rojack96/gonika/codec/constant"
@@ -10,15 +11,15 @@ import (
 	"github.com/rojack96/gonika/codec/parsers"
 )
 
-type codec13 struct {
+type codec14 struct {
 	command       string
 	avlDataPacket []byte
 	builders      *utils.Builders
 	parser        parsers.BaseParser
 }
 
-func New(avlDataPacket []byte) *codec13 {
-	return &codec13{
+func New(avlDataPacket []byte) *codec14 {
+	return &codec14{
 		avlDataPacket: avlDataPacket,
 		builders:      utils.NewBuilders(),
 		parser:        parsers.NewBaseParser(),
@@ -27,10 +28,10 @@ func New(avlDataPacket []byte) *codec13 {
 
 /* ---------- Response ----------*/
 
-func (c *codec13) DecodeResponse() *models.ResponseMessage {
+func (c *codec14) DecodeResponse() *models.ResponseMessage {
 	var result models.ResponseMessage
 
-	data := utils.ResponseDataMappingCodec13(c.avlDataPacket)
+	data := utils.ResponseDataMappingCodec14(c.avlDataPacket)
 
 	result.Preamble = c.parser.Preamble(data.Preamble)
 	result.DataSize = c.parser.Parse4bytes(data.DataSize)
@@ -41,25 +42,25 @@ func (c *codec13) DecodeResponse() *models.ResponseMessage {
 	result.Response = string(data.Response)
 	result.ResponseQuantity2 = c.parser.Quantity(data.ResponseQuantity2)
 	result.Crc16 = c.parser.Crc16(data.Crc16)
-	timestamp := data.CodeSpecificMapperParam.(mapper.Codec13).Timestamp
-	codecSpefificParam := models.Codec13{Timestamp: c.parser.Parse4bytes(timestamp[:])}
-	result.CodecSpecificParam = codecSpefificParam
+	imei := data.CodeSpecificMapperParam.(mapper.Codec14).Imei
+	codecSpecificParam := models.Codec14{Imei: hex.EncodeToString(imei[:])}
+	result.CodecSpecificParam = codecSpecificParam
 
 	return &result
 }
 
 /* ---------- Command ----------*/
 
-func (c *codec13) DecodeCommand() (*models.CommandMessage, error) {
-	return nil, errors.New("DecodeCommand is not supported for codec13")
+func (c *codec14) DecodeCommand() (*models.CommandMessage, error) {
+	return nil, errors.New("DecodeCommand is not supported for codec14")
 }
 
-func (c *codec13) SetCommand(cmd string) {
+func (c *codec14) SetCommand(cmd string) {
 	c.command = cmd
 }
 
 // Encode build the message received in a message to write in Codec12
-func (c *codec13) Encode() []byte {
+func (c *codec14) Encode() []byte {
 	var cmd mapper.CommandMessage
 
 	cmd.Preamble = []byte{0x00, 0x00, 0x00, 0x00}

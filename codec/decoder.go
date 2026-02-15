@@ -23,7 +23,7 @@ type AvlDecoder interface {
 }
 
 type GprsDecoder interface {
-	DecodeCommand() *models.CommandMessage
+	DecodeCommand() (*models.CommandMessage, error)
 	DecodeResponse() *models.ResponseMessage
 }
 

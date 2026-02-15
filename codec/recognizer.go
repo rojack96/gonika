@@ -31,6 +31,7 @@ func ImeiChecker(dataBuffer any) ([]byte, bool, error) {
 	return nil, false, nil
 }
 
+// Crc16Checker - This function checks if the crc16 from source buffer containts correct CRC16-IBM for Teltonika Device
 func Crc16Checker(dataBuffer any) error {
 	var (
 		data []byte

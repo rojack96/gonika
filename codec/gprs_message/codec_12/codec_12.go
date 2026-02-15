@@ -2,6 +2,7 @@ package codec12
 
 import (
 	"github.com/rojack96/gonika/codec/constant"
+	mapper "github.com/rojack96/gonika/codec/gprs_message/models"
 	"github.com/rojack96/gonika/codec/gprs_message/utils"
 	"github.com/rojack96/gonika/codec/models"
 	"github.com/rojack96/gonika/codec/parsers"
@@ -27,7 +28,7 @@ func New(avlDataPacket []byte) *codec12 {
 func (c *codec12) DecodeResponse() *models.ResponseMessage {
 	var result models.ResponseMessage
 
-	data := utils.ResponseDataMapping(c.avlDataPacket)
+	data := utils.ResponseDataMappingCodec12(c.avlDataPacket)
 
 	result.Preamble = c.parser.Preamble(data.Preamble)
 	result.DataSize = c.parser.Parse4bytes(data.DataSize)
@@ -44,13 +45,31 @@ func (c *codec12) DecodeResponse() *models.ResponseMessage {
 
 /* ---------- Command ----------*/
 
+func (c *codec12) DecodeCommand() (*models.CommandMessage, error) {
+	var result models.CommandMessage
+
+	data := utils.CommandDataMappingCodec12(c.avlDataPacket)
+
+	result.Preamble = c.parser.Preamble(data.Preamble)
+	result.DataSize = c.parser.Parse4bytes(data.DataSize)
+	result.CodecID = c.parser.CodecId(data.CodecID)
+	result.CommandQuantity1 = c.parser.Quantity(data.CommandQuantity1)
+	result.Type = c.parser.Type(data.Type)
+	result.CommandSize = c.parser.Parse4bytes(data.CommandSize)
+	result.Command = string(data.Command)
+	result.CommandQuantity2 = c.parser.Quantity(data.CommandQuantity2)
+	result.Crc16 = c.parser.Crc16(data.Crc16)
+
+	return &result, nil
+}
+
 func (c *codec12) SetCommand(cmd string) {
 	c.command = cmd
 }
 
 // Encode build the message received in a message to write in Codec12
 func (c *codec12) Encode() []byte {
-	var cmd models.CommandMessageByte
+	var cmd mapper.CommandMessage
 
 	cmd.Preamble = []byte{0x00, 0x00, 0x00, 0x00}
 	cmd.CodecID = constant.Codec12
@@ -68,22 +87,4 @@ func (c *codec12) Encode() []byte {
 	result = append(result, cmd.Crc16...)
 
 	return result
-}
-
-func (c *codec12) DecodeCommand() *models.CommandMessage {
-	var result models.CommandMessage
-
-	data := utils.CommandDataMapping(c.avlDataPacket)
-
-	result.Preamble = c.parser.Preamble(data.Preamble)
-	result.DataSize = c.parser.Parse4bytes(data.DataSize)
-	result.CodecID = c.parser.CodecId(data.CodecID)
-	result.CommandQuantity1 = c.parser.Quantity(data.CommandQuantity1)
-	result.Type = c.parser.Type(data.Type)
-	result.CommandSize = c.parser.Parse4bytes(data.CommandSize)
-	result.Command = string(data.Command)
-	result.CommandQuantity2 = c.parser.Quantity(data.CommandQuantity2)
-	result.Crc16 = c.parser.Crc16(data.Crc16)
-
-	return &result
 }
