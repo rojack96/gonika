@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 
 	cdc "github.com/rojack96/gonika/codec"
@@ -24,8 +23,8 @@ func main() {
 	//codec8ext()
 	//codec16()
 	//codec12Response()
-	//codec13Response()
-	codec14Response()
+	codec13Response()
+	//codec14Response()
 }
 
 func codec8() {
@@ -38,7 +37,7 @@ func codec8() {
 	}
 
 	resp := decoder.DecodeTCPflat()
-	jsonData, err := json.MarshalIndent(resp, "", "  ")
+	jsonData, err := resp.MarshalIndent("", "  ")
 	if err != nil {
 		fmt.Println("Error marshaling JSON:", err)
 		return
@@ -59,7 +58,7 @@ func codec8ext() {
 	}
 
 	resp := decoder.DecodeTCPflat()
-	jsonData, err := json.MarshalIndent(resp, "", "  ")
+	jsonData, err := resp.MarshalIndent("", "  ")
 	if err != nil {
 		fmt.Println("Error marshaling JSON:", err)
 		return
@@ -81,11 +80,7 @@ func codec12Response() {
 	}
 
 	respCmd := decoder.DecodeResponse()
-	jsonData, err := json.MarshalIndent(respCmd, "", "  ")
-	if err != nil {
-		fmt.Println("Error marshaling JSON:", err)
-		return
-	}
+	jsonData, _ := respCmd.MarshalJSON()
 
 	fmt.Println(string(jsonData))
 }
@@ -100,11 +95,7 @@ func codec13Response() {
 	}
 
 	respCmd := decoder.DecodeResponse()
-	jsonData, err := json.MarshalIndent(respCmd, "", "  ")
-	if err != nil {
-		fmt.Println("Error marshaling JSON:", err)
-		return
-	}
+	jsonData, _ := respCmd.MarshalJSON()
 
 	fmt.Println(string(jsonData))
 }
@@ -119,11 +110,7 @@ func codec14Response() {
 	}
 
 	respCmd := decoder.DecodeResponse()
-	jsonData, err := json.MarshalIndent(respCmd, "", "  ")
-	if err != nil {
-		fmt.Println("Error marshaling JSON:", err)
-		return
-	}
+	jsonData, _ := respCmd.MarshalJSON()
 
 	fmt.Println(string(jsonData))
 }

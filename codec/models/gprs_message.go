@@ -45,8 +45,8 @@ type ResponseMessage struct {
 	// Response Size (4 bytes)
 	//
 	// command or response length.
-	ResponseSize uint32 `json:"responseSize"`
-	CodecSpecificParam
+	ResponseSize       uint32 `json:"responseSize"`
+	CodecSpecificParam `json:"-"`
 	// Command (X bytes) command or response in HEX.
 	Response string `json:"response"`
 	// Command Quantity 2 (1 byte) a byte which defines how many records (commands or responses) is in the packet.
