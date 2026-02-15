@@ -8,6 +8,8 @@ import (
 	codec8 "github.com/rojack96/gonika/codec/device_data_sending/codec_8"
 	codec8ext "github.com/rojack96/gonika/codec/device_data_sending/codec_8e"
 	codec12 "github.com/rojack96/gonika/codec/gprs_message/codec_12"
+	codec13 "github.com/rojack96/gonika/codec/gprs_message/codec_13"
+	codec14 "github.com/rojack96/gonika/codec/gprs_message/codec_14"
 	"github.com/rojack96/gonika/codec/models"
 )
 
@@ -78,8 +80,8 @@ func GprsMessageDecoderFactory(gprsMessagePacket any) (GprsDecoder, error) {
 
 	var decoders = map[byte]func([]byte) GprsDecoder{
 		constant.Codec12: func(b []byte) GprsDecoder { return codec12.New(b) },
-		constant.Codec13: func(b []byte) GprsDecoder { return nil },
-		constant.Codec14: func(b []byte) GprsDecoder { return nil },
+		constant.Codec13: func(b []byte) GprsDecoder { return codec13.New(b) },
+		constant.Codec14: func(b []byte) GprsDecoder { return codec14.New(b) },
 	}
 
 	if ctor, ok := decoders[codecID]; ok {
