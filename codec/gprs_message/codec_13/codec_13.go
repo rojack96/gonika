@@ -1,4 +1,4 @@
-package codec12
+package codec13
 
 import (
 	"github.com/rojack96/gonika/codec/constant"
@@ -7,15 +7,15 @@ import (
 	"github.com/rojack96/gonika/codec/parsers"
 )
 
-type codec12 struct {
+type codec13 struct {
 	command       string
 	avlDataPacket []byte
 	builders      *utils.Builders
 	parser        parsers.BaseParser
 }
 
-func New(avlDataPacket []byte) *codec12 {
-	return &codec12{
+func New(avlDataPacket []byte) *codec13 {
+	return &codec13{
 		avlDataPacket: avlDataPacket,
 		builders:      utils.NewBuilders(),
 		parser:        parsers.NewBaseParser(),
@@ -24,10 +24,10 @@ func New(avlDataPacket []byte) *codec12 {
 
 /* ---------- Response ----------*/
 
-func (c *codec12) DecodeResponse() *models.ResponseMessage {
+func (c *codec13) DecodeResponse() *models.ResponseMessage {
 	var result models.ResponseMessage
 
-	data := utils.ResponseDataMapping(c.avlDataPacket)
+	data := utils.ResponseDataMappingCodec13(c.avlDataPacket)
 
 	result.Preamble = c.parser.Preamble(data.Preamble)
 	result.DataSize = c.parser.Parse4bytes(data.DataSize)
@@ -38,18 +38,20 @@ func (c *codec12) DecodeResponse() *models.ResponseMessage {
 	result.Response = string(data.Response)
 	result.ResponseQuantity2 = c.parser.Quantity(data.ResponseQuantity2)
 	result.Crc16 = c.parser.Crc16(data.Crc16)
+	codecSpefificParam := models.Codec13{Timestamp: c.parser.Parse4bytes(data.Timestamp)}
+	result.CodecSpecificParam = codecSpefificParam
 
 	return &result
 }
 
 /* ---------- Command ----------*/
 
-func (c *codec12) SetCommand(cmd string) {
+func (c *codec13) SetCommand(cmd string) {
 	c.command = cmd
 }
 
 // Encode build the message received in a message to write in Codec12
-func (c *codec12) Encode() []byte {
+func (c *codec13) Encode() []byte {
 	var cmd models.CommandMessageByte
 
 	cmd.Preamble = []byte{0x00, 0x00, 0x00, 0x00}
@@ -70,7 +72,7 @@ func (c *codec12) Encode() []byte {
 	return result
 }
 
-func (c *codec12) DecodeCommand() *models.CommandMessage {
+func (c *codec13) DecodeCommand() *models.CommandMessage {
 	var result models.CommandMessage
 
 	data := utils.CommandDataMapping(c.avlDataPacket)

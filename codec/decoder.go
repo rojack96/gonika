@@ -23,7 +23,8 @@ type AvlDecoder interface {
 }
 
 type GprsDecoder interface {
-	Decode() *models.ResponseMessage
+	DecodeCommand() *models.CommandMessage
+	DecodeResponse() *models.ResponseMessage
 }
 
 func DeviceDataSendingDecoderFactory(avlDataPacket any) (AvlDecoder, error) {
