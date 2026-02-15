@@ -54,11 +54,11 @@ func (c *codec12) Decode() *models.ResponseMessage {
 	data := utils.ResponseDataMapping(c.avlDataPacket)
 
 	result.Preamble = c.parser.Preamble(data.Preamble)
-	result.DataSize = c.parser.DataSize(data.DataSize)
+	result.DataSize = c.parser.Parse4bytes(data.DataSize)
 	result.CodecID = c.parser.CodecId(data.CodecID)
 	result.ResponseQuantity1 = c.parser.Quantity(data.ResponseQuantity1)
 	result.Type = c.parser.Type(data.Type)
-	result.ResponseSize = c.parser.ResponseSize(data.ResponseSize)
+	result.ResponseSize = c.parser.Parse4bytes(data.ResponseSize)
 	result.Response = string(data.Response)
 	result.ResponseQuantity2 = c.parser.Quantity(data.ResponseQuantity2)
 	result.Crc16 = c.parser.Crc16(data.Crc16)

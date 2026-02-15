@@ -24,14 +24,14 @@ func main() {
 		fmt.Println("IMEI not found in the data.")
 	}
 
-	decoder, err := cdc.DeviceDataSendingDecoderFactory(raw8ext)
+	decoder, err := cdc.DeviceDataSendingDecoderFactory(raw)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
 	//fmt.Println("decoder", decoder)
-	resp := decoder.DecodeFlat()
+	resp := decoder.DecodeTCPflat()
 	fmt.Println("resp", resp)
 	jsonData, err := json.MarshalIndent(resp, "", "  ")
 	if err != nil {

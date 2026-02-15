@@ -7,14 +7,13 @@ import (
 )
 
 type BaseParser interface {
+	Parse2bytes(data []byte) uint16
+	Parse4bytes(data []byte) uint32
 	Preamble(data []byte) models.Preamble
-	DataFieldLength(data []byte) models.DataFieldLength
-	DataSize(data []byte) models.DataSize
 	CodecId(data byte) models.CodecID
 	NumberOfData(data byte) models.NumberOfData
 	Quantity(data byte) models.Quantity
 	Type(data byte) models.Type
-	ResponseSize(data []byte) models.ResponseSize
 	Crc16(data []byte) models.Crc16
 	Timestamp(startIndex int, body []byte) (models.Timestamp, int)
 	Priority(index int, body []byte) (models.Priority, int)
@@ -27,22 +26,18 @@ func NewBaseParser() *baseParser {
 	return &baseParser{}
 }
 
+func (bp *baseParser) Parse2bytes(data []byte) uint16 {
+	return binary.BigEndian.Uint16(data)
+}
+
+func (bp *baseParser) Parse4bytes(data []byte) uint32 {
+	return binary.BigEndian.Uint32(data)
+}
+
 // Preamble This function parse the preamble from AVL data.
 func (bp *baseParser) Preamble(data []byte) models.Preamble {
 	preamble := binary.BigEndian.Uint32(data)
 	return models.Preamble(preamble)
-}
-
-// DataFieldLength This function parse the data field length from AVL data.
-func (bp *baseParser) DataFieldLength(data []byte) models.DataFieldLength {
-	dataFieldLength := binary.BigEndian.Uint32(data)
-	return models.DataFieldLength(dataFieldLength)
-}
-
-// DataSize This function parse the data field length from AVL data.
-func (bp *baseParser) DataSize(data []byte) models.DataSize {
-	dataFieldLength := binary.BigEndian.Uint32(data)
-	return models.DataSize(dataFieldLength)
 }
 
 // CodecId This function parse the codec id from AVL data.
@@ -63,12 +58,6 @@ func (bp *baseParser) Quantity(data byte) models.Quantity {
 // Type This function parse the type from AVL data.
 func (bp *baseParser) Type(data byte) models.Type {
 	return models.Type(data)
-}
-
-// ResponseSize This function parse the response size from AVL data.
-func (bp *baseParser) ResponseSize(data []byte) models.ResponseSize {
-	responseSize := binary.BigEndian.Uint32(data)
-	return models.ResponseSize(responseSize)
 }
 
 // Crc16 This function parse the crc16 from AVL data.

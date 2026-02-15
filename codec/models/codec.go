@@ -1,10 +1,5 @@
 package models
 
-type Result struct {
-	AvlDataPacket     *AvlDataPacket
-	AvlDataPacketFlat *AvlDataPacketFlat
-}
-
 type AvlData interface {
 	isAvlData()
 }
@@ -13,12 +8,15 @@ func (AvlData8) isAvlData()    {}
 func (AvlData8ext) isAvlData() {}
 func (AvlData16) isAvlData()   {}
 
-type AvlDataPacket struct {
-	Preamble        Preamble        `json:"preamble"`
-	DataFieldLength DataFieldLength `json:"dataFieldLength"`
-	CodecID         CodecID         `json:"codecId"`
-	NumberOfData1   NumberOfData    `json:"numberOfData1"`
-	AvlData         []AvlData       `json:"avlData"`
+type AvlDataPacketTCP struct {
+	Preamble Preamble `json:"preamble"`
+	// Data Field Length (4 bytes)
+	//
+	// size is calculated starting from Codec ID to Number of Data 2.
+	DataFieldLength uint32       `json:"dataFieldLength"`
+	CodecID         CodecID      `json:"codecId"`
+	NumberOfData1   NumberOfData `json:"numberOfData1"`
+	AvlData         []AvlData    `json:"avlData"`
 	// Number of Data 2 (1 byte)
 	//
 	// number which defines how many records is in the packet.
@@ -27,10 +25,42 @@ type AvlDataPacket struct {
 	Crc16         Crc16        `json:"crc16"`
 }
 
+type AvlDataPacketUDP struct {
+	// Length
+	//
+	// packet length (excluding this field) in big ending byte order.
+	Length uint16
+	// PacketId
+	//
+	// packet ID unique for this channel
+	PacketID uint16
+	// NotUsableByte
+	//
+	// not usable byte.
+	NotUsableByte uint8
+	// AvlPacketId
+	//
+	// ID identifying this AVL packet.
+	AvlPacketId uint8
+	// ImeiLength
+	//
+	// always will be 0x000F
+	ImeiLength    uint16
+	Imei          string
+	CodecID       CodecID      `json:"codecId"`
+	NumberOfData1 NumberOfData `json:"numberOfData1"`
+	AvlData       []AvlData    `json:"avlData"`
+	// Number of Data 2 (1 byte)
+	//
+	// number which defines how many records is in the packet.
+	// This number must be the same as “Number of Data 1”.
+	NumberOfData2 NumberOfData `json:"numberOfData2"`
+}
+
 type AvlData8 struct {
-	Timestamp  `json:"timestamp"`
-	Priority   `json:"priority"`
-	GpsElement `json:"gpsElement"`
+	Timestamp  Timestamp  `json:"timestamp"`
+	Priority   Priority   `json:"priority"`
+	GpsElement GpsElement `json:"gpsElement"`
 	// Event IO ID (1 byte) this field defines which IO property has changed and generated an event.
 	EventIOID uint8 `json:"eventIoID"`
 	// Number of Total IO (1 byte) a total number of properties coming with record (N = N1 + N2 + N4 + N8).
@@ -54,9 +84,9 @@ type AvlData8 struct {
 }
 
 type AvlData8ext struct {
-	Timestamp  `json:"timestamp"`
-	Priority   `json:"priority"`
-	GpsElement `json:"gpsElement"`
+	Timestamp  Timestamp  `json:"timestamp"`
+	Priority   Priority   `json:"priority"`
+	GpsElement GpsElement `json:"gpsElement"`
 	// Event IO ID (2 bytes) this field defines which IO property has changed and generated an event.
 	EventIOID uint16 `json:"eventIoID"`
 	// Number of Total IO (2 bytes) a total number of properties coming with record (N = N1 + N2 + N4 + N8).
@@ -84,9 +114,9 @@ type AvlData8ext struct {
 }
 
 type AvlData16 struct {
-	Timestamp  `json:"timestamp"`
-	Priority   `json:"priority"`
-	GpsElement `json:"gpsElement"`
+	Timestamp  Timestamp  `json:"timestamp"`
+	Priority   Priority   `json:"priority"`
+	GpsElement GpsElement `json:"gpsElement"`
 	// Event IO ID (1 byte) this field defines which IO property has changed and generated an event.
 	EventIOID uint16 `json:"eventIoID"`
 	// Data event generation type
@@ -160,17 +190,23 @@ type ResponseMessageByte struct {
 }
 
 type ResponseMessage struct {
-	Preamble `json:"preamble"`
-	DataSize `json:"dataSize"`
-	CodecID  `json:"codecId"`
+	Preamble Preamble `json:"preamble"`
+	// Data Size (4 bytes)
+	//
+	// size is calculated from Codec ID field to the second command or response quantity field.
+	DataSize uint32  `json:"dataSize"`
+	CodecID  CodecID `json:"codecId"`
 	// Command Quantity 1 (1 byte) it is ignored when parsing the message.
-	ResponseQuantity1 Quantity     `json:"responseQuantity1"`
-	Type              Type         `json:"type"`
-	ResponseSize      ResponseSize `json:"responseSize"`
+	ResponseQuantity1 Quantity `json:"responseQuantity1"`
+	Type              Type     `json:"type"`
+	// Response Size (4 bytes)
+	//
+	// command or response length.
+	ResponseSize uint32 `json:"responseSize"`
 	// Command (X bytes) command or response in HEX.
 	Response string `json:"response"`
 	// Command Quantity 2 (1 byte) a byte which defines how many records (commands or responses) is in the packet.
 	// This byte will not be parsed but it’s recommended that it should contain same value as Command/Response Quantity 1.
 	ResponseQuantity2 Quantity `json:"responseQuantity2"`
-	Crc16             `json:"crc16"`
+	Crc16             Crc16    `json:"crc16"`
 }

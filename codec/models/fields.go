@@ -5,16 +5,6 @@ package models
 // the packet starts with four zero bytes.
 type Preamble uint32
 
-// Data Field Length (4 bytes)
-//
-// size is calculated starting from Codec ID to Number of Data 2.
-type DataFieldLength uint32
-
-// Data Size (4 bytes)
-//
-// size is calculated from Codec ID field to the second command or response quantity field.
-type DataSize uint32
-
 // Codec ID (1 byte)
 type CodecID uint8
 
@@ -34,11 +24,6 @@ type Type uint8
 //
 // command or response length.
 type CommandSize uint32
-
-// Response Size (4 bytes)
-//
-// command or response length.
-type ResponseSize uint32
 
 // Number of Data
 //

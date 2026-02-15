@@ -9,13 +9,10 @@ func (AvlData8extFlat) isAvlDataFlat() {}
 func (AvlData16Flat) isAvlDataFlat()   {}
 
 type AvlDataPacketFlat struct {
-	Preamble        Preamble        `json:"preamble"`
-	DataFieldLength DataFieldLength `json:"dataFieldLength"`
-	CodecID         CodecID         `json:"codecId"`
-	NumberOfData1   NumberOfData    `json:"numberOfData1"`
-	AvlData         []AvlDataFlat   `json:"avlData"`
-	NumberOfData2   NumberOfData    `json:"numberOfData2"`
-	Crc16           Crc16           `json:"crc16"`
+	CodecID       CodecID       `json:"codecId"`
+	NumberOfData1 NumberOfData  `json:"numberOfData1"`
+	AvlData       []AvlDataFlat `json:"avlData"`
+	NumberOfData2 NumberOfData  `json:"numberOfData2"`
 }
 
 type AvlData8Flat struct {

@@ -14,10 +14,12 @@ import (
 // Decoder is the main struct responsible for decoding AVL data packets and GPRS messages.
 
 type AvlDecoder interface {
-	// Decode decodes the AVL data packet and returns all information based on Teltonika documentation.
-	Decode() *models.AvlDataPacket
-	// DecodeFlat decodes the AVL data packet and returns a flat structured representation.
-	DecodeFlat() *models.AvlDataPacketFlat
+	// DecodeTCP decodes the AVL data packet and returns all information based on Teltonika documentation.
+	DecodeTCP() *models.AvlDataPacketTCP
+	// DecodeTCPflat decodes the AVL data packet and returns a flat structured representation.
+	DecodeTCPflat() *models.AvlDataPacketFlat
+	DecodeUDP() *models.AvlDataPacketUDP
+	DecodeUDPflat() *models.AvlDataPacketFlat
 }
 
 type GprsDecoder interface {

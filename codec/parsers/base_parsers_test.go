@@ -18,39 +18,6 @@ func TestPreamble(t *testing.T) {
 	}
 }
 
-func TestDataFieldLength(t *testing.T) {
-	bp := NewBaseParser()
-	data := []byte{0x00, 0x00, 0x00, 0x9A}
-	got := bp.DataFieldLength(data)
-	want := models.DataFieldLength(154)
-
-	if got != want {
-		t.Fatalf("got %v, want %v", got, want)
-	}
-}
-
-func TestDataSize(t *testing.T) {
-	bp := NewBaseParser()
-	data := []byte{0x00, 0x00, 0x00, 0x9A}
-	got := bp.DataSize(data)
-	want := models.DataSize(154)
-
-	if got != want {
-		t.Fatalf("got %v, want %v", got, want)
-	}
-}
-
-func TestResponseSize(t *testing.T) {
-	bp := NewBaseParser()
-	data := []byte{0x00, 0x00, 0x00, 0x9A}
-	got := bp.ResponseSize(data)
-	want := models.ResponseSize(154)
-
-	if got != want {
-		t.Fatalf("got %v, want %v", got, want)
-	}
-}
-
 func TestCrc16(t *testing.T) {
 	bp := NewBaseParser()
 	data := []byte{0x00, 0x00, 0xBF, 0x30}
