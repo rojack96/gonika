@@ -13,12 +13,14 @@ import (
 type codec8 struct {
 	avlDataPacket []byte
 	parser        parsers.BaseParser
+	builder       *utils.Builders
 }
 
 func New(avlDataPacket []byte) *codec8 {
 	return &codec8{
 		avlDataPacket: avlDataPacket,
 		parser:        parsers.NewBaseParser(),
+		builder:       utils.NewBuilders(),
 	}
 }
 
