@@ -88,3 +88,21 @@ func (b *Builders) fourBytesTransformation(data int) [4]byte {
 	binary.BigEndian.PutUint32(bytes, num)
 	return [4]byte(bytes)
 }
+
+func (b *Builders) Uint16ToBytes(value uint16) [2]byte {
+	bytes := make([]byte, 2)
+	binary.BigEndian.PutUint16(bytes, value)
+	return [2]byte(bytes)
+}
+
+func (b *Builders) Uint32ToBytes(value uint32) [4]byte {
+	bytes := make([]byte, 4)
+	binary.BigEndian.PutUint32(bytes, value)
+	return [4]byte(bytes)
+}
+
+func (b *Builders) Uint64ToBytes(value uint64) [8]byte {
+	bytes := make([]byte, 8)
+	binary.BigEndian.PutUint64(bytes, value)
+	return [8]byte(bytes)
+}

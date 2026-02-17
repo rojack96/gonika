@@ -19,11 +19,11 @@ func main() {
 		fmt.Println("IMEI not found in the data.")
 	}
 
-	//codec8()
+	codec8()
 	//codec8ext()
 	//codec16()
 	//codec12Response()
-	codec13Response()
+	//codec13Response()
 	//codec14Response()
 }
 
@@ -36,7 +36,7 @@ func codec8() {
 		return
 	}
 
-	resp := decoder.DecodeTCPflat()
+	resp := decoder.DecodeTCP()
 	jsonData, err := resp.MarshalIndent("", "  ")
 	if err != nil {
 		fmt.Println("Error marshaling JSON:", err)

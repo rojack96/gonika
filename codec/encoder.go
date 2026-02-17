@@ -3,10 +3,12 @@ package codec
 import (
 	"encoding/hex"
 	"fmt"
+
+	m "github.com/rojack96/gonika/codec/models"
 )
 
 type AvlEncoder interface {
-	EncodeTCP() []byte
+	EncoderTCP(numberOfData uint8, gpsList []m.GpsElementEncoder, io m.Codec8Encoder) ([]byte, error)
 	EncodeUDP() []byte
 }
 
