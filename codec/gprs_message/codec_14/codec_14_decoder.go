@@ -4,7 +4,6 @@ import (
 	"encoding/hex"
 	"errors"
 
-	"github.com/rojack96/gonika/codec/constant"
 	mapper "github.com/rojack96/gonika/codec/gprs_message/models"
 	"github.com/rojack96/gonika/codec/gprs_message/utils"
 	"github.com/rojack96/gonika/codec/models"
@@ -35,7 +34,7 @@ func (c *codec14) DecodeResponse() *models.ResponseMessage {
 
 	result.Preamble = c.parser.Preamble(data.Preamble)
 	result.DataSize = c.parser.Parse4bytes(data.DataSize)
-	result.CodecID = c.parser.CodecId(data.CodecID)
+	result.CodecID = c.parser.CodecID(data.CodecID)
 	result.ResponseQuantity1 = c.parser.Quantity(data.ResponseQuantity1)
 	result.Type = c.parser.Type(data.Type)
 	result.ResponseSize = c.parser.Parse4bytes(data.ResponseSize)
@@ -57,26 +56,4 @@ func (c *codec14) DecodeCommand() (*models.CommandMessage, error) {
 
 func (c *codec14) SetCommand(cmd string) {
 	c.command = cmd
-}
-
-// Encode build the message received in a message to write in Codec12
-func (c *codec14) Encode() []byte {
-	var cmd mapper.CommandMessage
-
-	cmd.Preamble = [4]byte{0x00, 0x00, 0x00, 0x00}
-	cmd.CodecID = constant.Codec12
-	cmd.Type = constant.Command
-	cmd.CommandQuantity1 = 0x01
-	cmd.CommandQuantity2 = cmd.CommandQuantity1
-	cmd.Command = []byte(c.command)
-	cmd.CommandSize = c.builders.CommandSize(cmd.Command)
-	cmd.DataSize = c.builders.DataSize(cmd)
-
-	result := c.builders.MergeMessage(cmd)
-
-	cmd.Crc16 = c.builders.Crc16Builder(result)
-
-	result = append(result, cmd.Crc16[:]...)
-
-	return result
 }

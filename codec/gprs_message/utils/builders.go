@@ -34,7 +34,7 @@ func (b *Builders) CommandSize(command []byte) [4]byte {
 }
 
 func (b *Builders) DataSize(command models.CommandMessage) [4]byte {
-	ds := len(command.CommandSize) + len(command.Command) + 4 // 4 is equal to len of CodecId, CommandQuantity (1 & 2), Type
+	ds := len(command.CommandSize) + len(command.Command) + 4 // 4 is equal to len of CodecID, CommandQuantity (1 & 2), Type
 
 	return b.fourBytesTransformation(ds)
 }

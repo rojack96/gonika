@@ -9,7 +9,7 @@ func (AvlData8extFlat) isAvlDataFlat() {}
 func (AvlData16Flat) isAvlDataFlat()   {}
 
 type AvlDataPacketFlat struct {
-	CodecID       CodecID       `json:"codecId"`
+	CodecID       CodecID       `json:"codecID"`
 	NumberOfData1 NumberOfData  `json:"numberOfData1"`
 	AvlData       []AvlDataFlat `json:"avlData"`
 	NumberOfData2 NumberOfData  `json:"numberOfData2"`

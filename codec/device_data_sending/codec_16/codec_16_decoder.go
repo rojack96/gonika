@@ -1,4 +1,4 @@
-package codec8
+package codec16
 
 import (
 	"encoding/hex"
@@ -10,26 +10,28 @@ import (
 	"github.com/rojack96/gonika/codec/parsers"
 )
 
-type codec8 struct {
+type codec16 struct {
 	avlDataPacket []byte
 	parser        parsers.BaseParser
+	builder       *utils.Builders
 }
 
-func New(avlDataPacket []byte) *codec8 {
-	return &codec8{
+func New(avlDataPacket []byte) *codec16 {
+	return &codec16{
 		avlDataPacket: avlDataPacket,
 		parser:        parsers.NewBaseParser(),
+		builder:       utils.NewBuilders(),
 	}
 }
 
-func (c *codec8) DecodeTCP() *models.AvlDataPacketTCP {
+func (c *codec16) DecodeTCP() *models.AvlDataPacketTCP {
 	var result models.AvlDataPacketTCP
 
 	data := utils.DataMapping(c.avlDataPacket)
 
 	result.Preamble = c.parser.Preamble(data.AvlDataPacketHeader.Preamble)
+	result.CodecID = c.parser.CodecID(data.AvlDataArray.CodecID)
 	result.DataFieldLength = c.parser.Parse4bytes(data.AvlDataPacketHeader.DataFieldLength)
-	result.CodecID = c.parser.CodecId(data.AvlDataArray.CodecID)
 	result.NumberOfData1 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData1)
 	result.NumberOfData2 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData2)
 	result.Crc16 = c.parser.Crc16(data.Crc16)
@@ -43,12 +45,13 @@ func (c *codec8) DecodeTCP() *models.AvlDataPacketTCP {
 	}
 
 	for i := 0; i < int(result.NumberOfData1); i++ {
-		avl := models.AvlData8{}
+		avl := models.AvlData16{}
 
 		avl.Timestamp, index = c.parser.Timestamp(index, body)
 		avl.Priority, index = c.parser.Priority(index, body)
 		avl.GpsElement, index = c.parser.GpsElement(index, body)
 		avl.EventIOID, index = c.parseEventIO(index, body)
+		avl.GenerationType, index = c.parseGenerationType(index, body)
 		avl.NoOfTotalIO, index = c.parseTotalNumberOfIO(index, body)
 		avl.NoOfOneByte, avl.OneByteIO, index = c.parseIo(constant.OneByteIo, index, body)
 		avl.NoOfTwoByte, avl.TwoByteIO, index = c.parseIo(constant.TwoByteIo, index, body)
@@ -61,12 +64,12 @@ func (c *codec8) DecodeTCP() *models.AvlDataPacketTCP {
 	return &result
 }
 
-func (c *codec8) DecodeTCPflat() *models.AvlDataPacketFlat {
+func (c *codec16) DecodeTCPflat() *models.AvlDataPacketFlat {
 	var result models.AvlDataPacketFlat
 
 	data := utils.DataMapping(c.avlDataPacket)
 
-	result.CodecID = c.parser.CodecId(data.AvlDataArray.CodecID)
+	result.CodecID = c.parser.CodecID(data.AvlDataArray.CodecID)
 	result.NumberOfData1 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData1)
 	result.NumberOfData2 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData2)
 
@@ -79,7 +82,7 @@ func (c *codec8) DecodeTCPflat() *models.AvlDataPacketFlat {
 	}
 
 	for i := 0; i < int(result.NumberOfData1); i++ {
-		avl := models.AvlData8Flat{}
+		avl := models.AvlData8extFlat{}
 
 		avl.Timestamp, index = c.parser.Timestamp(index, body)
 		avl.Priority, index = c.parser.Priority(index, body)
@@ -94,11 +97,12 @@ func (c *codec8) DecodeTCPflat() *models.AvlDataPacketFlat {
 		avl.Speed = gps.Speed
 
 		_, index = c.parseEventIO(index, body)
+		_, index = c.parseGenerationType(index, body)
 		_, index = c.parseTotalNumberOfIO(index, body)
 
-		var ioData map[uint8]string
+		var ioData map[uint16]string
 
-		avl.IO = make(map[uint8]string)
+		avl.IO = make(map[uint16]string)
 
 		ioByteLen := []int{constant.OneByteIo, constant.TwoByteIo, constant.FourByteIo, constant.EightByteIo}
 		for _, t := range ioByteLen {
@@ -112,18 +116,18 @@ func (c *codec8) DecodeTCPflat() *models.AvlDataPacketFlat {
 	return &result
 }
 
-func (c *codec8) DecodeUDP() *models.AvlDataPacketUDP {
+func (c *codec16) DecodeUDP() *models.AvlDataPacketUDP {
 	var result models.AvlDataPacketUDP
 
 	data := utils.UdpDataMapping(c.avlDataPacket)
 
 	result.Length = c.parser.Parse2bytes(data.UdpChannelHeader.Length)
-	result.PacketID = c.parser.Parse2bytes(data.UdpChannelHeader.PacketId)
+	result.PacketID = c.parser.Parse2bytes(data.UdpChannelHeader.PacketID)
 	result.NotUsableByte = data.UdpChannelHeader.NotUsableByte
-	result.AvlPacketId = data.UdpAvlPacketHeader.AvlPacketId
+	result.AvlPacketID = data.UdpAvlPacketHeader.AvlPacketID
 	result.ImeiLength = c.parser.Parse2bytes(data.UdpAvlPacketHeader.ImeiLength)
 	result.Imei = hex.EncodeToString(data.UdpAvlPacketHeader.Imei[:])
-	result.CodecID = c.parser.CodecId(data.AvlDataArray.CodecID)
+	result.CodecID = c.parser.CodecID(data.AvlDataArray.CodecID)
 	result.NumberOfData1 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData1)
 	result.NumberOfData2 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData2)
 
@@ -136,12 +140,13 @@ func (c *codec8) DecodeUDP() *models.AvlDataPacketUDP {
 	}
 
 	for i := 0; i < int(result.NumberOfData1); i++ {
-		avl := models.AvlData8{}
+		avl := models.AvlData16{}
 
 		avl.Timestamp, index = c.parser.Timestamp(index, body)
 		avl.Priority, index = c.parser.Priority(index, body)
 		avl.GpsElement, index = c.parser.GpsElement(index, body)
 		avl.EventIOID, index = c.parseEventIO(index, body)
+		avl.GenerationType, index = c.parseGenerationType(index, body)
 		avl.NoOfTotalIO, index = c.parseTotalNumberOfIO(index, body)
 		avl.NoOfOneByte, avl.OneByteIO, index = c.parseIo(constant.OneByteIo, index, body)
 		avl.NoOfTwoByte, avl.TwoByteIO, index = c.parseIo(constant.TwoByteIo, index, body)
@@ -154,12 +159,12 @@ func (c *codec8) DecodeUDP() *models.AvlDataPacketUDP {
 	return &result
 }
 
-func (c *codec8) DecodeUDPflat() *models.AvlDataPacketFlat {
+func (c *codec16) DecodeUDPflat() *models.AvlDataPacketFlat {
 	var result models.AvlDataPacketFlat
 
 	data := utils.UdpDataMapping(c.avlDataPacket)
 
-	result.CodecID = c.parser.CodecId(data.AvlDataArray.CodecID)
+	result.CodecID = c.parser.CodecID(data.AvlDataArray.CodecID)
 	result.NumberOfData1 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData1)
 	result.NumberOfData2 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData2)
 
@@ -172,7 +177,7 @@ func (c *codec8) DecodeUDPflat() *models.AvlDataPacketFlat {
 	}
 
 	for i := 0; i < int(result.NumberOfData1); i++ {
-		avl := models.AvlData8Flat{}
+		avl := models.AvlData16Flat{}
 
 		avl.Timestamp, index = c.parser.Timestamp(index, body)
 		avl.Priority, index = c.parser.Priority(index, body)
@@ -187,11 +192,12 @@ func (c *codec8) DecodeUDPflat() *models.AvlDataPacketFlat {
 		avl.Speed = gps.Speed
 
 		_, index = c.parseEventIO(index, body)
+		_, index = c.parseGenerationType(index, body)
 		_, index = c.parseTotalNumberOfIO(index, body)
 
-		var ioData map[uint8]string
+		var ioData map[uint16]string
 
-		avl.IO = make(map[uint8]string)
+		avl.IO = make(map[uint16]string)
 
 		ioByteLen := []int{constant.OneByteIo, constant.TwoByteIo, constant.FourByteIo, constant.EightByteIo}
 		for _, t := range ioByteLen {
