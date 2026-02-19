@@ -9,25 +9,25 @@ func (Codec8ExtEncoder) isAvlDataEncoder() {}
 func (Codec16Encoder) isAvlDataEncoder()   {}
 
 type Codec8Encoder struct {
-	OneByte   map[uint8]uint8
-	TwoByte   map[uint8]uint16
-	FourByte  map[uint8]uint32
-	EightByte map[uint8]uint64
+	OneByte   map[uint8]uint8  `json:"oneByte" yaml:"oneByte"`
+	TwoByte   map[uint8]uint16 `json:"twoByte" yaml:"twoByte"`
+	FourByte  map[uint8]uint32 `json:"fourByte" yaml:"fourByte"`
+	EightByte map[uint8]uint64 `json:"eightByte" yaml:"eightByte"`
 }
 
 type Codec8ExtEncoder struct {
-	OneByte   map[uint16]uint8
-	TwoByte   map[uint16]uint16
-	FourByte  map[uint16]uint32
-	EightByte map[uint16]uint64
-	XByte     map[uint16]string
+	OneByte   map[uint16]uint8  `json:"oneByte" yaml:"oneByte"`
+	TwoByte   map[uint16]uint16 `json:"twoByte" yaml:"twoByte"`
+	FourByte  map[uint16]uint32 `json:"fourByte" yaml:"fourByte"`
+	EightByte map[uint16]uint64 `json:"eightByte" yaml:"eightByte"`
+	XByte     map[uint16]string `json:"xByte" yaml:"xByte"`
 }
 
 type Codec16Encoder struct {
-	OneByte   map[uint16]uint8
-	TwoByte   map[uint16]uint16
-	FourByte  map[uint16]uint32
-	EightByte map[uint16]uint64
+	OneByte   map[uint16]uint8  `json:"oneByte" yaml:"oneByte"`
+	TwoByte   map[uint16]uint16 `json:"twoByte" yaml:"twoByte"`
+	FourByte  map[uint16]uint32 `json:"fourByte" yaml:"fourByte"`
+	EightByte map[uint16]uint64 `json:"eightByte" yaml:"eightByte"`
 }
 
 type GpsElementEncoder struct {
@@ -40,6 +40,6 @@ type GpsElementEncoder struct {
 }
 
 type AvlDataArrayEncoder struct {
-	AvlDataEncoder
-	GpsElementEncoder
+	AvlDataEncoder    `json:"avlData" yaml:"avlData"`
+	GpsElementEncoder `json:"gps" yaml:"gps"`
 }

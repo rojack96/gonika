@@ -1,11 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 
 	cdc "github.com/rojack96/gonika/codec"
 	"github.com/rojack96/gonika/codec/constant"
 	"github.com/rojack96/gonika/codec/models"
+	"github.com/rojack96/gonika/codec/utility"
 )
 
 func main() {
@@ -21,9 +23,9 @@ func main() {
 		fmt.Println("IMEI not found in the data.")
 	}
 
-	codec8(false)
+	codec8(true)
 	codec8ext(false)
-	codec16(true)
+	codec16(false)
 	codec12Response(false)
 	codec13Response(false)
 	codec14Response(false)
@@ -35,7 +37,7 @@ func codec8(enabled bool) {
 	}
 	//const raw = "000000000000003608010000016B40D8EA30010000000000000000000000000000000105021503010101425E0F01F10000601A014E0000000000000000010000C7CF"
 
-	avlSlice := []models.AvlDataArrayEncoder{
+	/*avlSlice := []models.AvlDataArrayEncoder{
 		{
 			AvlDataEncoder: models.Codec8Encoder{
 				OneByte: map[uint8]uint8{
@@ -51,14 +53,25 @@ func codec8(enabled bool) {
 				Speed:      0,
 			},
 		},
+	}*/
+
+	avlSlice, err := utility.ReadFromFile("../templates/codec8.json")
+	if err != nil {
+		fmt.Println("erread", err)
+	}
+	data, err := json.MarshalIndent(avlSlice, "", "  ")
+	if err != nil {
+		fmt.Println("erread", err)
 	}
 
-	encoder, err := cdc.DeviceDataSendingEncoderFactory(constant.Codec8)
+	fmt.Println(string(data))
+
+	encoder, err := cdc.DeviceDataSendingEncoderFactory(avlSlice.Codec)
 	if err != nil {
 		fmt.Println("err", err)
 	}
 
-	raw, err := encoder.EncodeTCP(avlSlice)
+	raw, err := encoder.EncodeTCP(avlSlice.AvlDataPacket)
 	if err != nil {
 		fmt.Println("err2", err)
 	}
