@@ -30,7 +30,7 @@ type GprsDecoder interface {
 }
 
 func DeviceDataSendingDecoderFactory(avlDataPacket any) (AvlDecoder, error) {
-	const codecIdIndex = 8
+	const codecIDIndex = 8
 
 	var (
 		data []byte
@@ -41,11 +41,11 @@ func DeviceDataSendingDecoderFactory(avlDataPacket any) (AvlDecoder, error) {
 		return nil, fmt.Errorf("failed to transform data: %v", err)
 	}
 
-	if len(data) <= codecIdIndex {
+	if len(data) <= codecIDIndex {
 		return nil, fmt.Errorf("invalid packet length: %d", len(data))
 	}
 
-	codecID := data[codecIdIndex]
+	codecID := data[codecIDIndex]
 
 	var decoders = map[byte]func([]byte) AvlDecoder{
 		constant.Codec8:    func(b []byte) AvlDecoder { return codec8.New(b) },
@@ -61,7 +61,7 @@ func DeviceDataSendingDecoderFactory(avlDataPacket any) (AvlDecoder, error) {
 }
 
 func GprsMessageDecoderFactory(gprsMessagePacket any) (GprsDecoder, error) {
-	const codecIdIndex = 8
+	const codecIDIndex = 8
 
 	var (
 		data []byte
@@ -72,11 +72,11 @@ func GprsMessageDecoderFactory(gprsMessagePacket any) (GprsDecoder, error) {
 		return nil, fmt.Errorf("failed to transform data: %v", err)
 	}
 
-	if len(data) <= codecIdIndex {
+	if len(data) <= codecIDIndex {
 		return nil, fmt.Errorf("invalid packet length: %d", len(data))
 	}
 
-	codecID := data[codecIdIndex]
+	codecID := data[codecIDIndex]
 
 	var decoders = map[byte]func([]byte) GprsDecoder{
 		constant.Codec12: func(b []byte) GprsDecoder { return codec12.New(b) },

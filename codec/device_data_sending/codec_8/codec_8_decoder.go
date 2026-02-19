@@ -31,7 +31,7 @@ func (c *codec8) DecodeTCP() *models.AvlDataPacketTCP {
 
 	result.Preamble = c.parser.Preamble(data.AvlDataPacketHeader.Preamble)
 	result.DataFieldLength = c.parser.Parse4bytes(data.AvlDataPacketHeader.DataFieldLength)
-	result.CodecID = c.parser.CodecId(data.AvlDataArray.CodecID)
+	result.CodecID = c.parser.CodecID(data.AvlDataArray.CodecID)
 	result.NumberOfData1 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData1)
 	result.NumberOfData2 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData2)
 	result.Crc16 = c.parser.Crc16(data.Crc16)
@@ -68,7 +68,7 @@ func (c *codec8) DecodeTCPflat() *models.AvlDataPacketFlat {
 
 	data := utils.DataMapping(c.avlDataPacket)
 
-	result.CodecID = c.parser.CodecId(data.AvlDataArray.CodecID)
+	result.CodecID = c.parser.CodecID(data.AvlDataArray.CodecID)
 	result.NumberOfData1 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData1)
 	result.NumberOfData2 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData2)
 
@@ -120,12 +120,12 @@ func (c *codec8) DecodeUDP() *models.AvlDataPacketUDP {
 	data := utils.UdpDataMapping(c.avlDataPacket)
 
 	result.Length = c.parser.Parse2bytes(data.UdpChannelHeader.Length)
-	result.PacketID = c.parser.Parse2bytes(data.UdpChannelHeader.PacketId)
+	result.PacketID = c.parser.Parse2bytes(data.UdpChannelHeader.PacketID)
 	result.NotUsableByte = data.UdpChannelHeader.NotUsableByte
-	result.AvlPacketId = data.UdpAvlPacketHeader.AvlPacketId
+	result.AvlPacketID = data.UdpAvlPacketHeader.AvlPacketID
 	result.ImeiLength = c.parser.Parse2bytes(data.UdpAvlPacketHeader.ImeiLength)
 	result.Imei = hex.EncodeToString(data.UdpAvlPacketHeader.Imei[:])
-	result.CodecID = c.parser.CodecId(data.AvlDataArray.CodecID)
+	result.CodecID = c.parser.CodecID(data.AvlDataArray.CodecID)
 	result.NumberOfData1 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData1)
 	result.NumberOfData2 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData2)
 
@@ -161,7 +161,7 @@ func (c *codec8) DecodeUDPflat() *models.AvlDataPacketFlat {
 
 	data := utils.UdpDataMapping(c.avlDataPacket)
 
-	result.CodecID = c.parser.CodecId(data.AvlDataArray.CodecID)
+	result.CodecID = c.parser.CodecID(data.AvlDataArray.CodecID)
 	result.NumberOfData1 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData1)
 	result.NumberOfData2 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData2)
 

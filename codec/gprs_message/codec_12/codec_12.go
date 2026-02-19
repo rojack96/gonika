@@ -32,7 +32,7 @@ func (c *codec12) DecodeResponse() *models.ResponseMessage {
 
 	result.Preamble = c.parser.Preamble(data.Preamble)
 	result.DataSize = c.parser.Parse4bytes(data.DataSize)
-	result.CodecID = c.parser.CodecId(data.CodecID)
+	result.CodecID = c.parser.CodecID(data.CodecID)
 	result.ResponseQuantity1 = c.parser.Quantity(data.ResponseQuantity1)
 	result.Type = c.parser.Type(data.Type)
 	result.ResponseSize = c.parser.Parse4bytes(data.ResponseSize)
@@ -52,7 +52,7 @@ func (c *codec12) DecodeCommand() (*models.CommandMessage, error) {
 
 	result.Preamble = c.parser.Preamble(data.Preamble)
 	result.DataSize = c.parser.Parse4bytes(data.DataSize)
-	result.CodecID = c.parser.CodecId(data.CodecID)
+	result.CodecID = c.parser.CodecID(data.CodecID)
 	result.CommandQuantity1 = c.parser.Quantity(data.CommandQuantity1)
 	result.Type = c.parser.Type(data.Type)
 	result.CommandSize = c.parser.Parse4bytes(data.CommandSize)

@@ -18,7 +18,12 @@ func NewBuilders() *Builders {
 }
 
 func (b *Builders) MergeDataTCP(data models.AvlDataPacketByteTCP) []byte {
-	message := make([]byte, 0)
+	dataLen := len(data.AvlDataPacketHeader.Preamble) +
+		len(data.AvlDataPacketHeader.DataFieldLength) +
+		len(data.AvlDataArray.AvlData) +
+		3 //3 equals to CodecID, NumberOfData1 & 2
+
+	message := make([]byte, 0, dataLen)
 	message = append(message, data.AvlDataPacketHeader.Preamble[:]...)
 	message = append(message, data.AvlDataPacketHeader.DataFieldLength[:]...)
 	message = append(message, data.AvlDataArray.CodecID)
@@ -30,11 +35,17 @@ func (b *Builders) MergeDataTCP(data models.AvlDataPacketByteTCP) []byte {
 }
 
 func (b *Builders) MergeDataUDP(data models.AvlDataPacketByteUDP) []byte {
-	message := make([]byte, 0)
+	dataLen := len(data.UdpChannelHeader.Length) +
+		len(data.UdpChannelHeader.PacketID) +
+		len(data.UdpAvlPacketHeader.ImeiLength) +
+		len(data.UdpAvlPacketHeader.Imei) +
+		len(data.AvlDataArray.AvlData) +
+		5 // 5 equals to NotUsableByte, AvlPacketID, CodecID, NumberOfData1 & 2
+	message := make([]byte, 0, dataLen)
 	message = append(message, data.UdpChannelHeader.Length[:]...)
-	message = append(message, data.UdpChannelHeader.PacketId[:]...)
+	message = append(message, data.UdpChannelHeader.PacketID[:]...)
 	message = append(message, data.UdpChannelHeader.NotUsableByte)
-	message = append(message, data.UdpAvlPacketHeader.AvlPacketId)
+	message = append(message, data.UdpAvlPacketHeader.AvlPacketID)
 	message = append(message, data.UdpAvlPacketHeader.ImeiLength[:]...)
 	message = append(message, data.UdpAvlPacketHeader.Imei[:]...)
 	message = append(message, data.AvlDataArray.CodecID)
@@ -45,17 +56,16 @@ func (b *Builders) MergeDataUDP(data models.AvlDataPacketByteUDP) []byte {
 	return message
 }
 
-func (b *Builders) DataFieldLength(command models.AvlDataPacketByteTCP) [4]byte {
-	ds := len(command.AvlDataArray.AvlData) + 4 // 4 is equal to len of CodecId, CommandQuantity (1 & 2), Type
+/* ---------- Data to byte transformation ----------*/
 
+func (b *Builders) DataFieldLength(command models.AvlDataPacketByteTCP) [4]byte {
+	ds := len(command.AvlDataArray.AvlData) + 4 // 4 is equal to len of CodecID, CommandQuantity (1 & 2), Type
 	return b.fourBytesTransformation(ds)
 }
 
 func (b *Builders) Timestamp() [8]byte {
 	ts := time.Now().UnixMilli()
-	bytes := make([]byte, 8)
-	binary.BigEndian.PutUint64(bytes, uint64(ts))
-	return [8]byte(bytes)
+	return b.Uint64ToBytes(uint64(ts))
 }
 
 func (b *Builders) Priority() uint8 {
@@ -85,9 +95,7 @@ func (b *Builders) EventIo2Byte() [2]byte {
 		value = uint16(r.Intn(65536))
 	}
 
-	bytes := make([]byte, 2)
-	binary.BigEndian.PutUint16(bytes, value)
-	return [2]byte(bytes)
+	return b.Uint16ToBytes(value)
 }
 
 func (b *Builders) GenerationType() byte {
@@ -120,6 +128,25 @@ func (b *Builders) GpsElement(result *[]byte, gps m.GpsElementEncoder) error {
 	return nil
 }
 
+// coordinateStringToBytes converts a latitude or longitude string to a 4-byte representation
+// The string is parsed as a float64, multiplied by 1e7, and converted to big-endian bytes.
+// This is the inverse operation of decodeCoordinate from base_parsers.go
+func (b *Builders) coordinateStringToBytes(coordinateStr string) ([4]byte, error) {
+	var result [4]byte
+	// Parse string to float64
+	coord, err := strconv.ParseFloat(coordinateStr, 64)
+	if err != nil {
+		return result, err
+	}
+
+	// Multiply by 1e7 to get integer representation
+	intCoord := int32(coord * 1e7)
+
+	// Convert to 4 bytes in big-endian format
+	result = b.Uint32ToBytes(uint32(intCoord))
+	return result, nil
+}
+
 func (b *Builders) Crc16Builder(command []byte) [4]byte {
 	crcTable := crc16.MakeTable(crc16.CRC16_ARC)
 	crcRes := crc16.Checksum(command[8:], crcTable)
@@ -129,12 +156,11 @@ func (b *Builders) Crc16Builder(command []byte) [4]byte {
 	return result
 }
 
-func (b *Builders) fourBytesTransformation(data int) [4]byte {
-	bytes := make([]byte, 4)
-	num := uint32(data)
+/* ---------- Byte transformation ----------*/
 
-	binary.BigEndian.PutUint32(bytes, num)
-	return [4]byte(bytes)
+func (b *Builders) fourBytesTransformation(data int) [4]byte {
+	num := uint32(data)
+	return b.Uint32ToBytes(num)
 }
 
 func (b *Builders) Uint16ToBytes(value uint16) [2]byte {
@@ -153,24 +179,4 @@ func (b *Builders) Uint64ToBytes(value uint64) [8]byte {
 	bytes := make([]byte, 8)
 	binary.BigEndian.PutUint64(bytes, value)
 	return [8]byte(bytes)
-}
-
-// coordinateStringToBytes converts a latitude or longitude string to a 4-byte representation
-// The string is parsed as a float64, multiplied by 1e7, and converted to big-endian bytes.
-// This is the inverse operation of decodeCoordinate from base_parsers.go
-func (b *Builders) coordinateStringToBytes(coordinateStr string) ([4]byte, error) {
-	// Parse string to float64
-	coord, err := strconv.ParseFloat(coordinateStr, 64)
-	if err != nil {
-		return [4]byte{}, err
-	}
-
-	// Multiply by 1e7 to get integer representation
-	intCoord := int32(coord * 1e7)
-
-	// Convert to 4 bytes in big-endian format
-	bytes := make([]byte, 4)
-	binary.BigEndian.PutUint32(bytes, uint32(intCoord))
-
-	return [4]byte(bytes), nil
 }

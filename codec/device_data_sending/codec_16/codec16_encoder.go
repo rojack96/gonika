@@ -43,9 +43,9 @@ func (c *codec16) EncodeUDP(imei string, avlDataArray []m.AvlDataArrayEncoder) (
 	nOfData := len(avlDataArray)
 
 	packet.UdpChannelHeader.Length = [2]byte{}
-	packet.UdpChannelHeader.PacketId = [2]byte{}
+	packet.UdpChannelHeader.PacketID = [2]byte{}
 	packet.UdpChannelHeader.NotUsableByte = 0x01
-	packet.UdpAvlPacketHeader.AvlPacketId = 0x05
+	packet.UdpAvlPacketHeader.AvlPacketID = 0x05
 	packet.UdpAvlPacketHeader.ImeiLength = [2]byte{0x00, 0x0F}
 	imeiByte, err := hex.DecodeString(imei)
 	if err != nil {

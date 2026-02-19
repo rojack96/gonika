@@ -42,12 +42,12 @@ type AvlDataPacketByteTCP struct {
 
 type UdpChannelHeader struct {
 	Length        [2]byte
-	PacketId      [2]byte
+	PacketID      [2]byte
 	NotUsableByte byte
 }
 
 type UdpAvlPacketHeader struct {
-	AvlPacketId byte
+	AvlPacketID byte
 	ImeiLength  [2]byte
 	Imei        [15]byte
 }

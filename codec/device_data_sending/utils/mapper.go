@@ -41,12 +41,12 @@ func UdpDataMapping(avlDataPacket []byte) *models.AvlDataPacketByteUDP {
 
 	udpChannelHeader := models.UdpChannelHeader{
 		Length:        [2]byte(avlDataPacket[0:4]),
-		PacketId:      [2]byte(avlDataPacket[4:8]),
+		PacketID:      [2]byte(avlDataPacket[4:8]),
 		NotUsableByte: avlDataPacket[8],
 	}
 
 	avlPacketHeader := models.UdpAvlPacketHeader{
-		AvlPacketId: avlDataPacket[9],
+		AvlPacketID: avlDataPacket[9],
 		ImeiLength:  [2]byte(avlDataPacket[10:12]),
 		Imei:        [15]byte(avlDataPacket[12:26]),
 	}

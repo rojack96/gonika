@@ -10,7 +10,7 @@ type BaseParser interface {
 	Parse2bytes(data [2]byte) uint16
 	Parse4bytes(data [4]byte) uint32
 	Preamble(data [4]byte) models.Preamble
-	CodecId(data byte) models.CodecID
+	CodecID(data byte) models.CodecID
 	NumberOfData(data byte) models.NumberOfData
 	Quantity(data byte) models.Quantity
 	Type(data byte) models.Type
@@ -40,8 +40,8 @@ func (bp *baseParser) Preamble(data [4]byte) models.Preamble {
 	return models.Preamble(preamble)
 }
 
-// CodecId This function parse the codec id from AVL data.
-func (bp *baseParser) CodecId(data byte) models.CodecID {
+// CodecID This function parse the codec id from AVL data.
+func (bp *baseParser) CodecID(data byte) models.CodecID {
 	return models.CodecID(data)
 }
 

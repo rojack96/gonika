@@ -15,7 +15,7 @@ type CommandMessage struct {
 	//
 	// size is calculated from Codec ID field to the second command or response quantity field.
 	DataSize uint32  `json:"dataSize"`
-	CodecID  CodecID `json:"codecId"`
+	CodecID  CodecID `json:"codecID"`
 	// Command Quantity 1 (1 byte) it is ignored when parsing the message.
 	CommandQuantity1 Quantity `json:"commandQuantity1"`
 	Type             Type     `json:"type"`
@@ -38,7 +38,7 @@ type ResponseMessage struct {
 	//
 	// size is calculated from Codec ID field to the second command or response quantity field.
 	DataSize uint32  `json:"dataSize"`
-	CodecID  CodecID `json:"codecId"`
+	CodecID  CodecID `json:"codecID"`
 	// Command Quantity 1 (1 byte) it is ignored when parsing the message.
 	ResponseQuantity1 Quantity `json:"responseQuantity1"`
 	Type              Type     `json:"type"`
