@@ -2,6 +2,7 @@ package codec16
 
 import (
 	"encoding/hex"
+	"errors"
 
 	"github.com/rojack96/gonika/codec/constant"
 	"github.com/rojack96/gonika/codec/device_data_sending/models"
@@ -21,6 +22,9 @@ func (c *codec16) EncodeTCP(avlDataArray []m.AvlDataArrayEncoder) ([]byte, error
 	var packet models.AvlDataPacketByteTCP
 
 	nOfData := len(avlDataArray)
+	if nOfData > 256 {
+		return nil, errors.New("exceeded the number of data that can be entered")
+	}
 
 	packet.AvlDataPacketHeader.Preamble = [4]byte{0x00, 0x00, 0x00, 0x00}
 	packet.AvlDataArray.CodecID = constant.Codec16
@@ -49,6 +53,9 @@ func (c *codec16) EncodeUDP(imei string, avlDataArray []m.AvlDataArrayEncoder) (
 	var packet models.AvlDataPacketByteUDP
 
 	nOfData := len(avlDataArray)
+	if nOfData > 256 {
+		return nil, errors.New("exceeded the number of data that can be entered")
+	}
 
 	packet.UdpChannelHeader.Length = [2]byte{}
 	packet.UdpChannelHeader.PacketID = [2]byte{}

@@ -2,6 +2,7 @@ package codec8ext
 
 import (
 	"encoding/hex"
+	"errors"
 
 	"github.com/rojack96/gonika/codec/constant"
 	"github.com/rojack96/gonika/codec/device_data_sending/models"
@@ -21,6 +22,9 @@ func (c *codec8ext) EncodeTCP(avlDataArray []m.AvlDataArrayEncoder) ([]byte, err
 	var packet models.AvlDataPacketByteTCP
 
 	nOfData := len(avlDataArray)
+	if nOfData > 256 {
+		return nil, errors.New("exceeded the number of data that can be entered")
+	}
 
 	packet.AvlDataPacketHeader.Preamble = [4]byte{0x00, 0x00, 0x00, 0x00}
 	packet.AvlDataArray.CodecID = constant.Codec8ext
