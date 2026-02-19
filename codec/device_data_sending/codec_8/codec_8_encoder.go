@@ -7,7 +7,15 @@ import (
 	"github.com/rojack96/gonika/codec/device_data_sending/models"
 	"github.com/rojack96/gonika/codec/device_data_sending/utils"
 	m "github.com/rojack96/gonika/codec/models"
+	"github.com/rojack96/gonika/codec/parsers"
 )
+
+func NewEncoder() *codec8 {
+	return &codec8{
+		parser:  parsers.NewBaseParser(),
+		builder: utils.NewBuilders(),
+	}
+}
 
 func (c *codec8) EncodeTCP(avlDataArray []m.AvlDataArrayEncoder) ([]byte, error) {
 	var packet models.AvlDataPacketByteTCP

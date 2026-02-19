@@ -29,6 +29,7 @@ func main() {
 
 func codec8() {
 	// TODO use encoder instead of raw
+	//encoder, _ := cdc.DeviceDataSendingEncoderFactory(0x8)
 	const raw = "000000000000003608010000016B40D8EA30010000000000000000000000000000000105021503010101425E0F01F10000601A014E0000000000000000010000C7CF"
 	decoder, err := cdc.DeviceDataSendingDecoderFactory(raw)
 	if err != nil {

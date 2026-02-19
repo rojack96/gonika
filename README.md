@@ -64,7 +64,7 @@ resp := gprsDecoder.Decode()
 ## Project Layout
 
 - `codec/` — main factories, decoders and parsers
-  - `device_data_sending/` — codec_8, codec_8e, codec_16 implementations
+  - `device_data_sending/` — codec_8, codec_8ext, codec_16 implementations
   - `gprs_message/` — codec_12 and related builders
   - `parsers/` — base parser utilities
   - `models/` — typed structs for decoded data

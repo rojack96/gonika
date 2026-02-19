@@ -4,6 +4,10 @@ import (
 	"encoding/hex"
 	"fmt"
 
+	"github.com/rojack96/gonika/codec/constant"
+	codec16 "github.com/rojack96/gonika/codec/device_data_sending/codec_16"
+	codec8 "github.com/rojack96/gonika/codec/device_data_sending/codec_8"
+	codec8ext "github.com/rojack96/gonika/codec/device_data_sending/codec_8ext"
 	m "github.com/rojack96/gonika/codec/models"
 )
 
@@ -14,6 +18,19 @@ type AvlEncoder interface {
 
 type GprsEncoder interface {
 	Encode() []byte
+}
+
+func DeviceDataSendingEncoderFactory(codecID byte) (AvlEncoder, error) {
+	switch codecID {
+	case constant.Codec8:
+		return codec8.NewEncoder(), nil
+	case constant.Codec8ext:
+		return codec8ext.NewEncoder(), nil
+	case constant.Codec16:
+		return codec16.NewEncoder(), nil
+	default:
+		return nil, fmt.Errorf("unsupported codec: 0x%X", codecID)
+	}
 }
 
 func transformData(dataBuffer any) ([]byte, error) {
