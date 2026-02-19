@@ -1,0 +1,137 @@
+package codec8
+
+import (
+	"encoding/hex"
+	"errors"
+
+	"github.com/rojack96/gonika/codec/constant"
+	"github.com/rojack96/gonika/codec/device_data_sending/models"
+	"github.com/rojack96/gonika/codec/device_data_sending/utils"
+	m "github.com/rojack96/gonika/codec/models"
+	"github.com/rojack96/gonika/codec/parsers"
+)
+
+func NewEncoder() *codec8 {
+	return &codec8{
+		parser:  parsers.NewBaseParser(),
+		builder: utils.NewBuilders(),
+	}
+}
+
+func (c *codec8) EncodeTCP(avlDataArray []m.AvlDataArrayEncoder) ([]byte, error) {
+	var packet models.AvlDataPacketByteTCP
+
+	nOfData := len(avlDataArray)
+	if nOfData > 256 {
+		return nil, errors.New("exceeded the number of data that can be entered")
+	}
+
+	packet.AvlDataPacketHeader.Preamble = [4]byte{0x00, 0x00, 0x00, 0x00}
+	packet.AvlDataArray.CodecID = constant.Codec8
+	packet.AvlDataArray.NumberOfData1 = byte(nOfData)
+	packet.AvlDataArray.NumberOfData2 = byte(nOfData)
+
+	for n := range nOfData {
+		data, err := avlDataArrayBuilder(*c.builder, avlDataArray[n])
+		if err != nil {
+			return nil, err
+		}
+		packet.AvlDataArray.AvlData = append(packet.AvlDataArray.AvlData, data...)
+	}
+
+	packet.AvlDataPacketHeader.DataFieldLength = c.builder.DataFieldLength(packet)
+
+	result := c.builder.MergeDataTCP(packet)
+	packet.Crc16 = c.builder.Crc16Builder(result)
+
+	result = append(result, packet.Crc16[:]...)
+
+	return result, nil
+}
+
+func (c *codec8) EncodeUDP(imei string, avlDataArray []m.AvlDataArrayEncoder) ([]byte, error) {
+	var packet models.AvlDataPacketByteUDP
+
+	nOfData := len(avlDataArray)
+
+	packet.UdpChannelHeader.Length = [2]byte{}
+	packet.UdpChannelHeader.PacketID = [2]byte{}
+	packet.UdpChannelHeader.NotUsableByte = 0x01
+	packet.UdpAvlPacketHeader.AvlPacketID = 0x05
+	packet.UdpAvlPacketHeader.ImeiLength = [2]byte{0x00, 0x0F}
+	imeiByte, err := hex.DecodeString(imei)
+	if err != nil {
+		return nil, err
+	}
+	packet.UdpAvlPacketHeader.Imei = [15]byte(imeiByte)
+	packet.AvlDataArray.CodecID = constant.Codec8
+	packet.AvlDataArray.NumberOfData1 = byte(nOfData)
+	packet.AvlDataArray.NumberOfData2 = byte(nOfData)
+
+	for n := range nOfData {
+		data, err := avlDataArrayBuilder(*c.builder, avlDataArray[n])
+		if err != nil {
+			return nil, err
+		}
+		packet.AvlDataArray.AvlData = append(packet.AvlDataArray.AvlData, data...)
+	}
+
+	result := c.builder.MergeDataUDP(packet)
+
+	return result, nil
+}
+
+func avlDataArrayBuilder(b utils.Builders, avlData m.AvlDataArrayEncoder) ([]byte, error) {
+	result := make([]byte, 0)
+
+	gps := avlData.GpsElementEncoder
+	io := avlData.AvlDataEncoder.(m.Codec8Encoder)
+
+	nOfOneByte := uint8(len(io.OneByte))
+	nOfTwoByte := uint8(len(io.TwoByte))
+	nOfFourByte := uint8(len(io.FourByte))
+	nOfEightByte := uint8(len(io.EightByte))
+
+	timestamp := b.Timestamp()
+	priority := b.Priority()
+	eventIo := b.EventIo1Byte()
+	nOfTotalIo := nOfOneByte + nOfTwoByte + nOfFourByte + nOfEightByte
+
+	result = append(result, timestamp[:]...)
+	result = append(result, priority)
+
+	if err := b.GpsElement(&result, gps); err != nil {
+		return nil, err
+	}
+	result = append(result, eventIo)
+	result = append(result, nOfTotalIo)
+
+	result = append(result, nOfOneByte)
+	for k, v := range io.OneByte {
+		result = append(result, k)
+		result = append(result, v)
+	}
+
+	result = append(result, nOfTwoByte)
+	for k, v := range io.TwoByte {
+		result = append(result, k)
+		value := b.Uint16ToBytes(v)
+		result = append(result, value[:]...)
+	}
+
+	result = append(result, nOfFourByte)
+	for k, v := range io.FourByte {
+		result = append(result, k)
+		value := b.Uint32ToBytes(v)
+		result = append(result, value[:]...)
+	}
+
+	result = append(result, nOfEightByte)
+	for k, v := range io.EightByte {
+		result = append(result, k)
+		value := b.Uint64ToBytes(v)
+		result = append(result, value[:]...)
+	}
+
+	return result, nil
+}

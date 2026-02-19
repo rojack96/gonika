@@ -14,7 +14,7 @@ type AvlDataPacketTCP struct {
 	//
 	// size is calculated starting from Codec ID to Number of Data 2.
 	DataFieldLength uint32       `json:"dataFieldLength"`
-	CodecID         CodecID      `json:"codecId"`
+	CodecID         CodecID      `json:"codecID"`
 	NumberOfData1   NumberOfData `json:"numberOfData1"`
 	AvlData         []AvlData    `json:"avlData"`
 	// Number of Data 2 (1 byte)
@@ -30,7 +30,7 @@ type AvlDataPacketUDP struct {
 	//
 	// packet length (excluding this field) in big ending byte order.
 	Length uint16
-	// PacketId
+	// PacketID
 	//
 	// packet ID unique for this channel
 	PacketID uint16
@@ -38,16 +38,16 @@ type AvlDataPacketUDP struct {
 	//
 	// not usable byte.
 	NotUsableByte uint8
-	// AvlPacketId
+	// AvlPacketID
 	//
 	// ID identifying this AVL packet.
-	AvlPacketId uint8
+	AvlPacketID uint8
 	// ImeiLength
 	//
 	// always will be 0x000F
 	ImeiLength    uint16
 	Imei          string
-	CodecID       CodecID      `json:"codecId"`
+	CodecID       CodecID      `json:"codecID"`
 	NumberOfData1 NumberOfData `json:"numberOfData1"`
 	AvlData       []AvlData    `json:"avlData"`
 	// Number of Data 2 (1 byte)

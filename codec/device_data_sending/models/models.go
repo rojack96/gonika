@@ -29,7 +29,7 @@ type AvlDataArray struct {
 	NumberOfData2 byte
 }
 
-type AvlDataPacketByte struct {
+type AvlDataPacketByteTCP struct {
 	AvlDataPacketHeader AvlDataPacketHeader
 	AvlDataArray        AvlDataArray
 	// CRC-16 (4 bytes)
@@ -42,17 +42,17 @@ type AvlDataPacketByte struct {
 
 type UdpChannelHeader struct {
 	Length        [2]byte
-	PacketId      [2]byte
+	PacketID      [2]byte
 	NotUsableByte byte
 }
 
 type UdpAvlPacketHeader struct {
-	AvlPacketId byte
+	AvlPacketID byte
 	ImeiLength  [2]byte
 	Imei        [15]byte
 }
 
-type UdpAvlDataPacketByte struct {
+type AvlDataPacketByteUDP struct {
 	UdpChannelHeader   UdpChannelHeader
 	UdpAvlPacketHeader UdpAvlPacketHeader
 	AvlDataArray       AvlDataArray
