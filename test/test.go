@@ -21,15 +21,18 @@ func main() {
 		fmt.Println("IMEI not found in the data.")
 	}
 
-	codec8()
-	//codec8ext()
-	//codec16()
-	//codec12Response()
-	//codec13Response()
-	//codec14Response()
+	codec8(false)
+	codec8ext(false)
+	codec16(true)
+	codec12Response(false)
+	codec13Response(false)
+	codec14Response(false)
 }
 
-func codec8() {
+func codec8(enabled bool) {
+	if !enabled {
+		return
+	}
 	//const raw = "000000000000003608010000016B40D8EA30010000000000000000000000000000000105021503010101425E0F01F10000601A014E0000000000000000010000C7CF"
 
 	avlSlice := []models.AvlDataArrayEncoder{
@@ -75,12 +78,47 @@ func codec8() {
 	fmt.Println(string(jsonData))
 }
 
-func codec8ext() {
-	// TODO use encoder instead of raw
-	const raw = "00000000000000A98E020000017357633410000F0DC39B2095964A00AC00F80B00000000000B000500F00100150400C8000" +
-		"04501007156000500B5000500B600040018000000430FE00044011B000100F10000601B000000000000017357633BE1000F0DC39B209" +
-		"5964A00AC00F80B000001810001000000000000000000010181002D11213102030405060708090A0B0C0D0E0F104545010ABC2121020" +
-		"30405060708090A0B0C0D0E0F10020B010AAD020000BF30"
+func codec8ext(enabled bool) {
+	if !enabled {
+		return
+	}
+
+	/*
+		const raw = "00000000000000A98E020000017357633410000F0DC39B2095964A00AC00F80B00000000000B000500F00100150400C8000" +
+			"04501007156000500B5000500B600040018000000430FE00044011B000100F10000601B000000000000017357633BE1000F0DC39B209" +
+			"5964A00AC00F80B000001810001000000000000000000010181002D11213102030405060708090A0B0C0D0E0F104545010ABC2121020" +
+			"30405060708090A0B0C0D0E0F10020B010AAD020000BF30"
+	*/
+	avlSlice := []models.AvlDataArrayEncoder{
+		{
+			AvlDataEncoder: models.Codec8ExtEncoder{
+				OneByte: map[uint16]uint8{
+					1: 1,
+				},
+				XByte: map[uint16]string{
+					287: "0B0C0D0E0",
+				},
+			},
+			GpsElementEncoder: models.GpsElementEncoder{
+				Latitude:   "40.85130713602579",
+				Longitude:  "14.269259004134728",
+				Altitude:   0,
+				Angle:      0,
+				Satellites: 0,
+				Speed:      0,
+			},
+		},
+	}
+
+	encoder, err := cdc.DeviceDataSendingEncoderFactory(constant.Codec8ext)
+	if err != nil {
+		fmt.Println("err", err)
+	}
+
+	raw, err := encoder.EncodeTCP(avlSlice)
+	if err != nil {
+		fmt.Println("err2", err)
+	}
 	decoder, err := cdc.DeviceDataSendingDecoderFactory(raw)
 	if err != nil {
 		fmt.Println(err)
@@ -96,11 +134,66 @@ func codec8ext() {
 	fmt.Println(string(jsonData))
 }
 
-func codec16() {
-	// TODO implement codec16
+func codec16(enabled bool) {
+	if !enabled {
+		return
+	}
+	if !enabled {
+		return
+	}
+
+	/*
+		const raw = "00000000000000A98E020000017357633410000F0DC39B2095964A00AC00F80B00000000000B000500F00100150400C8000" +
+			"04501007156000500B5000500B600040018000000430FE00044011B000100F10000601B000000000000017357633BE1000F0DC39B209" +
+			"5964A00AC00F80B000001810001000000000000000000010181002D11213102030405060708090A0B0C0D0E0F104545010ABC2121020" +
+			"30405060708090A0B0C0D0E0F10020B010AAD020000BF30"
+	*/
+	avlSlice := []models.AvlDataArrayEncoder{
+		{
+			AvlDataEncoder: models.Codec16Encoder{
+				OneByte: map[uint16]uint8{
+					1: 1,
+				},
+			},
+			GpsElementEncoder: models.GpsElementEncoder{
+				Latitude:   "40.85130713602579",
+				Longitude:  "14.269259004134728",
+				Altitude:   0,
+				Angle:      0,
+				Satellites: 0,
+				Speed:      0,
+			},
+		},
+	}
+
+	encoder, err := cdc.DeviceDataSendingEncoderFactory(constant.Codec16)
+	if err != nil {
+		fmt.Println("err", err)
+	}
+
+	raw, err := encoder.EncodeTCP(avlSlice)
+	if err != nil {
+		fmt.Println("err2", err)
+	}
+	decoder, err := cdc.DeviceDataSendingDecoderFactory(raw)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	resp := decoder.DecodeTCP()
+	jsonData, err := resp.MarshalIndent("", "  ")
+	if err != nil {
+		fmt.Println("Error marshaling JSON:", err)
+		return
+	}
+	fmt.Println(string(jsonData))
 }
 
-func codec12Response() {
+func codec12Response(enabled bool) {
+	if !enabled {
+		return
+	}
 	// TODO use encoder instead of raw
 	const raw = "00000000000000900C010600000088494E493A323031392F372F323220373A3232205254433A323031392F372F323220373A3533205253543A32204552523A312053523A302042523A302043463A302046473A3020464C3A302054553A302F302055543A3020534D533A30204E4F4750533A303A3330204750533A31205341543A302052533A332052463A36352053463A31204D443A30010000C78F"
 	decoder, err := cdc.GprsMessageDecoderFactory(raw)
@@ -115,7 +208,10 @@ func codec12Response() {
 	fmt.Println(string(jsonData))
 }
 
-func codec13Response() {
+func codec13Response(enabled bool) {
+	if !enabled {
+		return
+	}
 	// TODO use encoder instead of raw
 	const raw = "000000000000001D0D01060000001564E8328168656C6C6F206C65747320746573740D0A0100003548" // Add raw data for codec13 response
 	decoder, err := cdc.GprsMessageDecoderFactory(raw)
@@ -130,7 +226,10 @@ func codec13Response() {
 	fmt.Println(string(jsonData))
 }
 
-func codec14Response() {
+func codec14Response(enabled bool) {
+	if !enabled {
+		return
+	}
 	// TODO use encoder instead of raw
 	const raw = "00000000000000AB0E0106000000A303520930814522515665723A30332E31382E31345F3034204750533A41584E5F352E31305F333333332048773A464D42313230204D6F643A313520494D45493A33353230393330383134353232353120496E69743A323031382D31312D323220373A313320557074696D653A3137323334204D41433A363042444430303136323631205350433A312830292041584C3A30204F42443A3020424C3A312E362042543A340100007AAE" // Add raw data for codec14 response
 	decoder, err := cdc.GprsMessageDecoderFactory(raw)
