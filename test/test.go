@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/hex"
 	"fmt"
 
 	cdc "github.com/rojack96/gonika/codec"
+	"github.com/rojack96/gonika/codec/models"
 )
 
 func main() {
@@ -28,8 +30,38 @@ func main() {
 }
 
 func codec8() {
+	var testSlice []models.AvlDataArrayEncoder
+	cdc8 := models.Codec8Encoder{
+		OneByte: map[uint8]uint8{
+			1: 1,
+		},
+	}
+	gps := models.GpsElementEncoder{
+		Latitude:   "40.85130713602579",
+		Longitude:  "14.269259004134728",
+		Altitude:   0,
+		Angle:      0,
+		Satellites: 0,
+		Speed:      0,
+	}
+
+	test := models.AvlDataArrayEncoder{
+		CodecEncoder:      cdc8,
+		GpsElementEncoder: gps,
+	}
+
+	testSlice = append(testSlice, test)
 	// TODO use encoder instead of raw
-	//encoder, _ := cdc.DeviceDataSendingEncoderFactory(0x8)
+	encoder, err := cdc.DeviceDataSendingEncoderFactory(0x8)
+	if err != nil {
+		fmt.Println("err", err)
+	}
+
+	e, err := encoder.EncodeTCP(testSlice)
+	if err != nil {
+		fmt.Println("err2", err)
+	}
+	fmt.Println("enc", hex.EncodeToString(e))
 	const raw = "000000000000003608010000016B40D8EA30010000000000000000000000000000000105021503010101425E0F01F10000601A014E0000000000000000010000C7CF"
 	decoder, err := cdc.DeviceDataSendingDecoderFactory(raw)
 	if err != nil {
