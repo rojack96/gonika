@@ -1,0 +1,59 @@
+{
+  "codec": 8,
+  "avlDataPacket": [
+    {
+      "avlData": {
+        "oneByte": {
+          "1": 1
+        },
+        "twoByte": {},
+        "fourByte": {},
+        "eightByte": {}
+      },
+      "gps": {
+        "latitude": "",
+        "longitude": "",
+        "altitude": 0,
+        "angle": 0,
+        "satellites": 0,
+        "speed": 0
+      }
+    },
+    {
+      "avlData": {
+        "oneByte": {
+          "1": 1
+        },
+        "twoByte": {},
+        "fourByte": {},
+        "eightByte": {}
+      },
+      "gps": {
+        "latitude": "",
+        "longitude": "",
+        "altitude": 0,
+        "angle": 0,
+        "satellites": 0,
+        "speed": 0
+      }
+    },
+    {
+      "avlData": {
+        "oneByte": {
+          "1": 1
+        },
+        "twoByte": {},
+        "fourByte": {},
+        "eightByte": {}
+      },
+      "gps": {
+        "latitude": "",
+        "longitude": "",
+        "altitude": 0,
+        "angle": 0,
+        "satellites": 0,
+        "speed": 0
+      }
+    }
+  ]
+}

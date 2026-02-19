@@ -85,7 +85,7 @@ func avlDataArrayBuilder(b utils.Builders, avlData m.AvlDataArrayEncoder) ([]byt
 	result := make([]byte, 0)
 
 	gps := avlData.GpsElementEncoder
-	io := avlData.CodecEncoder.(m.Codec8Encoder)
+	io := avlData.AvlDataEncoder.(m.Codec8Encoder)
 
 	nOfOneByte := uint8(len(io.OneByte))
 	nOfTwoByte := uint8(len(io.TwoByte))

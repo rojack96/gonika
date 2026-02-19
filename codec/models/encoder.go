@@ -1,6 +1,6 @@
 package models
 
-type CodecEncoder interface {
+type AvlDataEncoder interface {
 	isAvlDataEncoder()
 }
 
@@ -40,6 +40,6 @@ type GpsElementEncoder struct {
 }
 
 type AvlDataArrayEncoder struct {
-	CodecEncoder
+	AvlDataEncoder
 	GpsElementEncoder
 }
