@@ -1,4 +1,4 @@
-package codec8
+package codec16
 
 import (
 	"encoding/hex"
@@ -9,13 +9,13 @@ import (
 	m "github.com/rojack96/gonika/codec/models"
 )
 
-func (c *codec8) EncodeTCP(avlDataArray []m.AvlDataArrayEncoder) ([]byte, error) {
+func (c *codec16) EncodeTCP(avlDataArray []m.AvlDataArrayEncoder) ([]byte, error) {
 	var packet models.AvlDataPacketByteTCP
 
 	nOfData := len(avlDataArray)
 
 	packet.AvlDataPacketHeader.Preamble = [4]byte{0x00, 0x00, 0x00, 0x00}
-	packet.AvlDataArray.CodecID = constant.Codec8
+	packet.AvlDataArray.CodecID = constant.Codec16
 	packet.AvlDataArray.NumberOfData1 = byte(nOfData)
 	packet.AvlDataArray.NumberOfData2 = byte(nOfData)
 
@@ -37,7 +37,7 @@ func (c *codec8) EncodeTCP(avlDataArray []m.AvlDataArrayEncoder) ([]byte, error)
 	return result, nil
 }
 
-func (c *codec8) EncodeUDP(imei string, avlDataArray []m.AvlDataArrayEncoder) ([]byte, error) {
+func (c *codec16) EncodeUDP(imei string, avlDataArray []m.AvlDataArrayEncoder) ([]byte, error) {
 	var packet models.AvlDataPacketByteUDP
 
 	nOfData := len(avlDataArray)
@@ -52,7 +52,7 @@ func (c *codec8) EncodeUDP(imei string, avlDataArray []m.AvlDataArrayEncoder) ([
 		return nil, err
 	}
 	packet.UdpAvlPacketHeader.Imei = [15]byte(imeiByte)
-	packet.AvlDataArray.CodecID = constant.Codec8
+	packet.AvlDataArray.CodecID = constant.Codec16
 	packet.AvlDataArray.NumberOfData1 = byte(nOfData)
 	packet.AvlDataArray.NumberOfData2 = byte(nOfData)
 
@@ -73,7 +73,7 @@ func avlDataArrayBuilder(b utils.Builders, avlData m.AvlDataArrayEncoder) ([]byt
 	result := make([]byte, 0)
 
 	gps := avlData.GpsElementEncoder
-	io := avlData.CodecEncoder.(m.Codec8Encoder)
+	io := avlData.CodecEncoder.(m.Codec16Encoder)
 
 	nOfOneByte := uint8(len(io.OneByte))
 	nOfTwoByte := uint8(len(io.TwoByte))
@@ -82,7 +82,8 @@ func avlDataArrayBuilder(b utils.Builders, avlData m.AvlDataArrayEncoder) ([]byt
 
 	timestamp := b.Timestamp()
 	priority := b.Priority()
-	eventIo := b.EventIo1Byte()
+	eventIo := b.EventIo2Byte()
+	generationType := b.GenerationType()
 	nOfTotalIo := nOfOneByte + nOfTwoByte + nOfFourByte + nOfEightByte
 
 	result = append(result, timestamp[:]...)
@@ -91,32 +92,38 @@ func avlDataArrayBuilder(b utils.Builders, avlData m.AvlDataArrayEncoder) ([]byt
 	if err := b.GpsElement(&result, gps); err != nil {
 		return nil, err
 	}
-	result = append(result, eventIo)
+
+	result = append(result, eventIo[:]...)
+	result = append(result, generationType)
 	result = append(result, nOfTotalIo)
 
 	result = append(result, nOfOneByte)
 	for k, v := range io.OneByte {
-		result = append(result, k)
+		id := b.Uint16ToBytes(k)
+		result = append(result, id[:]...)
 		result = append(result, v)
 	}
 
 	result = append(result, nOfTwoByte)
 	for k, v := range io.TwoByte {
-		result = append(result, k)
+		id := b.Uint16ToBytes(k)
+		result = append(result, id[:]...)
 		value := b.Uint16ToBytes(v)
 		result = append(result, value[:]...)
 	}
 
 	result = append(result, nOfFourByte)
 	for k, v := range io.FourByte {
-		result = append(result, k)
+		id := b.Uint16ToBytes(k)
+		result = append(result, id[:]...)
 		value := b.Uint32ToBytes(v)
 		result = append(result, value[:]...)
 	}
 
 	result = append(result, nOfEightByte)
 	for k, v := range io.EightByte {
-		result = append(result, k)
+		id := b.Uint16ToBytes(k)
+		result = append(result, id[:]...)
 		value := b.Uint64ToBytes(v)
 		result = append(result, value[:]...)
 	}

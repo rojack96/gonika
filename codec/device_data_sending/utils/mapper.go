@@ -4,8 +4,8 @@ import (
 	"github.com/rojack96/gonika/codec/device_data_sending/models"
 )
 
-func DataMapping(avlDataPacket []byte) *models.AvlDataPacketByte {
-	var result models.AvlDataPacketByte
+func DataMapping(avlDataPacket []byte) *models.AvlDataPacketByteTCP {
+	var result models.AvlDataPacketByteTCP
 
 	if len(avlDataPacket) == 0 {
 		return nil
@@ -23,7 +23,7 @@ func DataMapping(avlDataPacket []byte) *models.AvlDataPacketByte {
 		NumberOfData2: avlDataPacket[len(avlDataPacket)-5],
 	}
 
-	result = models.AvlDataPacketByte{
+	result = models.AvlDataPacketByteTCP{
 		AvlDataPacketHeader: avlDataPacketHeader,
 		AvlDataArray:        avlDataArray,
 		Crc16:               [4]byte(avlDataPacket[len(avlDataPacket)-4:]),
@@ -32,8 +32,8 @@ func DataMapping(avlDataPacket []byte) *models.AvlDataPacketByte {
 	return &result
 }
 
-func UdpDataMapping(avlDataPacket []byte) *models.UdpAvlDataPacketByte {
-	var result models.UdpAvlDataPacketByte
+func UdpDataMapping(avlDataPacket []byte) *models.AvlDataPacketByteUDP {
+	var result models.AvlDataPacketByteUDP
 
 	if len(avlDataPacket) == 0 {
 		return nil
@@ -58,7 +58,7 @@ func UdpDataMapping(avlDataPacket []byte) *models.UdpAvlDataPacketByte {
 		NumberOfData2: avlDataPacket[len(avlDataPacket)-1],
 	}
 
-	result = models.UdpAvlDataPacketByte{
+	result = models.AvlDataPacketByteUDP{
 		UdpChannelHeader:   udpChannelHeader,
 		UdpAvlPacketHeader: avlPacketHeader,
 		AvlDataArray:       avlDataArray,

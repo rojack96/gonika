@@ -8,8 +8,8 @@ import (
 )
 
 type AvlEncoder interface {
-	EncoderTCP(numberOfData uint8, gpsList []m.GpsElementEncoder, io m.Codec8Encoder) ([]byte, error)
-	EncodeUDP() []byte
+	EncodeTCP(avlDataArray []m.AvlDataArrayEncoder) ([]byte, error)
+	EncodeUDP(imei string, avlDataArray []m.AvlDataArrayEncoder) ([]byte, error)
 }
 
 type GprsEncoder interface {

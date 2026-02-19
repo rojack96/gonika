@@ -1,4 +1,4 @@
-package codec8
+package codec8e
 
 import (
 	"encoding/hex"
@@ -9,18 +9,18 @@ import (
 	m "github.com/rojack96/gonika/codec/models"
 )
 
-func (c *codec8) EncodeTCP(avlDataArray []m.AvlDataArrayEncoder) ([]byte, error) {
+func (c *codec8ext) EncodeTCP(avlDataArray []m.AvlDataArrayEncoder) ([]byte, error) {
 	var packet models.AvlDataPacketByteTCP
 
 	nOfData := len(avlDataArray)
 
 	packet.AvlDataPacketHeader.Preamble = [4]byte{0x00, 0x00, 0x00, 0x00}
-	packet.AvlDataArray.CodecID = constant.Codec8
+	packet.AvlDataArray.CodecID = constant.Codec8ext
 	packet.AvlDataArray.NumberOfData1 = byte(nOfData)
 	packet.AvlDataArray.NumberOfData2 = byte(nOfData)
 
 	for n := range nOfData {
-		data, err := avlDataArrayBuilder(*c.builder, avlDataArray[n])
+		data, err := avlDataArrayBuilderExt(*c.builder, avlDataArray[n])
 		if err != nil {
 			return nil, err
 		}
@@ -37,7 +37,7 @@ func (c *codec8) EncodeTCP(avlDataArray []m.AvlDataArrayEncoder) ([]byte, error)
 	return result, nil
 }
 
-func (c *codec8) EncodeUDP(imei string, avlDataArray []m.AvlDataArrayEncoder) ([]byte, error) {
+func (c *codec8ext) EncodeUDP(imei string, avlDataArray []m.AvlDataArrayEncoder) ([]byte, error) {
 	var packet models.AvlDataPacketByteUDP
 
 	nOfData := len(avlDataArray)
@@ -52,12 +52,12 @@ func (c *codec8) EncodeUDP(imei string, avlDataArray []m.AvlDataArrayEncoder) ([
 		return nil, err
 	}
 	packet.UdpAvlPacketHeader.Imei = [15]byte(imeiByte)
-	packet.AvlDataArray.CodecID = constant.Codec8
+	packet.AvlDataArray.CodecID = constant.Codec8ext
 	packet.AvlDataArray.NumberOfData1 = byte(nOfData)
 	packet.AvlDataArray.NumberOfData2 = byte(nOfData)
 
 	for n := range nOfData {
-		data, err := avlDataArrayBuilder(*c.builder, avlDataArray[n])
+		data, err := avlDataArrayBuilderExt(*c.builder, avlDataArray[n])
 		if err != nil {
 			return nil, err
 		}
@@ -69,21 +69,22 @@ func (c *codec8) EncodeUDP(imei string, avlDataArray []m.AvlDataArrayEncoder) ([
 	return result, nil
 }
 
-func avlDataArrayBuilder(b utils.Builders, avlData m.AvlDataArrayEncoder) ([]byte, error) {
+func avlDataArrayBuilderExt(b utils.Builders, avlData m.AvlDataArrayEncoder) ([]byte, error) {
 	result := make([]byte, 0)
 
 	gps := avlData.GpsElementEncoder
-	io := avlData.CodecEncoder.(m.Codec8Encoder)
+	io := avlData.CodecEncoder.(m.Codec8ExtEncoder)
 
-	nOfOneByte := uint8(len(io.OneByte))
-	nOfTwoByte := uint8(len(io.TwoByte))
-	nOfFourByte := uint8(len(io.FourByte))
-	nOfEightByte := uint8(len(io.EightByte))
+	nOfOneByte := uint16(len(io.OneByte))
+	nOfTwoByte := uint16(len(io.TwoByte))
+	nOfFourByte := uint16(len(io.FourByte))
+	nOfEightByte := uint16(len(io.EightByte))
+	nOfXByte := uint16(len(io.XByte))
 
 	timestamp := b.Timestamp()
 	priority := b.Priority()
-	eventIo := b.EventIo1Byte()
-	nOfTotalIo := nOfOneByte + nOfTwoByte + nOfFourByte + nOfEightByte
+	eventIo := b.EventIo2Byte()
+	nOfTotalIo := nOfOneByte + nOfTwoByte + nOfFourByte + nOfEightByte + nOfXByte
 
 	result = append(result, timestamp[:]...)
 	result = append(result, priority)
@@ -91,34 +92,65 @@ func avlDataArrayBuilder(b utils.Builders, avlData m.AvlDataArrayEncoder) ([]byt
 	if err := b.GpsElement(&result, gps); err != nil {
 		return nil, err
 	}
-	result = append(result, eventIo)
-	result = append(result, nOfTotalIo)
 
-	result = append(result, nOfOneByte)
+	// Event IO (2 bytes)
+	result = append(result, eventIo[:]...)
+
+	// Number of Total IO (2 bytes)
+	nOfTotalIoBytes := b.Uint16ToBytes(nOfTotalIo)
+	result = append(result, nOfTotalIoBytes[:]...)
+
+	// One Byte IO
+	oneByte := b.Uint16ToBytes(nOfOneByte)
+	result = append(result, oneByte[:]...)
 	for k, v := range io.OneByte {
-		result = append(result, k)
+		id := b.Uint16ToBytes(k)
+		result = append(result, id[:]...)
 		result = append(result, v)
 	}
 
-	result = append(result, nOfTwoByte)
+	// Two Byte IO
+	twoByte := b.Uint16ToBytes(nOfTwoByte)
+	result = append(result, twoByte[:]...)
 	for k, v := range io.TwoByte {
-		result = append(result, k)
+		id := b.Uint16ToBytes(k)
+		result = append(result, id[:]...)
 		value := b.Uint16ToBytes(v)
 		result = append(result, value[:]...)
 	}
 
-	result = append(result, nOfFourByte)
+	// Four Byte IO
+	fourByte := b.Uint16ToBytes(nOfFourByte)
+	result = append(result, fourByte[:]...)
 	for k, v := range io.FourByte {
-		result = append(result, k)
+		id := b.Uint16ToBytes(k)
+		result = append(result, id[:]...)
 		value := b.Uint32ToBytes(v)
 		result = append(result, value[:]...)
 	}
 
-	result = append(result, nOfEightByte)
+	// Eight Byte IO
+	eightByte := b.Uint16ToBytes(nOfEightByte)
+	result = append(result, eightByte[:]...)
 	for k, v := range io.EightByte {
-		result = append(result, k)
+		id := b.Uint16ToBytes(k)
+		result = append(result, id[:]...)
 		value := b.Uint64ToBytes(v)
 		result = append(result, value[:]...)
+	}
+
+	// X Byte IO
+	xByte := b.Uint16ToBytes(nOfXByte)
+	result = append(result, xByte[:]...)
+	for k, v := range io.XByte {
+		id := b.Uint16ToBytes(k)
+		result = append(result, id[:]...)
+		// Convert string to bytes
+		valueBytes := []byte(v)
+		// Write value length (2 bytes)
+		lengthBytes := b.Uint16ToBytes(uint16(len(valueBytes)))
+		result = append(result, lengthBytes[:]...)
+		result = append(result, valueBytes...)
 	}
 
 	return result, nil
