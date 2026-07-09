@@ -1,4 +1,4 @@
-package utils
+package helpers
 
 import "github.com/rojack96/gonika/codec/gprs_message/models"
 

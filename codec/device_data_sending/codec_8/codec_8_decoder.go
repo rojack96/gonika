@@ -5,7 +5,7 @@ import (
 	"maps"
 
 	"github.com/rojack96/gonika/codec/constant"
-	"github.com/rojack96/gonika/codec/device_data_sending/utils"
+	utils "github.com/rojack96/gonika/codec/device_data_sending/helpers"
 	"github.com/rojack96/gonika/codec/models"
 	"github.com/rojack96/gonika/codec/parsers"
 )
