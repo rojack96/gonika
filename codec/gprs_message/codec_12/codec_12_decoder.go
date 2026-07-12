@@ -1,7 +1,7 @@
 package codec12
 
 import (
-	"github.com/rojack96/gonika/codec/gprs_message/utils"
+	"github.com/rojack96/gonika/codec/gprs_message/helpers"
 	"github.com/rojack96/gonika/codec/models"
 	"github.com/rojack96/gonika/codec/parsers"
 )
@@ -9,14 +9,14 @@ import (
 type codec12 struct {
 	command       string
 	avlDataPacket []byte
-	builders      *utils.Builders
+	builders      *helpers.Builders
 	parser        parsers.BaseParser
 }
 
 func New(avlDataPacket []byte) *codec12 {
 	return &codec12{
 		avlDataPacket: avlDataPacket,
-		builders:      utils.NewBuilders(),
+		builders:      helpers.NewBuilders(),
 		parser:        parsers.NewBaseParser(),
 	}
 }
@@ -26,7 +26,7 @@ func New(avlDataPacket []byte) *codec12 {
 func (c *codec12) DecodeResponse() *models.ResponseMessage {
 	var result models.ResponseMessage
 
-	data := utils.ResponseDataMappingCodec12(c.avlDataPacket)
+	data := helpers.ResponseDataMappingCodec12(c.avlDataPacket)
 
 	result.Preamble = c.parser.Preamble(data.Preamble)
 	result.DataSize = c.parser.Parse4bytes(data.DataSize)
@@ -46,7 +46,7 @@ func (c *codec12) DecodeResponse() *models.ResponseMessage {
 func (c *codec12) DecodeCommand() (*models.CommandMessage, error) {
 	var result models.CommandMessage
 
-	data := utils.CommandDataMappingCodec12(c.avlDataPacket)
+	data := helpers.CommandDataMappingCodec12(c.avlDataPacket)
 
 	result.Preamble = c.parser.Preamble(data.Preamble)
 	result.DataSize = c.parser.Parse4bytes(data.DataSize)

@@ -1,11 +1,10 @@
-package utils
+package helpers
 
 import (
 	"github.com/rojack96/gonika/codec/device_data_sending/models"
 )
 
 func DataMapping(avlDataPacket []byte) *models.AvlDataPacketByteTCP {
-	var result models.AvlDataPacketByteTCP
 
 	if len(avlDataPacket) == 0 {
 		return nil
@@ -23,7 +22,7 @@ func DataMapping(avlDataPacket []byte) *models.AvlDataPacketByteTCP {
 		NumberOfData2: avlDataPacket[len(avlDataPacket)-5],
 	}
 
-	result = models.AvlDataPacketByteTCP{
+	result := models.AvlDataPacketByteTCP{
 		AvlDataPacketHeader: avlDataPacketHeader,
 		AvlDataArray:        avlDataArray,
 		Crc16:               [4]byte(avlDataPacket[len(avlDataPacket)-4:]),
@@ -33,7 +32,6 @@ func DataMapping(avlDataPacket []byte) *models.AvlDataPacketByteTCP {
 }
 
 func UdpDataMapping(avlDataPacket []byte) *models.AvlDataPacketByteUDP {
-	var result models.AvlDataPacketByteUDP
 
 	if len(avlDataPacket) == 0 {
 		return nil
@@ -58,7 +56,7 @@ func UdpDataMapping(avlDataPacket []byte) *models.AvlDataPacketByteUDP {
 		NumberOfData2: avlDataPacket[len(avlDataPacket)-1],
 	}
 
-	result = models.AvlDataPacketByteUDP{
+	result := models.AvlDataPacketByteUDP{
 		UdpChannelHeader:   udpChannelHeader,
 		UdpAvlPacketHeader: avlPacketHeader,
 		AvlDataArray:       avlDataArray,

@@ -2,14 +2,14 @@ package codec13
 
 import (
 	"github.com/rojack96/gonika/codec/constant"
+	"github.com/rojack96/gonika/codec/gprs_message/helpers"
 	mapper "github.com/rojack96/gonika/codec/gprs_message/models"
-	"github.com/rojack96/gonika/codec/gprs_message/utils"
 	"github.com/rojack96/gonika/codec/parsers"
 )
 
 func NewEncoder() *codec13 {
 	return &codec13{
-		builders: utils.NewBuilders(),
+		builders: helpers.NewBuilders(),
 		parser:   parsers.NewBaseParser(),
 	}
 }
@@ -19,7 +19,7 @@ func (c *codec13) Encode() []byte {
 	var cmd mapper.CommandMessage
 
 	cmd.Preamble = [4]byte{0x00, 0x00, 0x00, 0x00}
-	cmd.CodecID = constant.Codec12
+	cmd.CodecID = constant.Codec13
 	cmd.Type = constant.Command
 	cmd.CommandQuantity1 = 0x01
 	cmd.CommandQuantity2 = cmd.CommandQuantity1

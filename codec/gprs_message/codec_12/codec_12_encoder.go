@@ -2,14 +2,14 @@ package codec12
 
 import (
 	"github.com/rojack96/gonika/codec/constant"
+	"github.com/rojack96/gonika/codec/gprs_message/helpers"
 	mapper "github.com/rojack96/gonika/codec/gprs_message/models"
-	"github.com/rojack96/gonika/codec/gprs_message/utils"
 	"github.com/rojack96/gonika/codec/parsers"
 )
 
 func NewEncoder() *codec12 {
 	return &codec12{
-		builders: utils.NewBuilders(),
+		builders: helpers.NewBuilders(),
 		parser:   parsers.NewBaseParser(),
 	}
 }

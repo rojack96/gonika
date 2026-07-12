@@ -5,8 +5,8 @@ import (
 	"errors"
 
 	"github.com/rojack96/gonika/codec/constant"
+	"github.com/rojack96/gonika/codec/device_data_sending/helpers"
 	"github.com/rojack96/gonika/codec/device_data_sending/models"
-	"github.com/rojack96/gonika/codec/device_data_sending/utils"
 	m "github.com/rojack96/gonika/codec/models"
 	"github.com/rojack96/gonika/codec/parsers"
 )
@@ -14,7 +14,7 @@ import (
 func NewEncoder() *codec8 {
 	return &codec8{
 		parser:  parsers.NewBaseParser(),
-		builder: utils.NewBuilders(),
+		builder: helpers.NewBuilders(),
 	}
 }
 
@@ -81,7 +81,7 @@ func (c *codec8) EncodeUDP(imei string, avlDataArray []m.AvlDataArrayEncoder) ([
 	return result, nil
 }
 
-func avlDataArrayBuilder(b utils.Builders, avlData m.AvlDataArrayEncoder) ([]byte, error) {
+func avlDataArrayBuilder(b helpers.Builders, avlData m.AvlDataArrayEncoder) ([]byte, error) {
 	result := make([]byte, 0)
 
 	gps := avlData.GpsElementEncoder
@@ -100,7 +100,8 @@ func avlDataArrayBuilder(b utils.Builders, avlData m.AvlDataArrayEncoder) ([]byt
 	result = append(result, timestamp[:]...)
 	result = append(result, priority)
 
-	if err := b.GpsElement(&result, gps); err != nil {
+	err := b.GpsElement(&result, gps)
+	if err != nil {
 		return nil, err
 	}
 	result = append(result, eventIo)

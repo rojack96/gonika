@@ -3,8 +3,8 @@ package codec13
 import (
 	"errors"
 
+	"github.com/rojack96/gonika/codec/gprs_message/helpers"
 	mapper "github.com/rojack96/gonika/codec/gprs_message/models"
-	"github.com/rojack96/gonika/codec/gprs_message/utils"
 	"github.com/rojack96/gonika/codec/models"
 	"github.com/rojack96/gonika/codec/parsers"
 )
@@ -12,14 +12,14 @@ import (
 type codec13 struct {
 	command       string
 	avlDataPacket []byte
-	builders      *utils.Builders
+	builders      *helpers.Builders
 	parser        parsers.BaseParser
 }
 
 func New(avlDataPacket []byte) *codec13 {
 	return &codec13{
 		avlDataPacket: avlDataPacket,
-		builders:      utils.NewBuilders(),
+		builders:      helpers.NewBuilders(),
 		parser:        parsers.NewBaseParser(),
 	}
 }
@@ -29,7 +29,7 @@ func New(avlDataPacket []byte) *codec13 {
 func (c *codec13) DecodeResponse() *models.ResponseMessage {
 	var result models.ResponseMessage
 
-	data := utils.ResponseDataMappingCodec13(c.avlDataPacket)
+	data := helpers.ResponseDataMappingCodec13(c.avlDataPacket)
 
 	result.Preamble = c.parser.Preamble(data.Preamble)
 	result.DataSize = c.parser.Parse4bytes(data.DataSize)
