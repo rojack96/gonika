@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 
 	"github.com/getrak/crc16"
-	"github.com/rojack96/gonika/codec/gprs_message/models"
+	"github.com/rojack96/gonika/codec/models"
 )
 
 type Builders struct{}
@@ -13,7 +13,7 @@ func NewBuilders() *Builders {
 	return &Builders{}
 }
 
-func (b *Builders) MergeMessage(command models.CommandMessage) []byte {
+func (b *Builders) MergeMessage(command models.CommandMessageByte) []byte {
 	message := make([]byte, 0)
 	message = append(message, command.Preamble[:]...)
 	message = append(message, command.DataSize[:]...)
@@ -33,7 +33,7 @@ func (b *Builders) CommandSize(command []byte) [4]byte {
 	return b.fourBytesTransformation(lenCommand)
 }
 
-func (b *Builders) DataSize(command models.CommandMessage) [4]byte {
+func (b *Builders) DataSize(command models.CommandMessageByte) [4]byte {
 	ds := len(command.CommandSize) + len(command.Command) + 4 // 4 is equal to len of CodecID, CommandQuantity (1 & 2), Type
 
 	return b.fourBytesTransformation(ds)

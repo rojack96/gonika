@@ -1,32 +1,37 @@
-package codec12
+package gprs
 
 import (
-	"github.com/rojack96/gonika/codec/gprs_message/helpers"
+	utils "github.com/rojack96/gonika/codec/gprs_message/helpers"
+	"github.com/rojack96/gonika/codec/helpers"
+
 	"github.com/rojack96/gonika/codec/models"
 	"github.com/rojack96/gonika/codec/parsers"
 )
 
 type codec12 struct {
-	command       string
-	avlDataPacket []byte
-	builders      *helpers.Builders
-	parser        parsers.BaseParser
+	command  string
+	builders *utils.Builders
+	parser   *parsers.BaseParser
 }
 
-func New(avlDataPacket []byte) *codec12 {
+func NewCodec12Decoder() *codec12 {
 	return &codec12{
-		avlDataPacket: avlDataPacket,
-		builders:      helpers.NewBuilders(),
-		parser:        parsers.NewBaseParser(),
+		builders: utils.NewBuilders(),
+		parser:   parsers.NewBaseParser(),
 	}
 }
 
 /* ---------- Response ----------*/
 
-func (c *codec12) DecodeResponse() *models.ResponseMessage {
+func (c *codec12) DecodeResponse(avlDataPacket any) (*models.ResponseMessage, error) {
 	var result models.ResponseMessage
 
-	data := helpers.ResponseDataMappingCodec12(c.avlDataPacket)
+	transformedData, err := helpers.TransformData(avlDataPacket)
+	if err != nil {
+		return nil, err
+	}
+
+	data := utils.ResponseDataMappingCodec12(transformedData)
 
 	result.Preamble = c.parser.Preamble(data.Preamble)
 	result.DataSize = c.parser.Parse4bytes(data.DataSize)
@@ -38,15 +43,20 @@ func (c *codec12) DecodeResponse() *models.ResponseMessage {
 	result.ResponseQuantity2 = c.parser.Quantity(data.ResponseQuantity2)
 	result.Crc16 = c.parser.Crc16(data.Crc16)
 
-	return &result
+	return &result, nil
 }
 
 /* ---------- Command ----------*/
 
-func (c *codec12) DecodeCommand() (*models.CommandMessage, error) {
+func (c *codec12) DecodeCommand(avlDataPacket any) (*models.CommandMessage, error) {
 	var result models.CommandMessage
 
-	data := helpers.CommandDataMappingCodec12(c.avlDataPacket)
+	transformedData, err := helpers.TransformData(avlDataPacket)
+	if err != nil {
+		return nil, err
+	}
+
+	data := utils.CommandDataMappingCodec12(transformedData)
 
 	result.Preamble = c.parser.Preamble(data.Preamble)
 	result.DataSize = c.parser.Parse4bytes(data.DataSize)

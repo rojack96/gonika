@@ -5,9 +5,8 @@ import (
 
 	"github.com/rojack96/gonika/codec/constant"
 	dds "github.com/rojack96/gonika/codec/device_data_sending"
-	codec12 "github.com/rojack96/gonika/codec/gprs_message/codec_12"
-	codec13 "github.com/rojack96/gonika/codec/gprs_message/codec_13"
-	codec14 "github.com/rojack96/gonika/codec/gprs_message/codec_14"
+	gprs "github.com/rojack96/gonika/codec/gprs_message"
+
 	"github.com/rojack96/gonika/codec/models"
 )
 
@@ -120,7 +119,7 @@ type GprsDecoder interface {
 	//	 "crc16": 43137
 	// }
 	// Codec 13 and Codec 14 return an unsupported-operation error.
-	DecodeCommand() (*models.CommandMessage, error)
+	DecodeCommand(avlDataPacket any) (*models.CommandMessage, error)
 
 	// DecodeResponse decodes a Codec 12, Codec 13, or Codec 14 GPRS response.
 	//
@@ -137,13 +136,10 @@ type GprsDecoder interface {
 	//	 "crc16": 49926
 	// }
 	// Codec 13 additionally includes "timestamp"; Codec 14 includes "imei".
-	DecodeResponse() *models.ResponseMessage
+	DecodeResponse(avlDataPacket any) (*models.ResponseMessage, error)
 }
 
-// Deprecated: Use NewDecoder instead.
-func DeviceDataSendingDecoderFactory(avlDataPacket any) (AvlDecoder, error)
-
-func NewDecoder(codecID byte) (AvlDecoder, error) {
+func NewDataSendingDecoder(codecID byte) (AvlDecoder, error) {
 	switch codecID {
 	case constant.Codec8:
 		return dds.NewCodec8Decoder(), nil
@@ -156,31 +152,21 @@ func NewDecoder(codecID byte) (AvlDecoder, error) {
 	}
 }
 
-// Deprecated: Use GprsMessageDecoder instead.
-func GprsMessageDecoderFactory(gprsMessagePacket any) (GprsDecoder, error)
-
-func GprsMessageDecoder(gprsMessagePacket any) (GprsDecoder, error) {
-	const codecIDIndex = 8
-
-	data, err := transformData(gprsMessagePacket)
-	if err != nil {
-		return nil, fmt.Errorf("failed to transform data: %v", err)
+func NewGprsDecoder(codecID byte) (GprsDecoder, error) {
+	switch codecID {
+	case constant.Codec12:
+		return gprs.NewCodec12Decoder(), nil
+	case constant.Codec13:
+		return gprs.NewCodec13Decoder(), nil
+	case constant.Codec14:
+		return gprs.NewCodec14Decoder(), nil
+	default:
+		return nil, fmt.Errorf("unsupported codec: 0x%X", codecID)
 	}
-
-	if len(data) <= codecIDIndex {
-		return nil, fmt.Errorf("invalid packet length: %d", len(data))
-	}
-
-	codecID := data[codecIDIndex]
-
-	var decoders = map[byte]func([]byte) GprsDecoder{
-		constant.Codec12: func(b []byte) GprsDecoder { return codec12.New(b) },
-		constant.Codec13: func(b []byte) GprsDecoder { return codec13.New(b) },
-		constant.Codec14: func(b []byte) GprsDecoder { return codec14.New(b) },
-	}
-
-	if ctor, ok := decoders[codecID]; ok {
-		return ctor(data), nil
-	}
-	return nil, fmt.Errorf("unsupported codec: 0x%X", codecID)
 }
+
+// Deprecated: Use NewDataSendingDecoder instead.
+func DeviceDataSendingDecoderFactory(avlDataPacket any) (AvlDecoder, error)
+
+// Deprecated: Use NewGprsDecoder instead.
+func GprsMessageDecoderFactory(gprsMessagePacket any) (GprsDecoder, error)

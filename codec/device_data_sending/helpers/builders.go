@@ -7,8 +7,7 @@ import (
 	"time"
 
 	"github.com/getrak/crc16"
-	"github.com/rojack96/gonika/codec/device_data_sending/models"
-	m "github.com/rojack96/gonika/codec/models"
+	"github.com/rojack96/gonika/codec/models"
 )
 
 type Builders struct{}
@@ -105,7 +104,7 @@ func (b *Builders) GenerationType() byte {
 	return byte(r.Intn(8)) // 0–7
 }
 
-func (b *Builders) GpsElement(result *[]byte, gps m.GpsElementEncoder) error {
+func (b *Builders) GpsElement(result *[]byte, gps models.GpsElementEncoder) error {
 	lat, err := b.coordinateStringToBytes(gps.Latitude)
 	if err != nil {
 		return err

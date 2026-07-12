@@ -6,8 +6,7 @@ import (
 
 	"github.com/rojack96/gonika/codec/constant"
 	"github.com/rojack96/gonika/codec/device_data_sending/helpers"
-	"github.com/rojack96/gonika/codec/device_data_sending/models"
-	m "github.com/rojack96/gonika/codec/models"
+	"github.com/rojack96/gonika/codec/models"
 	"github.com/rojack96/gonika/codec/parsers"
 )
 
@@ -18,7 +17,7 @@ func NewCodec8ExtEncoder() *codec8ext {
 	}
 }
 
-func (c *codec8ext) EncodeTCP(avlDataArray []m.AvlDataArrayEncoder) ([]byte, error) {
+func (c *codec8ext) EncodeTCP(avlDataArray []models.AvlDataArrayEncoder) ([]byte, error) {
 	var packet models.AvlDataPacketByteTCP
 
 	nOfData := len(avlDataArray)
@@ -49,7 +48,7 @@ func (c *codec8ext) EncodeTCP(avlDataArray []m.AvlDataArrayEncoder) ([]byte, err
 	return result, nil
 }
 
-func (c *codec8ext) EncodeUDP(imei string, avlDataArray []m.AvlDataArrayEncoder) ([]byte, error) {
+func (c *codec8ext) EncodeUDP(imei string, avlDataArray []models.AvlDataArrayEncoder) ([]byte, error) {
 	var packet models.AvlDataPacketByteUDP
 
 	nOfData := len(avlDataArray)
@@ -81,11 +80,11 @@ func (c *codec8ext) EncodeUDP(imei string, avlDataArray []m.AvlDataArrayEncoder)
 	return result, nil
 }
 
-func avlDataArrayBuilderExt(b helpers.Builders, avlData m.AvlDataArrayEncoder) ([]byte, error) {
+func avlDataArrayBuilderExt(b helpers.Builders, avlData models.AvlDataArrayEncoder) ([]byte, error) {
 	result := make([]byte, 0)
 
 	gps := avlData.GpsElementEncoder
-	io := avlData.AvlDataEncoder.(m.Codec8ExtEncoder)
+	io := avlData.AvlDataEncoder.(models.Codec8ExtEncoder)
 
 	nOfOneByte := uint16(len(io.OneByte))
 	nOfTwoByte := uint16(len(io.TwoByte))

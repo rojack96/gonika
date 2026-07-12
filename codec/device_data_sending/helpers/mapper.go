@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"github.com/rojack96/gonika/codec/device_data_sending/models"
+	"github.com/rojack96/gonika/codec/models"
 )
 
 func DataMapping(avlDataPacket []byte) *models.AvlDataPacketByteTCP {

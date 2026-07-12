@@ -8,14 +8,14 @@ import (
 
 	"github.com/rojack96/gonika/codec/constant"
 	utils "github.com/rojack96/gonika/codec/device_data_sending/helpers"
+	"github.com/rojack96/gonika/codec/helpers"
 	"github.com/rojack96/gonika/codec/models"
 	"github.com/rojack96/gonika/codec/parsers"
 )
 
 type codec16 struct {
-	avlDataPacket []byte
-	parser        parsers.BaseParser
-	builder       *utils.Builders
+	parser  *parsers.BaseParser
+	builder *utils.Builders
 }
 
 func NewCodec16Decoder() *codec16 {
@@ -32,7 +32,7 @@ func NewCodec16Decoder() *codec16 {
 func (c *codec16) DecodeTCP(avlDataPacket any) (*models.AvlDataPacketTCP, error) {
 	var result models.AvlDataPacketTCP
 
-	transformedData, err := utils.TransformData(avlDataPacket)
+	transformedData, err := helpers.TransformData(avlDataPacket)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (c *codec16) DecodeTCP(avlDataPacket any) (*models.AvlDataPacketTCP, error)
 func (c *codec16) DecodeTCPflat(avlDataPacket any) (*models.AvlDataPacketFlat, error) {
 	var result models.AvlDataPacketFlat
 
-	transformedData, err := utils.TransformData(avlDataPacket)
+	transformedData, err := helpers.TransformData(avlDataPacket)
 	if err != nil {
 		return nil, err
 	}
@@ -138,7 +138,7 @@ func (c *codec16) DecodeTCPflat(avlDataPacket any) (*models.AvlDataPacketFlat, e
 func (c *codec16) DecodeUDP(avlDataPacket any) (*models.AvlDataPacketUDP, error) {
 	var result models.AvlDataPacketUDP
 
-	transformedData, err := utils.TransformData(avlDataPacket)
+	transformedData, err := helpers.TransformData(avlDataPacket)
 	if err != nil {
 		return nil, err
 	}
@@ -186,7 +186,7 @@ func (c *codec16) DecodeUDP(avlDataPacket any) (*models.AvlDataPacketUDP, error)
 func (c *codec16) DecodeUDPflat(avlDataPacket any) (*models.AvlDataPacketFlat, error) {
 	var result models.AvlDataPacketFlat
 
-	transformedData, err := utils.TransformData(avlDataPacket)
+	transformedData, err := helpers.TransformData(avlDataPacket)
 	if err != nil {
 		return nil, err
 	}

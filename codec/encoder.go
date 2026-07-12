@@ -5,32 +5,41 @@ import (
 	"fmt"
 
 	"github.com/rojack96/gonika/codec/constant"
-	codec12 "github.com/rojack96/gonika/codec/gprs_message/codec_12"
-	codec13 "github.com/rojack96/gonika/codec/gprs_message/codec_13"
-	codec14 "github.com/rojack96/gonika/codec/gprs_message/codec_14"
-	m "github.com/rojack96/gonika/codec/models"
+	dds "github.com/rojack96/gonika/codec/device_data_sending"
+	gprs "github.com/rojack96/gonika/codec/gprs_message"
+	"github.com/rojack96/gonika/codec/models"
 )
 
 type AvlEncoder interface {
-	EncodeTCP(avlDataArray []m.AvlDataArrayEncoder) ([]byte, error)
-	EncodeUDP(imei string, avlDataArray []m.AvlDataArrayEncoder) ([]byte, error)
+	EncodeTCP(avlDataArray []models.AvlDataArrayEncoder) ([]byte, error)
+	EncodeUDP(imei string, avlDataArray []models.AvlDataArrayEncoder) ([]byte, error)
 }
 
 type GprsEncoder interface {
 	Encode() []byte
 }
 
-// Deprecated: Use NewEncoder instead.
-func DeviceDataSendingEncoderFactory(codecID byte) (AvlEncoder, error)
-
-func GprsMessageEncoderFactory(codecID byte) (GprsEncoder, error) {
+func NewDataSendingEncoder(codecID byte) (AvlEncoder, error) {
 	switch codecID {
 	case constant.Codec12:
-		return codec12.NewEncoder(), nil
+		return dds.NewCodec8Encoder(), nil
 	case constant.Codec13:
-		return codec13.NewEncoder(), nil
+		return dds.NewCodec8Encoder(), nil
 	case constant.Codec14:
-		return codec14.NewEncoder(), nil
+		return dds.NewCodec16Encoder(), nil
+	default:
+		return nil, fmt.Errorf("unsupported codec: 0x%X", codecID)
+	}
+}
+
+func NewGprsMessageEncoder(codecID byte) (GprsEncoder, error) {
+	switch codecID {
+	case constant.Codec12:
+		return gprs.NewCodec12Encoder(), nil
+	case constant.Codec13:
+		return gprs.NewCodec13Encoder(), nil
+	case constant.Codec14:
+		return gprs.NewCodec14Encoder(), nil
 	default:
 		return nil, fmt.Errorf("unsupported codec: 0x%X", codecID)
 	}
@@ -56,3 +65,9 @@ func transformData(dataBuffer any) ([]byte, error) {
 		)
 	}
 }
+
+// Deprecated: Use NewDataSendingEncoder instead.
+func DeviceDataSendingEncoderFactory(codecID byte) (AvlEncoder, error)
+
+// Deprecated: Use NewGprsMessageEncoder instead.
+func GprsMessageEncoderFactory(codecID byte) (GprsEncoder, error)
