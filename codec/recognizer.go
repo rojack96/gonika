@@ -11,12 +11,9 @@ import (
 
 // ImeiChecker This function checks if the data buffer contains a valid IMEI number and returns it if found.
 func ImeiChecker(dataBuffer any) ([]byte, bool, error) {
-	var (
-		data []byte
-		err  error
-	)
 
-	if data, err = transformData(dataBuffer); err != nil {
+	data, err := transformData(dataBuffer)
+	if err != nil {
 		return nil, false, fmt.Errorf("failed to transform data: %v", err)
 	}
 
@@ -33,12 +30,9 @@ func ImeiChecker(dataBuffer any) ([]byte, bool, error) {
 
 // Crc16Checker - This function checks if the crc16 from source buffer containts correct CRC16-IBM for Teltonika Device
 func Crc16Checker(dataBuffer any) error {
-	var (
-		data []byte
-		err  error
-	)
 
-	if data, err = transformData(dataBuffer); err != nil {
+	data, err := transformData(dataBuffer)
+	if err != nil {
 		return fmt.Errorf("failed to transform data: %v", err)
 	}
 
@@ -62,12 +56,9 @@ func Crc16Checker(dataBuffer any) error {
 
 // CodecRecognizer This function identifies the codec type from the AVL data packet and returns the codec ID if recognized.
 func CodecRecognizer(avlDataPacket any) (byte, error) {
-	var (
-		data []byte
-		err  error
-	)
 
-	if data, err = transformData(avlDataPacket); err != nil {
+	data, err := transformData(avlDataPacket)
+	if err != nil {
 		return 0x00, fmt.Errorf("failed to transform data: %v", err)
 	}
 
