@@ -9,7 +9,8 @@ import (
 	"github.com/rojack96/gonika/codec/constant"
 )
 
-// ImeiChecker This function checks if the data buffer contains a valid IMEI number and returns it if found.
+// ImeiChecker This function checks if the data buffer
+// contains a valid IMEI number and returns it if found.
 func ImeiChecker(dataBuffer any) ([]byte, bool, error) {
 
 	data, err := transformData(dataBuffer)
@@ -28,7 +29,8 @@ func ImeiChecker(dataBuffer any) ([]byte, bool, error) {
 	return nil, false, nil
 }
 
-// Crc16Checker - This function checks if the crc16 from source buffer containts correct CRC16-IBM for Teltonika Device
+// Crc16Checker - This function checks if the crc16 from
+// source buffer containts correct CRC16-IBM for Teltonika Device
 func Crc16Checker(dataBuffer any) error {
 
 	data, err := transformData(dataBuffer)
@@ -54,22 +56,30 @@ func Crc16Checker(dataBuffer any) error {
 	return nil
 }
 
-// CodecRecognizer This function identifies the codec type from the AVL data packet and returns the codec ID if recognized.
+// CodecRecognizer - This function identifies the codec
+// type from the AVL data packet and returns the codec ID if recognized.
 func CodecRecognizer(avlDataPacket any) (byte, error) {
+	const codecIDIndex = 8
 
 	data, err := transformData(avlDataPacket)
 	if err != nil {
 		return 0x00, fmt.Errorf("failed to transform data: %v", err)
 	}
 
-	if len(data) <= 8 {
+	if len(data) <= codecIDIndex {
 		return 0x00, fmt.Errorf("invalid packet length: %d", len(data))
 	}
 
-	codecID := data[8]
+	codecID := data[codecIDIndex]
 
 	switch codecID {
-	case constant.Codec8, constant.Codec8ext, constant.Codec16, constant.Codec12, constant.Codec13, constant.Codec14:
+	case
+		constant.Codec8,
+		constant.Codec8ext,
+		constant.Codec16,
+		constant.Codec12,
+		constant.Codec13,
+		constant.Codec14:
 		return codecID, nil
 	default:
 		return 0x00, fmt.Errorf("unsupported codec: 0x%X", codecID)

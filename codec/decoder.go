@@ -4,9 +4,7 @@ import (
 	"fmt"
 
 	"github.com/rojack96/gonika/codec/constant"
-	codec16 "github.com/rojack96/gonika/codec/device_data_sending/codec_16"
-	codec8 "github.com/rojack96/gonika/codec/device_data_sending/codec_8"
-	codec8ext "github.com/rojack96/gonika/codec/device_data_sending/codec_8ext"
+	dds "github.com/rojack96/gonika/codec/device_data_sending"
 	codec12 "github.com/rojack96/gonika/codec/gprs_message/codec_12"
 	codec13 "github.com/rojack96/gonika/codec/gprs_message/codec_13"
 	codec14 "github.com/rojack96/gonika/codec/gprs_message/codec_14"
@@ -51,7 +49,7 @@ type AvlDecoder interface {
 	//	 "numberOfData2": 1,
 	//	 "crc16": 39184
 	// }
-	DecodeTCP() *models.AvlDataPacketTCP
+	DecodeTCP(avlDataPacket any) (*models.AvlDataPacketTCP, error)
 
 	// DecodeTCPflat decodes the AVL data packet and returns a flat structured representation.
 	//
@@ -74,24 +72,24 @@ type AvlDecoder interface {
 	//	 ],
 	//	 "numberOfData2": 1
 	// }
-	DecodeTCPflat() *models.AvlDataPacketFlat
+	DecodeTCPflat(avlDataPacket any) (*models.AvlDataPacketFlat, error)
 
 	// DecodeUDP decodes an AVL packet received over UDP.
 	//
 	// Example JSON result:
 	// {
-	//	 "Length": 45,
-	//	 "PacketID": 1,
-	//	 "NotUsableByte": 1,
-	//	 "AvlPacketID": 1,
-	//	 "ImeiLength": 15,
-	//	 "Imei": "123456789012345",
+	//	 "length": 45,
+	//	 "packetID": 1,
+	//	 "notUsableByte": 1,
+	//	 "avlPacketID": 1,
+	//	 "imeiLength": 15,
+	//	 "imei": "123456789012345",
 	//	 "codecID": 8,
 	//	 "numberOfData1": 0,
 	//	 "avlData": [],
 	//	 "numberOfData2": 0
 	// }
-	DecodeUDP() *models.AvlDataPacketUDP
+	DecodeUDP(avlDataPacket any) (*models.AvlDataPacketUDP, error)
 
 	// DecodeUDPflat decodes an AVL packet received over UDP into a flat representation.
 	//
@@ -101,8 +99,8 @@ type AvlDecoder interface {
 	//	 "numberOfData1": 0,
 	//	 "avlData": [],
 	//	 "numberOfData2": 0
-	// }
-	DecodeUDPflat() *models.AvlDataPacketFlat
+	// }(
+	DecodeUDPflat(avlDataPacket any) (*models.AvlDataPacketFlat, error)
 }
 
 type GprsDecoder interface {
@@ -142,34 +140,26 @@ type GprsDecoder interface {
 	DecodeResponse() *models.ResponseMessage
 }
 
-func DeviceDataSendingDecoderFactory(avlDataPacket any) (AvlDecoder, error) {
-	const codecIDIndex = 8
+// Deprecated: Use NewDecoder instead.
+func DeviceDataSendingDecoderFactory(avlDataPacket any) (AvlDecoder, error)
 
-	data, err := transformData(avlDataPacket)
-	if err != nil {
-		return nil, fmt.Errorf("failed to transform data: %v", err)
+func NewDecoder(codecID byte) (AvlDecoder, error) {
+	switch codecID {
+	case constant.Codec8:
+		return dds.NewCodec8Decoder(), nil
+	case constant.Codec8ext:
+		return dds.NewCodec8ExtDecoder(), nil
+	case constant.Codec16:
+		return dds.NewCodec16Decoder(), nil
+	default:
+		return nil, fmt.Errorf("unsupported codec: 0x%X", codecID)
 	}
-
-	if len(data) <= codecIDIndex {
-		return nil, fmt.Errorf("invalid packet length: %d", len(data))
-	}
-
-	codecID := data[codecIDIndex]
-
-	var decoders = map[byte]func([]byte) AvlDecoder{
-		constant.Codec8:    func(b []byte) AvlDecoder { return codec8.New(b) },
-		constant.Codec8ext: func(b []byte) AvlDecoder { return codec8ext.New(b) },
-		constant.Codec16:   func(b []byte) AvlDecoder { return codec16.New(b) },
-	}
-
-	if ctor, ok := decoders[codecID]; ok {
-		return ctor(data), nil
-	}
-
-	return nil, fmt.Errorf("unsupported codec: 0x%X", codecID)
 }
 
-func GprsMessageDecoderFactory(gprsMessagePacket any) (GprsDecoder, error) {
+// Deprecated: Use GprsMessageDecoder instead.
+func GprsMessageDecoderFactory(gprsMessagePacket any) (GprsDecoder, error)
+
+func GprsMessageDecoder(gprsMessagePacket any) (GprsDecoder, error) {
 	const codecIDIndex = 8
 
 	data, err := transformData(gprsMessagePacket)

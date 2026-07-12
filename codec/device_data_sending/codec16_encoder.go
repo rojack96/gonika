@@ -1,4 +1,4 @@
-package codec16
+package dds
 
 import (
 	"encoding/hex"
@@ -11,7 +11,7 @@ import (
 	"github.com/rojack96/gonika/codec/parsers"
 )
 
-func NewEncoder() *codec16 {
+func NewCodec16Encoder() *codec16 {
 	return &codec16{
 		parser:  parsers.NewBaseParser(),
 		builder: helpers.NewBuilders(),
@@ -32,7 +32,7 @@ func (c *codec16) EncodeTCP(avlDataArray []m.AvlDataArrayEncoder) ([]byte, error
 	packet.AvlDataArray.NumberOfData2 = byte(nOfData)
 
 	for n := range nOfData {
-		data, err := avlDataArrayBuilder(*c.builder, avlDataArray[n])
+		data, err := c.avlDataArrayBuilder(avlDataArray[n])
 		if err != nil {
 			return nil, err
 		}
@@ -72,7 +72,7 @@ func (c *codec16) EncodeUDP(imei string, avlDataArray []m.AvlDataArrayEncoder) (
 	packet.AvlDataArray.NumberOfData2 = byte(nOfData)
 
 	for n := range nOfData {
-		data, err := avlDataArrayBuilder(*c.builder, avlDataArray[n])
+		data, err := c.avlDataArrayBuilder(avlDataArray[n])
 		if err != nil {
 			return nil, err
 		}
@@ -84,7 +84,7 @@ func (c *codec16) EncodeUDP(imei string, avlDataArray []m.AvlDataArrayEncoder) (
 	return result, nil
 }
 
-func avlDataArrayBuilder(b helpers.Builders, avlData m.AvlDataArrayEncoder) ([]byte, error) {
+func (c *codec16) avlDataArrayBuilder(avlData m.AvlDataArrayEncoder) ([]byte, error) {
 	result := make([]byte, 0)
 
 	gps := avlData.GpsElementEncoder
@@ -95,16 +95,16 @@ func avlDataArrayBuilder(b helpers.Builders, avlData m.AvlDataArrayEncoder) ([]b
 	nOfFourByte := uint8(len(io.FourByte))
 	nOfEightByte := uint8(len(io.EightByte))
 
-	timestamp := b.Timestamp()
-	priority := b.Priority()
-	eventIo := b.EventIo2Byte()
-	generationType := b.GenerationType()
+	timestamp := c.builder.Timestamp()
+	priority := c.builder.Priority()
+	eventIo := c.builder.EventIo2Byte()
+	generationType := c.builder.GenerationType()
 	nOfTotalIo := nOfOneByte + nOfTwoByte + nOfFourByte + nOfEightByte
 
 	result = append(result, timestamp[:]...)
 	result = append(result, priority)
 
-	err := b.GpsElement(&result, gps)
+	err := c.builder.GpsElement(&result, gps)
 	if err != nil {
 		return nil, err
 	}
@@ -115,32 +115,32 @@ func avlDataArrayBuilder(b helpers.Builders, avlData m.AvlDataArrayEncoder) ([]b
 
 	result = append(result, nOfOneByte)
 	for k, v := range io.OneByte {
-		id := b.Uint16ToBytes(k)
+		id := c.builder.Uint16ToBytes(k)
 		result = append(result, id[:]...)
 		result = append(result, v)
 	}
 
 	result = append(result, nOfTwoByte)
 	for k, v := range io.TwoByte {
-		id := b.Uint16ToBytes(k)
+		id := c.builder.Uint16ToBytes(k)
 		result = append(result, id[:]...)
-		value := b.Uint16ToBytes(v)
+		value := c.builder.Uint16ToBytes(v)
 		result = append(result, value[:]...)
 	}
 
 	result = append(result, nOfFourByte)
 	for k, v := range io.FourByte {
-		id := b.Uint16ToBytes(k)
+		id := c.builder.Uint16ToBytes(k)
 		result = append(result, id[:]...)
-		value := b.Uint32ToBytes(v)
+		value := c.builder.Uint32ToBytes(v)
 		result = append(result, value[:]...)
 	}
 
 	result = append(result, nOfEightByte)
 	for k, v := range io.EightByte {
-		id := b.Uint16ToBytes(k)
+		id := c.builder.Uint16ToBytes(k)
 		result = append(result, id[:]...)
-		value := b.Uint64ToBytes(v)
+		value := c.builder.Uint64ToBytes(v)
 		result = append(result, value[:]...)
 	}
 

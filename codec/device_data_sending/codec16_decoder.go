@@ -1,7 +1,9 @@
-package codec16
+package dds
 
 import (
+	"encoding/binary"
 	"encoding/hex"
+	"fmt"
 	"maps"
 
 	"github.com/rojack96/gonika/codec/constant"
@@ -16,18 +18,26 @@ type codec16 struct {
 	builder       *utils.Builders
 }
 
-func New(avlDataPacket []byte) *codec16 {
+func NewCodec16Decoder() *codec16 {
 	return &codec16{
-		avlDataPacket: avlDataPacket,
-		parser:        parsers.NewBaseParser(),
-		builder:       utils.NewBuilders(),
+		parser:  parsers.NewBaseParser(),
+		builder: utils.NewBuilders(),
 	}
 }
 
-func (c *codec16) DecodeTCP() *models.AvlDataPacketTCP {
+// ----------------------------------------
+// TCP Decoder for Codec 16
+// ----------------------------------------
+
+func (c *codec16) DecodeTCP(avlDataPacket any) (*models.AvlDataPacketTCP, error) {
 	var result models.AvlDataPacketTCP
 
-	data := utils.DataMapping(c.avlDataPacket)
+	transformedData, err := utils.TransformData(avlDataPacket)
+	if err != nil {
+		return nil, err
+	}
+
+	data := utils.DataMapping(transformedData)
 
 	result.Preamble = c.parser.Preamble(data.AvlDataPacketHeader.Preamble)
 	result.CodecID = c.parser.CodecID(data.AvlDataArray.CodecID)
@@ -41,7 +51,7 @@ func (c *codec16) DecodeTCP() *models.AvlDataPacketTCP {
 	index := 0
 
 	if result.NumberOfData1 != result.NumberOfData2 {
-		return nil
+		return nil, fmt.Errorf("inconsistent data count")
 	}
 
 	for i := 0; i < int(result.NumberOfData1); i++ {
@@ -61,13 +71,18 @@ func (c *codec16) DecodeTCP() *models.AvlDataPacketTCP {
 		result.AvlData = append(result.AvlData, avl)
 	}
 
-	return &result
+	return &result, nil
 }
 
-func (c *codec16) DecodeTCPflat() *models.AvlDataPacketFlat {
+func (c *codec16) DecodeTCPflat(avlDataPacket any) (*models.AvlDataPacketFlat, error) {
 	var result models.AvlDataPacketFlat
 
-	data := utils.DataMapping(c.avlDataPacket)
+	transformedData, err := utils.TransformData(avlDataPacket)
+	if err != nil {
+		return nil, err
+	}
+
+	data := utils.DataMapping(transformedData)
 
 	result.CodecID = c.parser.CodecID(data.AvlDataArray.CodecID)
 	result.NumberOfData1 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData1)
@@ -78,7 +93,7 @@ func (c *codec16) DecodeTCPflat() *models.AvlDataPacketFlat {
 	index := 0
 
 	if result.NumberOfData1 != result.NumberOfData2 {
-		return nil
+		return nil, fmt.Errorf("inconsistent data count")
 	}
 
 	for i := 0; i < int(result.NumberOfData1); i++ {
@@ -113,13 +128,22 @@ func (c *codec16) DecodeTCPflat() *models.AvlDataPacketFlat {
 		result.AvlData = append(result.AvlData, avl)
 	}
 
-	return &result
+	return &result, nil
 }
 
-func (c *codec16) DecodeUDP() *models.AvlDataPacketUDP {
+// ----------------------------------------
+// UDP Decoder for Codec 16
+// ----------------------------------------
+
+func (c *codec16) DecodeUDP(avlDataPacket any) (*models.AvlDataPacketUDP, error) {
 	var result models.AvlDataPacketUDP
 
-	data := utils.UdpDataMapping(c.avlDataPacket)
+	transformedData, err := utils.TransformData(avlDataPacket)
+	if err != nil {
+		return nil, err
+	}
+
+	data := utils.UdpDataMapping(transformedData)
 
 	result.Length = c.parser.Parse2bytes(data.UdpChannelHeader.Length)
 	result.PacketID = c.parser.Parse2bytes(data.UdpChannelHeader.PacketID)
@@ -136,7 +160,7 @@ func (c *codec16) DecodeUDP() *models.AvlDataPacketUDP {
 	index := 0
 
 	if result.NumberOfData1 != result.NumberOfData2 {
-		return nil
+		return nil, fmt.Errorf("inconsistent data count")
 	}
 
 	for i := 0; i < int(result.NumberOfData1); i++ {
@@ -156,13 +180,18 @@ func (c *codec16) DecodeUDP() *models.AvlDataPacketUDP {
 		result.AvlData = append(result.AvlData, avl)
 	}
 
-	return &result
+	return &result, nil
 }
 
-func (c *codec16) DecodeUDPflat() *models.AvlDataPacketFlat {
+func (c *codec16) DecodeUDPflat(avlDataPacket any) (*models.AvlDataPacketFlat, error) {
 	var result models.AvlDataPacketFlat
 
-	data := utils.UdpDataMapping(c.avlDataPacket)
+	transformedData, err := utils.TransformData(avlDataPacket)
+	if err != nil {
+		return nil, err
+	}
+
+	data := utils.UdpDataMapping(transformedData)
 
 	result.CodecID = c.parser.CodecID(data.AvlDataArray.CodecID)
 	result.NumberOfData1 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData1)
@@ -173,7 +202,7 @@ func (c *codec16) DecodeUDPflat() *models.AvlDataPacketFlat {
 	index := 0
 
 	if result.NumberOfData1 != result.NumberOfData2 {
-		return nil
+		return nil, fmt.Errorf("inconsistent data count")
 	}
 
 	for i := 0; i < int(result.NumberOfData1); i++ {
@@ -208,5 +237,63 @@ func (c *codec16) DecodeUDPflat() *models.AvlDataPacketFlat {
 		result.AvlData = append(result.AvlData, avl)
 	}
 
-	return &result
+	return &result, nil
+}
+
+// ----------------------------------------
+// Parsers for Codec 16
+// ----------------------------------------
+
+// This function parse the Event IO data from AVL data.
+//
+// Event IO changed
+// if data is acquired on event
+// this field defines which IO property has changed and generated an event.
+func (c *codec16) parseEventIO(startIndex int, body []byte) (uint16, int) {
+	endIndex := startIndex + 2
+	eventIOID := binary.BigEndian.Uint16(body[startIndex:endIndex])
+
+	return eventIOID, endIndex
+}
+
+func (c *codec16) parseGenerationType(startIndex int, body []byte) (uint8, int) {
+	generationType := body[startIndex]
+
+	return generationType, startIndex + 1
+}
+
+// Total Number of IO.
+//
+// A total number of properties coming with record (N = N1 + N2 + N4 + N8).
+func (c *codec16) parseTotalNumberOfIO(startIndex int, body []byte) (uint8, int) {
+	noOfTotalIO := body[startIndex]
+
+	return noOfTotalIO, startIndex + 1
+}
+
+// parseIo This function parse byte IO.
+func (c *codec16) parseIo(valueLength int, startIndex int, body []byte) (uint8, map[uint16]string, int) {
+	const idLength = 2
+	splitByte := idLength + valueLength
+	result := map[uint16]string{}
+
+	if startIndex >= len(body) {
+		return 0, result, len(body)
+	}
+
+	// One Byte IO Number
+	nOfIOelements := body[startIndex]
+	// One Byte IO Data
+	IOelementsStartIndex := startIndex + 1
+	IOelementsEndIndex := IOelementsStartIndex + int(nOfIOelements)*splitByte
+	data := body[IOelementsStartIndex:IOelementsEndIndex]
+
+	for i := 0; i < len(data); i += splitByte {
+		id := binary.BigEndian.Uint16(data[i : i+2])
+		value := hex.EncodeToString(data[i+2 : i+splitByte])
+
+		result[id] = value
+	}
+
+	return nOfIOelements, result, IOelementsEndIndex
 }

@@ -1,4 +1,4 @@
-package codec8ext
+package dds
 
 import (
 	"encoding/hex"
@@ -11,7 +11,7 @@ import (
 	"github.com/rojack96/gonika/codec/parsers"
 )
 
-func NewEncoder() *codec8ext {
+func NewCodec8ExtEncoder() *codec8ext {
 	return &codec8ext{
 		parser:  parsers.NewBaseParser(),
 		builder: helpers.NewBuilders(),

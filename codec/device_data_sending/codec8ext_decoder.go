@@ -1,33 +1,43 @@
-package codec8ext
+package dds
 
 import (
+	"encoding/binary"
 	"encoding/hex"
+	"fmt"
 	"maps"
 
 	"github.com/rojack96/gonika/codec/constant"
+	"github.com/rojack96/gonika/codec/device_data_sending/helpers"
 	utils "github.com/rojack96/gonika/codec/device_data_sending/helpers"
 	"github.com/rojack96/gonika/codec/models"
 	"github.com/rojack96/gonika/codec/parsers"
 )
 
 type codec8ext struct {
-	avlDataPacket []byte
-	parser        parsers.BaseParser
-	builder       *utils.Builders
+	parser  parsers.BaseParser
+	builder *utils.Builders
 }
 
-func New(avlDataPacket []byte) *codec8ext {
+func NewCodec8ExtDecoder() *codec8ext {
 	return &codec8ext{
-		avlDataPacket: avlDataPacket,
-		parser:        parsers.NewBaseParser(),
-		builder:       utils.NewBuilders(),
+		parser:  parsers.NewBaseParser(),
+		builder: utils.NewBuilders(),
 	}
 }
 
-func (c *codec8ext) DecodeTCP() *models.AvlDataPacketTCP {
+// ----------------------------------------
+// TCP Decoder for Codec 8 Extended
+// ----------------------------------------
+
+func (c *codec8ext) DecodeTCP(avlDataPacket any) (*models.AvlDataPacketTCP, error) {
 	var result models.AvlDataPacketTCP
 
-	data := utils.DataMapping(c.avlDataPacket)
+	transformedData, err := helpers.TransformData(avlDataPacket)
+	if err != nil {
+		return nil, err
+	}
+
+	data := utils.DataMapping(transformedData)
 
 	result.Preamble = c.parser.Preamble(data.AvlDataPacketHeader.Preamble)
 	result.CodecID = c.parser.CodecID(data.AvlDataArray.CodecID)
@@ -41,7 +51,7 @@ func (c *codec8ext) DecodeTCP() *models.AvlDataPacketTCP {
 	index := 0
 
 	if result.NumberOfData1 != result.NumberOfData2 {
-		return nil
+		return nil, fmt.Errorf("inconsistent data count")
 	}
 
 	for i := 0; i < int(result.NumberOfData1); i++ {
@@ -61,13 +71,18 @@ func (c *codec8ext) DecodeTCP() *models.AvlDataPacketTCP {
 		result.AvlData = append(result.AvlData, avl)
 	}
 
-	return &result
+	return &result, nil
 }
 
-func (c *codec8ext) DecodeTCPflat() *models.AvlDataPacketFlat {
+func (c *codec8ext) DecodeTCPflat(avlDataPacket any) (*models.AvlDataPacketFlat, error) {
 	var result models.AvlDataPacketFlat
 
-	data := utils.DataMapping(c.avlDataPacket)
+	transformedData, err := helpers.TransformData(avlDataPacket)
+	if err != nil {
+		return nil, err
+	}
+
+	data := utils.DataMapping(transformedData)
 
 	result.CodecID = c.parser.CodecID(data.AvlDataArray.CodecID)
 	result.NumberOfData1 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData1)
@@ -78,7 +93,7 @@ func (c *codec8ext) DecodeTCPflat() *models.AvlDataPacketFlat {
 	index := 0
 
 	if result.NumberOfData1 != result.NumberOfData2 {
-		return nil
+		return nil, fmt.Errorf("inconsistent data count")
 	}
 
 	for i := 0; i < int(result.NumberOfData1); i++ {
@@ -114,13 +129,22 @@ func (c *codec8ext) DecodeTCPflat() *models.AvlDataPacketFlat {
 		result.AvlData = append(result.AvlData, avl)
 	}
 
-	return &result
+	return &result, nil
 }
 
-func (c *codec8ext) DecodeUDP() *models.AvlDataPacketUDP {
+// ----------------------------------------
+// UDP Decoder for Codec 8 Extended
+// ----------------------------------------
+
+func (c *codec8ext) DecodeUDP(avlDataPacket any) (*models.AvlDataPacketUDP, error) {
 	var result models.AvlDataPacketUDP
 
-	data := utils.UdpDataMapping(c.avlDataPacket)
+	transformedData, err := helpers.TransformData(avlDataPacket)
+	if err != nil {
+		return nil, err
+	}
+
+	data := utils.UdpDataMapping(transformedData)
 
 	result.Length = c.parser.Parse2bytes(data.UdpChannelHeader.Length)
 	result.PacketID = c.parser.Parse2bytes(data.UdpChannelHeader.PacketID)
@@ -137,7 +161,7 @@ func (c *codec8ext) DecodeUDP() *models.AvlDataPacketUDP {
 	index := 0
 
 	if result.NumberOfData1 != result.NumberOfData2 {
-		return nil
+		return nil, fmt.Errorf("inconsistent data count")
 	}
 
 	for i := 0; i < int(result.NumberOfData1); i++ {
@@ -157,13 +181,18 @@ func (c *codec8ext) DecodeUDP() *models.AvlDataPacketUDP {
 		result.AvlData = append(result.AvlData, avl)
 	}
 
-	return &result
+	return &result, nil
 }
 
-func (c *codec8ext) DecodeUDPflat() *models.AvlDataPacketFlat {
+func (c *codec8ext) DecodeUDPflat(avlDataPacket any) (*models.AvlDataPacketFlat, error) {
 	var result models.AvlDataPacketFlat
 
-	data := utils.UdpDataMapping(c.avlDataPacket)
+	transformedData, err := helpers.TransformData(avlDataPacket)
+	if err != nil {
+		return nil, err
+	}
+
+	data := utils.UdpDataMapping(transformedData)
 
 	result.CodecID = c.parser.CodecID(data.AvlDataArray.CodecID)
 	result.NumberOfData1 = c.parser.NumberOfData(data.AvlDataArray.NumberOfData1)
@@ -174,7 +203,7 @@ func (c *codec8ext) DecodeUDPflat() *models.AvlDataPacketFlat {
 	index := 0
 
 	if result.NumberOfData1 != result.NumberOfData2 {
-		return nil
+		return nil, fmt.Errorf("inconsistent data count")
 	}
 
 	for i := 0; i < int(result.NumberOfData1); i++ {
@@ -210,5 +239,113 @@ func (c *codec8ext) DecodeUDPflat() *models.AvlDataPacketFlat {
 		result.AvlData = append(result.AvlData, avl)
 	}
 
-	return &result
+	return &result, nil
+}
+
+// ----------------------------------------
+// Parsers for Codec 8 Extended
+// ----------------------------------------
+
+// ParseEventIO This function parse the Event IO data from AVL data.
+//
+// Event IO changed
+// if data is acquired on event
+// this field defines which IO property has changed and generated an event.
+func (c *codec8ext) parseEventIO(startIndex int, body []byte) (uint16, int) {
+	endIndex := startIndex + 2
+	eventIOID := binary.BigEndian.Uint16(body[startIndex:endIndex])
+
+	return eventIOID, endIndex
+}
+
+// ParseTotalNumberOfIO Total Number of IO.
+//
+// A total number of properties coming with record (N = N1 + N2 + N4 + N8).
+func (c *codec8ext) parseTotalNumberOfIO(startIndex int, body []byte) (uint16, int) {
+	endIndex := startIndex + 2
+	noOfTotalIO := binary.BigEndian.Uint16(body[startIndex:endIndex])
+
+	return noOfTotalIO, endIndex
+}
+
+// parseIo This function parse byte IO.
+func (c *codec8ext) parseIo(valueLength int, startIndex int, body []byte) (uint16, map[uint16]string, int) {
+	const idLength = 2
+	splitByte := idLength + valueLength
+	result := map[uint16]string{}
+
+	if startIndex >= len(body) {
+		return 0, result, len(body)
+	}
+
+	// One Byte IO Number
+	nOfIOstartIndex := startIndex
+	nOfIOendIndex := nOfIOstartIndex + 2
+	nOfIOelements := binary.BigEndian.Uint16(body[nOfIOstartIndex:nOfIOendIndex])
+	// One Byte IO Data
+	IOelementsStartIndex := nOfIOendIndex
+	IOelementsEndIndex := IOelementsStartIndex + int(nOfIOelements)*splitByte
+	data := body[IOelementsStartIndex:IOelementsEndIndex]
+
+	for i := 0; i < len(data); i += splitByte {
+		id := binary.BigEndian.Uint16(data[i : i+2])
+		value := hex.EncodeToString(data[i+2 : i+splitByte])
+
+		result[id] = value
+	}
+
+	return nOfIOelements, result, IOelementsEndIndex
+}
+
+// ParseXByteIO This function parse X byte IO.
+//
+// NX
+// a number of properties, which length is defined by length element.
+// X Byte IO Number
+func (c *codec8ext) parseXByteIO(startIndex int, body []byte) (uint16, map[uint16]string, int) {
+	result := map[uint16]string{}
+
+	// Eight Byte IO Number
+	nOfIOstartIndex := startIndex
+	nOfIOendIndex := nOfIOstartIndex + 2
+	noOfXByteIO := binary.BigEndian.Uint16(body[nOfIOstartIndex:nOfIOendIndex])
+	// X Byte IO Data
+
+	if noOfXByteIO == 0 { // if there is no X byte IO, return the index after reading number of X byte IO
+		return noOfXByteIO, result, startIndex + 2
+	}
+
+	xByteIOStartIndex := nOfIOendIndex
+
+	var i uint16 = 0
+	j := 0
+
+	for i < noOfXByteIO {
+		xIOIDStartIndex := j + xByteIOStartIndex
+		xIOIDEndIndex := xIOIDStartIndex + 2
+
+		xValueLengthStartIndex := xIOIDEndIndex
+		xValueLengthEndIndex := xValueLengthStartIndex + 2
+
+		valueLength := binary.BigEndian.Uint16(body[xValueLengthStartIndex:xValueLengthEndIndex])
+
+		if valueLength == 0 {
+			return noOfXByteIO, result, xValueLengthEndIndex
+		}
+
+		xValueStartIndex := xValueLengthEndIndex
+		xValueEndIndex := xValueStartIndex + int(valueLength)
+
+		id := binary.BigEndian.Uint16(body[xIOIDStartIndex:xIOIDEndIndex])
+		value := hex.EncodeToString(body[xValueStartIndex:xValueEndIndex])
+
+		result[id] = value
+
+		i = i + 1
+		xByteIOStartIndex = xValueEndIndex
+	}
+
+	xByteIOEndIndex := xByteIOStartIndex
+	return noOfXByteIO, result, xByteIOEndIndex
+
 }

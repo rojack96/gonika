@@ -29,24 +29,24 @@ type AvlDataPacketUDP struct {
 	// Length
 	//
 	// packet length (excluding this field) in big ending byte order.
-	Length uint16
+	Length uint16 `json:"length"`
 	// PacketID
 	//
 	// packet ID unique for this channel
-	PacketID uint16
+	PacketID uint16 `json:"packetID"`
 	// NotUsableByte
 	//
 	// not usable byte.
-	NotUsableByte uint8
+	NotUsableByte uint8 `json:"notUsableByte"`
 	// AvlPacketID
 	//
 	// ID identifying this AVL packet.
-	AvlPacketID uint8
+	AvlPacketID uint8 `json:"avlPacketID"`
 	// ImeiLength
 	//
 	// always will be 0x000F
-	ImeiLength    uint16
-	Imei          string
+	ImeiLength    uint16       `json:"imeiLength"`
+	Imei          string       `json:"imei"`
 	CodecID       CodecID      `json:"codecID"`
 	NumberOfData1 NumberOfData `json:"numberOfData1"`
 	AvlData       []AvlData    `json:"avlData"`
