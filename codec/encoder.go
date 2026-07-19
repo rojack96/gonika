@@ -21,11 +21,11 @@ type GprsEncoder interface {
 
 func NewDataSendingEncoder(codecID byte) (AvlEncoder, error) {
 	switch codecID {
-	case constant.Codec12:
+	case constant.Codec8:
 		return dds.NewCodec8Encoder(), nil
-	case constant.Codec13:
-		return dds.NewCodec8Encoder(), nil
-	case constant.Codec14:
+	case constant.Codec8ext:
+		return dds.NewCodec8ExtEncoder(), nil
+	case constant.Codec16:
 		return dds.NewCodec16Encoder(), nil
 	default:
 		return nil, fmt.Errorf("unsupported codec: 0x%X", codecID)
@@ -67,7 +67,11 @@ func transformData(dataBuffer any) ([]byte, error) {
 }
 
 // Deprecated: Use NewDataSendingEncoder instead.
-func DeviceDataSendingEncoderFactory(codecID byte) (AvlEncoder, error)
+func DeviceDataSendingEncoderFactory(codecID byte) (AvlEncoder, error) {
+	return NewDataSendingEncoder(codecID)
+}
 
 // Deprecated: Use NewGprsMessageEncoder instead.
-func GprsMessageEncoderFactory(codecID byte) (GprsEncoder, error)
+func GprsMessageEncoderFactory(codecID byte) (GprsEncoder, error) {
+	return NewGprsMessageEncoder(codecID)
+}

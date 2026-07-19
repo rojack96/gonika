@@ -166,7 +166,21 @@ func NewGprsDecoder(codecID byte) (GprsDecoder, error) {
 }
 
 // Deprecated: Use NewDataSendingDecoder instead.
-func DeviceDataSendingDecoderFactory(avlDataPacket any) (AvlDecoder, error)
+func DeviceDataSendingDecoderFactory(avlDataPacket any) (AvlDecoder, error) {
+	codecID, err := CodecRecognizer(avlDataPacket)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewDataSendingDecoder(codecID)
+}
 
 // Deprecated: Use NewGprsDecoder instead.
-func GprsMessageDecoderFactory(gprsMessagePacket any) (GprsDecoder, error)
+func GprsMessageDecoderFactory(gprsMessagePacket any) (GprsDecoder, error) {
+	codecID, err := CodecRecognizer(gprsMessagePacket)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewGprsDecoder(codecID)
+}

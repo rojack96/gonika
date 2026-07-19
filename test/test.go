@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	cdc "github.com/rojack96/gonika/codec"
 	"github.com/rojack96/gonika/codec/constant"
@@ -9,10 +10,11 @@ import (
 )
 
 func main() {
+	log.SetFlags(0)
 
 	imei, found, err := cdc.ImeiChecker("000F333536333037303432343431303133")
 	if err != nil {
-		fmt.Println("Error checking IMEI:", err)
+		log.Println("Error checking IMEI:", err)
 		return
 	}
 	if found {
@@ -27,6 +29,28 @@ func main() {
 	codec12Response(false)
 	codec13Response(false)
 	codec14Response(false)
+}
+
+func printIndentedJSON(label string, marshaler interface {
+	MarshalIndent(prefix, indent string) ([]byte, error)
+}) {
+	jsonData, err := marshaler.MarshalIndent("", "  ")
+	if err != nil {
+		log.Printf("%s: error marshaling JSON: %v\n", label, err)
+		return
+	}
+	fmt.Println(string(jsonData))
+}
+
+func printJSON(label string, marshaler interface {
+	MarshalJSON() ([]byte, error)
+}) {
+	jsonData, err := marshaler.MarshalJSON()
+	if err != nil {
+		log.Printf("%s: error marshaling JSON: %v\n", label, err)
+		return
+	}
+	fmt.Println(string(jsonData))
 }
 
 func codec8(enabled bool) {
@@ -53,29 +77,31 @@ func codec8(enabled bool) {
 		},
 	}
 
-	encoder, err := cdc.DeviceDataSendingEncoderFactory(constant.Codec8)
+	encoder, err := cdc.NewDataSendingEncoder(constant.Codec8)
 	if err != nil {
-		fmt.Println("err", err)
+		log.Println("Error creating Codec 8 encoder:", err)
+		return
 	}
 
 	raw, err := encoder.EncodeTCP(avlSlice)
 	if err != nil {
-		fmt.Println("err2", err)
-	}
-
-	decoder, err := cdc.DeviceDataSendingDecoderFactory(raw)
-	if err != nil {
-		fmt.Println(err)
+		log.Println("Error encoding Codec 8 packet:", err)
 		return
 	}
 
-	resp := decoder.DecodeTCP()
-	jsonData, err := resp.MarshalIndent("", "  ")
+	decoder, err := cdc.NewDataSendingDecoder(constant.Codec8)
 	if err != nil {
-		fmt.Println("Error marshaling JSON:", err)
+		log.Println("Error creating Codec 8 decoder:", err)
 		return
 	}
-	fmt.Println(string(jsonData))
+
+	resp, err := decoder.DecodeTCP(raw)
+	if err != nil {
+		log.Println("Error decoding Codec 8 packet:", err)
+		return
+	}
+
+	printIndentedJSON("Codec 8", resp)
 }
 
 func codec8ext(enabled bool) {
@@ -110,34 +136,34 @@ func codec8ext(enabled bool) {
 		},
 	}
 
-	encoder, err := cdc.DeviceDataSendingEncoderFactory(constant.Codec8ext)
+	encoder, err := cdc.NewDataSendingEncoder(constant.Codec8ext)
 	if err != nil {
-		fmt.Println("err", err)
+		log.Println("Error creating Codec 8 Extended encoder:", err)
+		return
 	}
 
 	raw, err := encoder.EncodeTCP(avlSlice)
 	if err != nil {
-		fmt.Println("err2", err)
-	}
-	decoder, err := cdc.DeviceDataSendingDecoderFactory(raw)
-	if err != nil {
-		fmt.Println(err)
+		log.Println("Error encoding Codec 8 Extended packet:", err)
 		return
 	}
 
-	resp := decoder.DecodeTCPflat()
-	jsonData, err := resp.MarshalIndent("", "  ")
+	decoder, err := cdc.NewDataSendingDecoder(constant.Codec8ext)
 	if err != nil {
-		fmt.Println("Error marshaling JSON:", err)
+		log.Println("Error creating Codec 8 Extended decoder:", err)
 		return
 	}
-	fmt.Println(string(jsonData))
+
+	resp, err := decoder.DecodeTCPflat(raw)
+	if err != nil {
+		log.Println("Error decoding Codec 8 Extended packet:", err)
+		return
+	}
+
+	printIndentedJSON("Codec 8 Extended", resp)
 }
 
 func codec16(enabled bool) {
-	if !enabled {
-		return
-	}
 	if !enabled {
 		return
 	}
@@ -166,28 +192,31 @@ func codec16(enabled bool) {
 		},
 	}
 
-	encoder, err := cdc.DeviceDataSendingEncoderFactory(constant.Codec16)
+	encoder, err := cdc.NewDataSendingEncoder(constant.Codec16)
 	if err != nil {
-		fmt.Println("err", err)
+		log.Println("Error creating Codec 16 encoder:", err)
+		return
 	}
 
 	raw, err := encoder.EncodeTCP(avlSlice)
 	if err != nil {
-		fmt.Println("err2", err)
-	}
-	decoder, err := cdc.DeviceDataSendingDecoderFactory(raw)
-	if err != nil {
-		fmt.Println(err)
+		log.Println("Error encoding Codec 16 packet:", err)
 		return
 	}
 
-	resp := decoder.DecodeTCP()
-	jsonData, err := resp.MarshalIndent("", "  ")
+	decoder, err := cdc.NewDataSendingDecoder(constant.Codec16)
 	if err != nil {
-		fmt.Println("Error marshaling JSON:", err)
+		log.Println("Error creating Codec 16 decoder:", err)
 		return
 	}
-	fmt.Println(string(jsonData))
+
+	resp, err := decoder.DecodeTCP(raw)
+	if err != nil {
+		log.Println("Error decoding Codec 16 packet:", err)
+		return
+	}
+
+	printIndentedJSON("Codec 16", resp)
 }
 
 func codec12Response(enabled bool) {
@@ -196,16 +225,19 @@ func codec12Response(enabled bool) {
 	}
 	// TODO use encoder instead of raw
 	const raw = "00000000000000900C010600000088494E493A323031392F372F323220373A3232205254433A323031392F372F323220373A3533205253543A32204552523A312053523A302042523A302043463A302046473A3020464C3A302054553A302F302055543A3020534D533A30204E4F4750533A303A3330204750533A31205341543A302052533A332052463A36352053463A31204D443A30010000C78F"
-	decoder, err := cdc.GprsMessageDecoderFactory(raw)
+	decoder, err := cdc.NewGprsDecoder(constant.Codec12)
 	if err != nil {
-		fmt.Println(err)
+		log.Println("Error creating Codec 12 decoder:", err)
 		return
 	}
 
-	respCmd := decoder.DecodeResponse()
-	jsonData, _ := respCmd.MarshalJSON()
+	respCmd, err := decoder.DecodeResponse(raw)
+	if err != nil {
+		log.Println("Error decoding Codec 12 response:", err)
+		return
+	}
 
-	fmt.Println(string(jsonData))
+	printJSON("Codec 12 response", respCmd)
 }
 
 func codec13Response(enabled bool) {
@@ -214,16 +246,19 @@ func codec13Response(enabled bool) {
 	}
 	// TODO use encoder instead of raw
 	const raw = "000000000000001D0D01060000001564E8328168656C6C6F206C65747320746573740D0A0100003548" // Add raw data for codec13 response
-	decoder, err := cdc.GprsMessageDecoderFactory(raw)
+	decoder, err := cdc.NewGprsDecoder(constant.Codec13)
 	if err != nil {
-		fmt.Println(err)
+		log.Println("Error creating Codec 13 decoder:", err)
 		return
 	}
 
-	respCmd := decoder.DecodeResponse()
-	jsonData, _ := respCmd.MarshalJSON()
+	respCmd, err := decoder.DecodeResponse(raw)
+	if err != nil {
+		log.Println("Error decoding Codec 13 response:", err)
+		return
+	}
 
-	fmt.Println(string(jsonData))
+	printJSON("Codec 13 response", respCmd)
 }
 
 func codec14Response(enabled bool) {
@@ -232,14 +267,17 @@ func codec14Response(enabled bool) {
 	}
 	// TODO use encoder instead of raw
 	const raw = "00000000000000AB0E0106000000A303520930814522515665723A30332E31382E31345F3034204750533A41584E5F352E31305F333333332048773A464D42313230204D6F643A313520494D45493A33353230393330383134353232353120496E69743A323031382D31312D323220373A313320557074696D653A3137323334204D41433A363042444430303136323631205350433A312830292041584C3A30204F42443A3020424C3A312E362042543A340100007AAE" // Add raw data for codec14 response
-	decoder, err := cdc.GprsMessageDecoderFactory(raw)
+	decoder, err := cdc.NewGprsDecoder(constant.Codec14)
 	if err != nil {
-		fmt.Println(err)
+		log.Println("Error creating Codec 14 decoder:", err)
 		return
 	}
 
-	respCmd := decoder.DecodeResponse()
-	jsonData, _ := respCmd.MarshalJSON()
+	respCmd, err := decoder.DecodeResponse(raw)
+	if err != nil {
+		log.Println("Error decoding Codec 14 response:", err)
+		return
+	}
 
-	fmt.Println(string(jsonData))
+	printJSON("Codec 14 response", respCmd)
 }
